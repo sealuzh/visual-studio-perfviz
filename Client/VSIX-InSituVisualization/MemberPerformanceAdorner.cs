@@ -67,6 +67,10 @@ namespace VSIX_InSituVisualization
         /// <param name="e">The event arguments.</param>
         private async void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
+            if (Document == null)
+            {
+                return;
+            }
             var root = await Document.GetSyntaxRootAsync();
             var memberDeclarationSyntaxs = root.DescendantNodes().OfType<MemberDeclarationSyntax>();
             var customSpanObtainer = new CustomSpanProvider();
