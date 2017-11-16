@@ -5,11 +5,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using EnvDTE;
-using Microsoft.VisualStudio.Shell;
-using System.ComponentModel;
-using Microsoft.VisualStudio.Settings;
-using Microsoft.VisualStudio.Shell.Settings;
 
 namespace VSIX_InSituVisualization.TelemetryCollector
 {
@@ -20,8 +15,6 @@ namespace VSIX_InSituVisualization.TelemetryCollector
         private const string QueryType = "events";
         private const string QueryPath = "dependencies";
         private const string ParameterString = "timespan=P30D&$orderby=timestamp%20desc&$top=10";
-
-        //public static ServiceProvider GlobalProvider { get; }
 
         private readonly string _appId;
         private readonly string _apiKey;

@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using VSIX_InSituVisualization.TelemetryCollector;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace VSIX_InSituVisualization
 {
@@ -95,7 +96,19 @@ namespace VSIX_InSituVisualization
                     _methodAdornerLayer.DrawPerformanceInfo(snapshotSpan, performanceInfo);
                 }
 
+                //returns null if keys not available on options page
+                //TODO JO: Maybe has to be moved to another entry point.
                 AzureTelemetry telemetry = AzureTelemetryFactory.getInstance();
+                IList<MemberTelemetry> resultList;
+                if (telemetry != null)
+                {
+                    //TODO JO: Add implementation for background task to pull data.
+                    Task<IList<MemberTelemetry>> task = telemetry.GetConcreteMemberTelemetriesAsync();
+                    TaskAwaiter<IList<MemberTelemetry>> awaiter = task.GetAwaiter();
+                    //task.Start();
+                    //resultList = awaiter.GetResult();
+                }
+
                 //Task<IList<MemberTelemetry>> telemetryTask = telemetry.GetConcreteMemberTelemetriesAsync();
                 //telemetryTask.Start();
                 //IList<MemberTelemetry> result = telemetryTask.Result;

@@ -13,11 +13,18 @@ using Microsoft.VisualStudio.Shell.Settings;
 namespace VSIX_InSituVisualization.TelemetryCollector
 
 {
+    /// <summary>
+    /// AzureTelemetryFactory creates and returns exactly one instance of AzureTelemetry. Loads Authorization Keys from settings store.
+    /// </summary>
     class AzureTelemetryFactory
     {
 
         private static AzureTelemetry telemetryInstance;
 
+        /// <summary>
+        /// AzureTelemetry returns the one and current instance of AzureTelemetry.
+        /// <para=AzureTelemetry>The current instance that is returned. Returns null if settings pane empty.</para>
+        /// </summary>
         public static AzureTelemetry getInstance()
         {
             String appId = "";
