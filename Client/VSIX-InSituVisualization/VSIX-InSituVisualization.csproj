@@ -62,8 +62,8 @@
     <Compile Include="MemberPerformanceAdorner.cs" />
     <Compile Include="MethodAdornerTextViewCreationListener.cs" />
     <Compile Include="ModelBase.cs" />
-    <Compile Include="OptionsPackage.cs" />
-    <Compile Include="OptionsPage.cs">
+    <Compile Include="OptionsPagePackage.cs" />
+    <Compile Include="OptionsPageGrid.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="PerformanceInfo.cs" />
@@ -71,6 +71,7 @@
     <Compile Include="PerformanceInfoDetailWindowCommand.cs" />
     <Compile Include="TelemetryCollector\AverageMemberTelemety.cs" />
     <Compile Include="TelemetryCollector\AzureTelemetry.cs" />
+    <Compile Include="TelemetryCollector\AzureTelemetryFactory.cs" />
     <Compile Include="TelemetryCollector\ConcreteMemberTelemetry.cs" />
     <Compile Include="TelemetryCollector\MemberTelemetry.cs" />
     <Compile Include="Views\PerformanceInfoDetailWindowControl.xaml.cs">

@@ -6,6 +6,9 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using VSIX_InSituVisualization.TelemetryCollector;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace VSIX_InSituVisualization
 {
@@ -92,9 +95,17 @@ namespace VSIX_InSituVisualization
                     _methodAdornerLayer.DrawPerformanceInfo(snapshotSpan, performanceInfo);
                 }
 
+                AzureTelemetry telemetry = AzureTelemetryFactory.getInstance();
+                //Task<IList<MemberTelemetry>> telemetryTask = telemetry.GetConcreteMemberTelemetriesAsync();
+                //telemetryTask.Start();
+                //IList<MemberTelemetry> result = telemetryTask.Result;
+
+                //telemetry.GetConcreteMemberTelemetriesAsync();
+
                 // Setting PerformanceInfo to Method from Caret
                 if (CaretPosition.Position > memberDeclarationSyntax.SpanStart &&
-                    CaretPosition.Position < memberDeclarationSyntax.FullSpan.End)
+                    CaretPosition.Position < memberDeclarationSyntax.FullSpan.End &&
+                    Settings.PerformanceInfoDetailWindowViewModel != null)
                 {
                     Settings.PerformanceInfoDetailWindowViewModel.PerformanceInfo = performanceInfo;
                 }
