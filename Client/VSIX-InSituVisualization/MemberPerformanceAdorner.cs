@@ -6,7 +6,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using VSIX_InSituVisualization.TelemetryCollector;
 using System.Threading.Tasks;
 
 namespace VSIX_InSituVisualization
@@ -52,23 +51,30 @@ namespace VSIX_InSituVisualization
             }
 
             var memberName = memberDeclaraitonSyntax.GetMemberIdentifier().ToString();
-            var averageMemberTelemetries = await TelemetryCache.GetAverageMemberTelemetyAsync();
+            try
+            {
+                var averageMemberTelemetries = await TelemetryCache.GetAverageMemberTelemetyAsync();
 
-            // TODO RR: Do Real Mapping
-            var memberTelemetries = averageMemberTelemetries.Where(tel => tel.MemberName.Contains(memberName)).ToList();
-            var memberTelemetry = memberTelemetries.FirstOrDefault();
-            if (memberTelemetry == null)
+                // TODO RR: Do Real Mapping
+                var memberTelemetries = averageMemberTelemetries.Where(tel => tel.MemberName.Contains(memberName)).ToList();
+                var memberTelemetry = memberTelemetries.FirstOrDefault();
+                if (memberTelemetry == null)
+                {
+                    return null;
+                }
+
+                var performanceInfo = new PerformanceInfo(memberName)
+                {
+                    MeanExecutionTime = memberTelemetry.Duration
+                };
+
+                _performanceInfos.Add(memberDeclaraitonSyntax, performanceInfo);
+                return performanceInfo;
+            }
+            catch
             {
                 return null;
             }
-
-            var performanceInfo = new PerformanceInfo(memberName)
-            {
-                MeanExecutionTime = memberTelemetry.Duration
-            };
-
-            _performanceInfos.Add(memberDeclaraitonSyntax, performanceInfo);
-            return performanceInfo;
         }
 
 
@@ -111,10 +117,7 @@ namespace VSIX_InSituVisualization
                 _methodAdornerLayer.DrawRedSpan(snapshotSpan);
 #endif
 
-                if (performanceInfo != null)
-                {
-                    _methodAdornerLayer.DrawPerformanceInfo(snapshotSpan, performanceInfo);
-                }
+                _methodAdornerLayer.DrawPerformanceInfo(snapshotSpan, performanceInfo);
 
                 // Setting PerformanceInfo to Method from Caret
                 if (CaretPosition.Position > memberDeclarationSyntax.SpanStart &&

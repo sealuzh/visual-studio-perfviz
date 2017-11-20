@@ -13,6 +13,11 @@ namespace VSIX_InSituVisualization
         private static IList<AverageMemberTelemety> _averageMemberTelemeties;
         private static DateTime LastUpdate { get; } = DateTime.MinValue;
 
+        /// <summary>
+        /// Throws
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <returns></returns>
         public static async Task<IList<AverageMemberTelemety>> GetAverageMemberTelemetyAsync()
         {
             var telemetry = AzureTelemetryFactory.GetInstance();
