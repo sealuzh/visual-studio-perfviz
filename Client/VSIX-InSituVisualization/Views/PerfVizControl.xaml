@@ -14,18 +14,11 @@
     </UserControl.Resources>
 
     <StackPanel Orientation="Horizontal" Opacity="0.6">
-
-        <StackPanel>
-            <Polygon Points="0,0 5,3, 0,6" Fill="GreenYellow" Margin="1,1,1,1" Visibility="{Binding ShowFirstCallerArrow, Converter={StaticResource BoolToVis}}" />
-            <Polygon Points="0,0 5,3, 0,6" Fill="GreenYellow" Margin="1,1,1,1" Visibility="{Binding ShowSecondCallerArrow, Converter={StaticResource BoolToVis}}" />
-        </StackPanel>
-
         <Button Background="{Binding Path=BackgroundColor, Converter={StaticResource ColorToSolidColorBrush}}"
                 Width ="48" 
                 Height="17"
                 Command="{Binding Path=OpenDetailViewCommand}"
-                Content="{Binding Path=PerformanceInfo.MemberTime}"
-                ContentStringFormat="{}{0:P2}"
+                Content="{Binding Path=PerformanceInfo.MeanExecutionTime}"
                 VerticalContentAlignment="Top"
                 Padding="0"
                 BorderThickness="0">
@@ -40,11 +33,6 @@
                 </Style>
             </Button.Style>
         </Button>
-        
-        <StackPanel>
-            <Polygon Points="0,0 5,3, 0,6" Fill="GreenYellow" Margin="1,1,1,1" Visibility="{Binding ShowFirstCalleeArrow, Converter={StaticResource BoolToVis}}"/>
-            <Polygon Points="0,0 5,3, 0,6" Fill="GreenYellow" Margin="1,1,1,1" Visibility="{Binding ShowSecondCallerArrow, Converter={StaticResource BoolToVis}}"/>
-        </StackPanel>
 
     </StackPanel>
 

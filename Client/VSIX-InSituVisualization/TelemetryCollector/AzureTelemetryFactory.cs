@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel;
-using EnvDTE;
 using Microsoft.VisualStudio.Shell;
-using EnvDTE80;
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell.Settings;
 
@@ -16,45 +9,34 @@ namespace VSIX_InSituVisualization.TelemetryCollector
     /// <summary>
     /// AzureTelemetryFactory creates and returns exactly one instance of AzureTelemetry. Loads Authorization Keys from settings store.
     /// </summary>
-    class AzureTelemetryFactory
+    internal static class AzureTelemetryFactory
     {
 
-        private static AzureTelemetry telemetryInstance;
+        private static AzureTelemetry _telemetryInstance;
 
         /// <summary>
         /// AzureTelemetry returns the one and current instance of AzureTelemetry.
-        /// <para=AzureTelemetry>The current instance that is returned. Returns null if settings pane empty.</para>
         /// </summary>
-        public static AzureTelemetry getInstance()
+        /// <returns>The current instance that is returned. Returns null if settings pane empty.</returns>
+        public static AzureTelemetry GetInstance()
         {
-            String appId = "";
-            String apiKey = "";
-            if (GetWritableSettingsStore().PropertyExists("Performance Visualization", "AppId") &&
-                GetWritableSettingsStore().PropertyExists("Performance Visualization", "ApiKey"))
-            {
-                appId = GetWritableSettingsStore().GetString("Performance Visualization", "AppId");
-                apiKey = GetWritableSettingsStore().GetString("Performance Visualization", "ApiKey");
-            }
-
-            //check whether necessary variables are given - if not abort
-            if (apiKey == "" || appId == "")
+            if (!GetWritableSettingsStore().PropertyExists("Performance Visualization", "AppId") ||
+                !GetWritableSettingsStore().PropertyExists("Performance Visualization", "ApiKey"))
             {
                 return null;
             }
-            else
+
+            var appId = GetWritableSettingsStore().GetString("Performance Visualization", "AppId");
+            var apiKey = GetWritableSettingsStore().GetString("Performance Visualization", "ApiKey");
+
+            //check whether necessary variables are given - if not abort
+            if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(appId))
             {
-                //create factory instance
-                if (telemetryInstance == null)
-                {
-                    telemetryInstance = new AzureTelemetry(appId, apiKey);
-                    return telemetryInstance;
-                }
-                else
-                {
-                    return telemetryInstance;
-                }
+                return null;
             }
- 
+
+            //create factory instance
+            return _telemetryInstance ?? (_telemetryInstance = new AzureTelemetry(appId, apiKey));
         }
 
         private static WritableSettingsStore GetWritableSettingsStore()

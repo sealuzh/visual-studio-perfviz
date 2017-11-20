@@ -58,7 +58,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             client.DefaultRequestHeaders.Add("x-api-key", apikey);
             var req = string.Format(Url, appid, queryType, queryPath, parameterString);
             var response = await client.GetAsync(req);
-            return response.IsSuccessStatusCode ? response.Content.ReadAsStringAsync().Result : response.ReasonPhrase;
+            return response.IsSuccessStatusCode ? response.Content.ReadAsStringAsync().Result : throw new InvalidOperationException(response.ReasonPhrase);
         }
 
         

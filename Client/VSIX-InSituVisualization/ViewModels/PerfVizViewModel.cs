@@ -25,8 +25,25 @@ namespace VSIX_InSituVisualization.ViewModels
         {
             get
             {
-                const double hueColorGreen = 120;
-                return new HsvColor((1 - PerformanceInfo.MemberTime) * hueColorGreen, 1, 1);
+                if (PerformanceInfo.MeanExecutionTime > TimeSpan.FromMilliseconds(200))
+                {
+                    return Colors.Red;
+                }
+                if (PerformanceInfo.MeanExecutionTime > TimeSpan.FromMilliseconds(100))
+                {
+                    return Colors.Orange;
+                }
+
+                if (PerformanceInfo.MeanExecutionTime > TimeSpan.FromMilliseconds(10))
+                {
+                    return Colors.LightSalmon;
+                }
+
+                return Colors.GreenYellow;
+
+
+                //const double hueColorGreen = 120;
+                //return new HsvColor((1 - PerformanceInfo.MemberTime) * hueColorGreen, 1, 1);
             }
         }
 

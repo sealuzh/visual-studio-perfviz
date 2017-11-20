@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace VSIX_InSituVisualization
 {
-    public abstract class PerformanceInfo : ModelBase
+    public class PerformanceInfo : ModelBase
     {
 
         private int _numberOfCalls;
@@ -13,7 +13,7 @@ namespace VSIX_InSituVisualization
         private TimeSpan _totalExecutionTime;
         private TimeSpan _meanExecutionTime;
 
-        protected PerformanceInfo(string identifierName)
+        public PerformanceInfo(string identifierName)
         {
             IdentifierName = identifierName;
         }
@@ -61,9 +61,9 @@ namespace VSIX_InSituVisualization
             set => SetProperty(ref _meanExecutionTime, value);
         }
 
-        public abstract ObservableCollection<PerformanceInfo> CallerPerformanceInfo { get; }
+        public virtual ObservableCollection<PerformanceInfo> CallerPerformanceInfo { get; } = new ObservableCollection<PerformanceInfo>();
 
-        public abstract ObservableCollection<PerformanceInfo> CalleePerformanceInfo { get; }
+        public virtual ObservableCollection<PerformanceInfo> CalleePerformanceInfo { get; } = new ObservableCollection<PerformanceInfo>();
 
     }
 }

@@ -7,9 +7,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using VSIX_InSituVisualization.TelemetryCollector;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 
 namespace VSIX_InSituVisualization
 {
@@ -31,7 +29,6 @@ namespace VSIX_InSituVisualization
 
         private Document Document => CaretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MemberPerformanceAdorner"/> class.
         /// </summary>
@@ -45,7 +42,7 @@ namespace VSIX_InSituVisualization
 
 
 
-        private PerformanceInfo GetPerformanceInfo(MemberDeclarationSyntax memberDeclaraitonSyntax)
+        private async Task<PerformanceInfo> GetPerformanceInfo(MemberDeclarationSyntax memberDeclaraitonSyntax)
         {
             // TODO RR: Use SyntaxAnnotation https://joshvarty.wordpress.com/2015/09/18/learn-roslyn-now-part-13-keeping-track-of-syntax-nodes-with-syntax-annotations/
             // TODO RR: Do one Dictionary per Class/File
@@ -53,8 +50,23 @@ namespace VSIX_InSituVisualization
             {
                 return perfInfo;
             }
-            // TODO RR: Get real one?
-            var performanceInfo = new RandomPerformanceInfo(memberDeclaraitonSyntax.GetMemberIdentifier().ToString());
+
+            var memberName = memberDeclaraitonSyntax.GetMemberIdentifier().ToString();
+            var averageMemberTelemetries = await TelemetryCache.GetAverageMemberTelemetyAsync();
+
+            // TODO RR: Do Real Mapping
+            var memberTelemetries = averageMemberTelemetries.Where(tel => tel.MemberName.Contains(memberName)).ToList();
+            var memberTelemetry = memberTelemetries.FirstOrDefault();
+            if (memberTelemetry == null)
+            {
+                return null;
+            }
+
+            var performanceInfo = new PerformanceInfo(memberName)
+            {
+                MeanExecutionTime = memberTelemetry.Duration
+            };
+
             _performanceInfos.Add(memberDeclaraitonSyntax, performanceInfo);
             return performanceInfo;
         }
@@ -75,18 +87,26 @@ namespace VSIX_InSituVisualization
             {
                 return;
             }
+
             var root = await Document.GetSyntaxRootAsync();
             var memberDeclarationSyntaxs = root.DescendantNodes().OfType<MemberDeclarationSyntax>();
             var customSpanObtainer = new CustomSpanProvider();
             foreach (var memberDeclarationSyntax in memberDeclarationSyntaxs)
             {
-                var performanceInfo = GetPerformanceInfo(memberDeclarationSyntax);
+                var performanceInfo = await GetPerformanceInfo(memberDeclarationSyntax);
+                if (performanceInfo == null)
+                {
+                    continue;
+                }
+
                 var span = customSpanObtainer.GetSpan(memberDeclarationSyntax);
                 if (span == default(Span))
                 {
                     continue;
                 }
+
                 var snapshotSpan = new SnapshotSpan(_textView.TextSnapshot, span);
+
 #if DEBUG_SPANS
                 _methodAdornerLayer.DrawRedSpan(snapshotSpan);
 #endif
@@ -95,25 +115,6 @@ namespace VSIX_InSituVisualization
                 {
                     _methodAdornerLayer.DrawPerformanceInfo(snapshotSpan, performanceInfo);
                 }
-
-                //returns null if keys not available on options page
-                //TODO JO: Maybe has to be moved to another entry point.
-                AzureTelemetry telemetry = AzureTelemetryFactory.getInstance();
-                IList<MemberTelemetry> resultList;
-                if (telemetry != null)
-                {
-                    //TODO JO: Add implementation for background task to pull data.
-                    Task<IList<MemberTelemetry>> task = telemetry.GetConcreteMemberTelemetriesAsync();
-                    TaskAwaiter<IList<MemberTelemetry>> awaiter = task.GetAwaiter();
-                    //task.Start();
-                    //resultList = awaiter.GetResult();
-                }
-
-                //Task<IList<MemberTelemetry>> telemetryTask = telemetry.GetConcreteMemberTelemetriesAsync();
-                //telemetryTask.Start();
-                //IList<MemberTelemetry> result = telemetryTask.Result;
-
-                //telemetry.GetConcreteMemberTelemetriesAsync();
 
                 // Setting PerformanceInfo to Method from Caret
                 if (CaretPosition.Position > memberDeclarationSyntax.SpanStart &&
