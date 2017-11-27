@@ -25,23 +25,10 @@ namespace VSIX_InSituVisualization.ViewModels
         {
             get
             {
-                if (PerformanceInfo.MeanExecutionTime > TimeSpan.FromMilliseconds(200))
-                {
-                    return Colors.Red;
-                }
-                if (PerformanceInfo.MeanExecutionTime > TimeSpan.FromMilliseconds(100))
-                {
-                    return Colors.Orange;
-                }
-
-                if (PerformanceInfo.MeanExecutionTime > TimeSpan.FromMilliseconds(10))
-                {
-                    return Colors.LightSalmon;
-                }
-
+                // TODO RR:
+                
+                // ReSharper disable once ArrangeAccessorOwnerBody
                 return Colors.GreenYellow;
-
-
                 //const double hueColorGreen = 120;
                 //return new HsvColor((1 - PerformanceInfo.MemberTime) * hueColorGreen, 1, 1);
             }

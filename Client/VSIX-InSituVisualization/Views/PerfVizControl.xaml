@@ -15,11 +15,13 @@
 
     <StackPanel Orientation="Horizontal" Opacity="0.6">
         <Button Background="{Binding Path=BackgroundColor, Converter={StaticResource ColorToSolidColorBrush}}"
-                Width ="48" 
+                Width ="60" 
                 Height="17"
                 Command="{Binding Path=OpenDetailViewCommand}"
-                Content="{Binding Path=PerformanceInfo.MeanExecutionTime}"
+                Content="{Binding Path=PerformanceInfo.MeanExecutionTime.TotalMilliseconds}"
+                ContentStringFormat="{}{0} ms "
                 VerticalContentAlignment="Top"
+                HorizontalContentAlignment="Right"
                 Padding="0"
                 BorderThickness="0">
             <Button.Style>
