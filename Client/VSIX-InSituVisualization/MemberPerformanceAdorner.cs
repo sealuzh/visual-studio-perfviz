@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Threading.Tasks;
+using VSIX_InSituVisualization.TelemetryCollector;
 
 namespace VSIX_InSituVisualization
 {
@@ -41,7 +42,7 @@ namespace VSIX_InSituVisualization
 
 
 
-        private async Task<PerformanceInfo> GetPerformanceInfo(MemberDeclarationSyntax memberDeclaraitonSyntax)
+        private PerformanceInfo GetPerformanceInfo(MemberDeclarationSyntax memberDeclaraitonSyntax)
         {
             // TODO RR: Use SyntaxAnnotation https://joshvarty.wordpress.com/2015/09/18/learn-roslyn-now-part-13-keeping-track-of-syntax-nodes-with-syntax-annotations/
             // TODO RR: Do one Dictionary per Class/File
@@ -53,23 +54,32 @@ namespace VSIX_InSituVisualization
             var memberName = memberDeclaraitonSyntax.GetMemberIdentifier().ToString();
             try
             {
-                var averageMemberTelemetries = await TelemetryCache.GetAverageMemberTelemetyAsync();
-
                 // TODO RR: Do Real Mapping
-                var memberTelemetries = averageMemberTelemetries.Where(tel => tel.MemberName.Contains(memberName)).ToList();
-                var memberTelemetry = memberTelemetries.FirstOrDefault();
-                if (memberTelemetry == null)
+                AzureTelemetryStore dataStore = AzureTelemetryFactory.GetInstance();
+                Dictionary<String, TimeSpan> averageMemberTelemetries = dataStore.GetAverageMemberTelemetry();
+                // is null when being written to at the same time
+                if (averageMemberTelemetries != null)
+                {
+                    // if no information given for this method it does not exist in dict
+                    if (!averageMemberTelemetries.ContainsKey(memberName))
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        var performanceInfo = new PerformanceInfo(memberName)
+                        {
+                            MeanExecutionTime = averageMemberTelemetries[memberName]
+                        };
+
+                        _performanceInfos.Add(memberDeclaraitonSyntax, performanceInfo);
+                        return performanceInfo;
+                    }
+                }
+                else
                 {
                     return null;
                 }
-
-                var performanceInfo = new PerformanceInfo(memberName)
-                {
-                    MeanExecutionTime = memberTelemetry.Duration
-                };
-
-                _performanceInfos.Add(memberDeclaraitonSyntax, performanceInfo);
-                return performanceInfo;
             }
             catch
             {
@@ -99,7 +109,7 @@ namespace VSIX_InSituVisualization
             var customSpanObtainer = new CustomSpanProvider();
             foreach (var memberDeclarationSyntax in memberDeclarationSyntaxs)
             {
-                var performanceInfo = await GetPerformanceInfo(memberDeclarationSyntax);
+                var performanceInfo = GetPerformanceInfo(memberDeclarationSyntax);
                 if (performanceInfo == null)
                 {
                     continue;

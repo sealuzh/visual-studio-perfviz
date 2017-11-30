@@ -19,8 +19,6 @@ namespace VSIX_InSituVisualization
     /// </summary>
     public class OptionsPageGrid : DialogPage
     {
-        private string appId;
-        private string apiKey;
 
         [Category("Credentials")]
         [DisplayName("Insights Application ID")]

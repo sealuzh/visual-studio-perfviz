@@ -74,6 +74,7 @@
     <Compile Include="TelemetryCollector\AverageMemberTelemety.cs" />
     <Compile Include="TelemetryCollector\AzureTelemetry.cs" />
     <Compile Include="TelemetryCollector\AzureTelemetryFactory.cs" />
+    <Compile Include="TelemetryCollector\AzureTelemetryStore.cs" />
     <Compile Include="TelemetryCollector\ConcreteMemberTelemetry.cs" />
     <Compile Include="TelemetryCollector\MemberTelemetry.cs" />
     <Compile Include="Views\PerformanceInfoDetailWindowControl.xaml.cs">

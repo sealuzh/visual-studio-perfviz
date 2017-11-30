@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Timers;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Timers;
 using Newtonsoft.Json;
 
-namespace AzureTelemetryCollector.TelemetryCollector
+namespace VSIX_InSituVisualization.TelemetryCollector
 {
 
     class AzureTelemetryStore
@@ -78,7 +78,7 @@ namespace AzureTelemetryCollector.TelemetryCollector
 
         private void WriteSystemCacheData()
         {
-            
+            //TODO: Find better path because this one is deleted upon startup.
             String json = JsonConvert.SerializeObject(_concreteMemberTelemetries);
             System.IO.File.WriteAllText(_basePath + "\\VSIXStore.json", json);
         }
