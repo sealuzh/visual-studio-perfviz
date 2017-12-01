@@ -15,9 +15,11 @@ namespace VSIX_InSituVisualization.TelemetryCollector
         private readonly AzureTelemetry _azureTelemetry;
         private String _apiKey;
         private String _appId;
-        private String _basePath;
-        private readonly Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>> _concreteMemberTelemetries;
-        private Dictionary<String, TimeSpan> _averageMemberTelemetry;
+        private readonly String _basePath;
+        private readonly Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>> _allMemberTelemetries;
+        private Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>> _currentMemberTelemetries;
+        private TelemetryFilter _filter;
+        private Dictionary<String, TimeSpan> _currentAveragedMemberTelemetry;
         private readonly int TIMERINTERVAL = 5000;
         private Boolean _isAverageTelemetryLock;
         private Boolean _isConcreteMemberTelemetriesLock;
@@ -29,14 +31,15 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             _basePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             _isAverageTelemetryLock = false;
             _isConcreteMemberTelemetriesLock = false;
-           
+            _filter = new TelemetryFilter();
+
+            AddFilter(GetFilterProperties()["City"], "IsEqual", "Zurich");
+
             _azureTelemetry = new AzureTelemetry(appId, apiKey);
 
-            _concreteMemberTelemetries = FetchSystemCacheData();
-            //_averageMemberTelemetry = new Dictionary<String, TimeSpan>();
-            _averageMemberTelemetry = TakeAverageOfDict(_concreteMemberTelemetries);
-
-            //TODO: Call stored data
+            _allMemberTelemetries = FetchSystemCacheData();
+            _currentMemberTelemetries = _filter.ApplyFilters(_allMemberTelemetries);
+            _currentAveragedMemberTelemetry = TakeAverageOfDict(_currentMemberTelemetries);
 
             //Setup Timer Task that automatically updates the store via REST
             var timer = new Timer
@@ -48,17 +51,31 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             
         }
 
-
-        public Dictionary<String, TimeSpan> GetAverageMemberTelemetry()
+        public Dictionary<String, TimeSpan> GetCurrentAveragedMemberTelemetry()
         {
             if (!_isAverageTelemetryLock)
             {
-                return _averageMemberTelemetry;
+                return _currentAveragedMemberTelemetry;
             }
             else
             {
                 return null;
             }
+        }
+
+        public Dictionary<String, PropertyInfo> GetFilterProperties()
+        {
+            return _filter.GetFilterProperties();
+        }
+
+        public void ResetFilter()
+        {
+            _filter.ResetFilter();
+        }
+
+        public void AddFilter(PropertyInfo propertyInfo, String filterType, String parameter)
+        {
+            _filter.AddFilter(propertyInfo, filterType, parameter);
         }
 
         private Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>> FetchSystemCacheData()
@@ -76,10 +93,10 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             }
         }
 
-        private void WriteSystemCacheData()
+        private void WriteSystemCacheData(Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>> toStoreTelemetryData)
         {
             //TODO: Find better path because this one is deleted upon startup.
-            String json = JsonConvert.SerializeObject(_concreteMemberTelemetries);
+            String json = JsonConvert.SerializeObject(toStoreTelemetryData);
             System.IO.File.WriteAllText(_basePath + "\\VSIXStore.json", json);
         }
 
@@ -93,12 +110,12 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                 _isConcreteMemberTelemetriesLock = true;
                 foreach (ConcreteMemberTelemetry restReturnMember in newRestData)
                 {
-                    if (_concreteMemberTelemetries.ContainsKey(restReturnMember.MemberName))
+                    if (_allMemberTelemetries.ContainsKey(restReturnMember.MemberName))
                     {
-                        if (!_concreteMemberTelemetries[restReturnMember.MemberName].ContainsKey(restReturnMember.Id))
+                        if (!_allMemberTelemetries[restReturnMember.MemberName].ContainsKey(restReturnMember.Id))
                         {
                             //element is missing --> new element. Add it to the dict
-                            _concreteMemberTelemetries[restReturnMember.MemberName].Add(restReturnMember.Id, restReturnMember);
+                            _allMemberTelemetries[restReturnMember.MemberName].Add(restReturnMember.Id, restReturnMember);
                             updateOccured = true;
                         } //else: already exists, no need to add it
 
@@ -108,7 +125,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                         //case methodname does not exist: add a new dict for the new method, put the element inside.
                         Dictionary<String, ConcreteMemberTelemetry> newDict = new Dictionary<String, ConcreteMemberTelemetry>();
                         newDict.Add(restReturnMember.Id, restReturnMember);
-                        _concreteMemberTelemetries.Add(restReturnMember.MemberName, newDict);
+                        _allMemberTelemetries.Add(restReturnMember.MemberName, newDict);
                         updateOccured = true;
                     }
 
@@ -116,8 +133,10 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                 _isConcreteMemberTelemetriesLock = false;
                 if (updateOccured)
                 {
-                    _averageMemberTelemetry = TakeAverageOfDict(_concreteMemberTelemetries);
-                    WriteSystemCacheData();
+                    WriteSystemCacheData(_allMemberTelemetries);
+                    _currentMemberTelemetries = _filter.ApplyFilters(_allMemberTelemetries);
+                    _currentAveragedMemberTelemetry = TakeAverageOfDict(_currentMemberTelemetries);
+                    
                 }
                 
             }

@@ -56,7 +56,8 @@ namespace VSIX_InSituVisualization
             {
                 // TODO RR: Do Real Mapping
                 AzureTelemetryStore dataStore = AzureTelemetryFactory.GetInstance();
-                Dictionary<String, TimeSpan> averageMemberTelemetries = dataStore.GetAverageMemberTelemetry();
+                //dataStore.AddFilter(dataStore.GetFilterProperties()["City"], "IsEqual", "Zurich");
+                Dictionary<String, TimeSpan> averageMemberTelemetries = dataStore.GetCurrentAveragedMemberTelemetry();
                 // is null when being written to at the same time
                 if (averageMemberTelemetries != null)
                 {
