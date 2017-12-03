@@ -11,18 +11,18 @@ namespace VSIX_InSituVisualization.TelemetryCollector
     class StringFilter : IFilter
     {
 
-        private String _filterString;
-        private PropertyInfo _property;
-        private FilterType _filterType;
+        private readonly String _filterString;
+        private readonly PropertyInfo _property;
+        private readonly StringFilterType _stringFilterType;
 
-        public StringFilter(PropertyInfo property, FilterType filterType, string filterString)
+        public StringFilter(PropertyInfo property, StringFilterType stringFilterType, string filterString)
         {
             _filterString = filterString;
             _property = property;
-            _filterType = filterType;
+            _stringFilterType = stringFilterType;
         }
 
-        public enum FilterType
+        public enum StringFilterType
         {
             IsEqual, Contains
         }
@@ -30,40 +30,40 @@ namespace VSIX_InSituVisualization.TelemetryCollector
         public Dictionary<string, Dictionary<string, ConcreteMemberTelemetry>> ApplyFilter(Dictionary<string, Dictionary<string, ConcreteMemberTelemetry>> inDictionary)
         {
             Dictionary<string, Dictionary<string, ConcreteMemberTelemetry>> outDictionary = new Dictionary<string, Dictionary<string, ConcreteMemberTelemetry>>(inDictionary);
-            List<String> toRemoveMethod = new List<String>();
+            List<String> toRemoveMethodKeys = new List<String>();
             foreach (KeyValuePair<String, Dictionary<String, ConcreteMemberTelemetry>> kvpMethod in inDictionary)
             {
-                List<String> toRemove = new List<string>();
+                List<String> toRemoveMemberKeys = new List<string>();
                 foreach (KeyValuePair<String, ConcreteMemberTelemetry> kvpMember in inDictionary[kvpMethod.Key])
                 {
-                    String memberName = (String)_property.GetValue(kvpMember.Value);
-                    switch (_filterType)
+                    String memberPropertyValue = (String)_property.GetValue(kvpMember.Value);
+                    switch (_stringFilterType)
                     {
-                        case FilterType.IsEqual:
-                            if (!memberName.Equals(_filterString))
+                        case StringFilterType.IsEqual:
+                            if (!memberPropertyValue.Equals(_filterString))
                             {
-                                toRemove.Add(kvpMember.Key);
+                                toRemoveMemberKeys.Add(kvpMember.Key);
                             }
                             break;
-                        case FilterType.Contains:
-                            if (!memberName.Contains(_filterString))
+                        case StringFilterType.Contains:
+                            if (!memberPropertyValue.Contains(_filterString))
                             {
-                                toRemove.Add(kvpMember.Key);
+                                toRemoveMemberKeys.Add(kvpMember.Key);
                             }
                             break;
                     }
                 }
-                foreach (String removeKey in toRemove)
+                foreach (String removeKey in toRemoveMemberKeys)
                 {
                     outDictionary[kvpMethod.Key].Remove(removeKey);
                 }
                 //check whether db on method level is empty --> remove
                 if (outDictionary[kvpMethod.Key].Count <= 0)
                 {
-                    toRemoveMethod.Add(kvpMethod.Key);
+                    toRemoveMethodKeys.Add(kvpMethod.Key);
                 }
             }
-            foreach (String removeKey in toRemoveMethod)
+            foreach (String removeKey in toRemoveMethodKeys)
             {
                 outDictionary.Remove(removeKey);
             }

@@ -18,7 +18,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
         private readonly String _basePath;
         private readonly Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>> _allMemberTelemetries;
         private Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>> _currentMemberTelemetries;
-        private TelemetryFilter _filter;
+        private readonly TelemetryFilter _filter;
         private Dictionary<String, TimeSpan> _currentAveragedMemberTelemetry;
         private readonly int TIMERINTERVAL = 5000;
         private Boolean _isAverageTelemetryLock;
@@ -34,6 +34,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             _filter = new TelemetryFilter();
 
             AddFilter(GetFilterProperties()["City"], "IsEqual", "Zurich");
+            AddFilter(GetFilterProperties()["Timestamp"], "IsGreaterEqualThen", new DateTime(2017, 11, 21));
 
             _azureTelemetry = new AzureTelemetry(appId, apiKey);
 
@@ -73,7 +74,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             _filter.ResetFilter();
         }
 
-        public void AddFilter(PropertyInfo propertyInfo, String filterType, String parameter)
+        public void AddFilter(PropertyInfo propertyInfo, String filterType, Object parameter)
         {
             _filter.AddFilter(propertyInfo, filterType, parameter);
         }

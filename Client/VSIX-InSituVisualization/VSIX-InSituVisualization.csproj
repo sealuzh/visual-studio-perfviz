@@ -77,6 +77,7 @@
     <Compile Include="TelemetryCollector\AzureTelemetryStore.cs" />
     <Compile Include="TelemetryCollector\ConcreteMemberTelemetry.cs" />
     <Compile Include="TelemetryCollector\IFilter.cs" />
+    <Compile Include="TelemetryCollector\DateTimeFilter.cs" />
     <Compile Include="TelemetryCollector\StringFilter.cs" />
     <Compile Include="TelemetryCollector\MemberTelemetry.cs" />
     <Compile Include="TelemetryCollector\TelemetryFilter.cs" />

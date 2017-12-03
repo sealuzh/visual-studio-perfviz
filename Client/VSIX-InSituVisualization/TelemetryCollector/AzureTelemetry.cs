@@ -14,7 +14,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
 
         private const string QueryType = "events";
         private const string QueryPath = "dependencies";
-        private const string ParameterString = "timespan=P30D&$orderby=timestamp%20desc&$top=100";
+        private const string ParameterString = "timespan=P30D&$orderby=timestamp%20desc&$top=10000";
 
         private readonly string _appId;
         private readonly string _apiKey;

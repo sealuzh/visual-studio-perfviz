@@ -13,8 +13,8 @@ namespace VSIX_InSituVisualization.TelemetryCollector
     {
 
         private List<PropertyInfo> _properties;
-        private Dictionary<String, PropertyInfo> _propertyMap;
-        private List<IFilter> _currentFilters;
+        private readonly Dictionary<String, PropertyInfo> _propertyMap;
+        private readonly List<IFilter> _currentFilters;
 
         public TelemetryFilter()
         {
@@ -37,18 +37,30 @@ namespace VSIX_InSituVisualization.TelemetryCollector
 
         public void AddFilter(PropertyInfo property, String filterType, Object parameter)
         {
-            switch (property.GetType().ToString())
+            switch (property.PropertyType.ToString())
             {
-                case "String":
+                case "System.String":
                     try
                     {
-                        Enum.TryParse(filterType, out StringFilter.FilterType type);
+                        StringFilter.StringFilterType type = (StringFilter.StringFilterType)Enum.Parse(typeof(StringFilter.StringFilterType), filterType);
                         IFilter newFilter = new StringFilter(property, type, parameter.ToString());
                         _currentFilters.Add(newFilter);
                     }
                     catch
                     {
-                        
+
+                    }
+                    break;
+                case "System.DateTime":
+                    try
+                    {
+                        DateTimeFilter.DateTimeFilterType type = (DateTimeFilter.DateTimeFilterType)Enum.Parse(typeof(DateTimeFilter.DateTimeFilterType), filterType);
+                        IFilter newFilter = new DateTimeFilter(property, type, (DateTime)parameter);
+                        _currentFilters.Add(newFilter);
+                    }
+                    catch
+                    {
+
                     }
                     break;
                 default:
