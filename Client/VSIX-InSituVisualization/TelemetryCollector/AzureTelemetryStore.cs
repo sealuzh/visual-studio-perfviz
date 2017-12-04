@@ -15,14 +15,14 @@ namespace VSIX_InSituVisualization.TelemetryCollector
     {
         private readonly AzureTelemetry _azureTelemetry;
         private readonly string _basePath;
-        private readonly IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> _allMemberTelemetries;
+        private IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> _allMemberTelemetries;
         private IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> _currentMemberTelemetries;
         private readonly FilterController _filterController;
         private Dictionary<string, TimeSpan> _currentAveragedMemberTelemetry;
         private const int Timerinterval = 5000;
         private bool _isAverageTelemetryLock;
         private bool _isConcreteMemberTelemetriesLock;
-        
+
         public AzureTelemetryStore(string appId, string apiKey)
         {
             _basePath = Path.GetDirectoryName(Path.GetTempPath()) + "\\InSitu";
@@ -30,14 +30,12 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             _isConcreteMemberTelemetriesLock = false;
             _filterController = new FilterController();
 
-            //AddFilter(GetFilterProperties()["City"], "IsEqual", "Zurich");
             AddFilter(GetFilterProperties()["Timestamp"], "IsGreaterEqualThen", new DateTime(2017, 11, 21));
 
             _azureTelemetry = new AzureTelemetry(appId, apiKey);
 
             _allMemberTelemetries = FetchSystemCacheData();
-            _currentMemberTelemetries = _filterController.ApplyFilters(_allMemberTelemetries);
-            _currentAveragedMemberTelemetry = TakeAverageOfDict(_currentMemberTelemetries);
+            StoreUpdate(false);
 
             //Setup Timer Task that automatically updates the store via REST
             var timer = new Timer
@@ -46,16 +44,12 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             };
             timer.Elapsed += FetchNewRestData;
             timer.Enabled = true;
-            
+
         }
 
         public Dictionary<string, TimeSpan> GetCurrentAveragedMemberTelemetry()
         {
-            if (!_isAverageTelemetryLock)
-            {
-                return _currentAveragedMemberTelemetry;
-            }
-            return null;
+            return !_isAverageTelemetryLock ? new Dictionary<string, TimeSpan>(_currentAveragedMemberTelemetry) : null;
         }
 
         public Dictionary<string, PropertyInfo> GetFilterProperties()
@@ -66,11 +60,19 @@ namespace VSIX_InSituVisualization.TelemetryCollector
         public void ResetFilter()
         {
             _filterController.ResetFilter();
+            StoreUpdate(false);
         }
 
         public void AddFilter(PropertyInfo propertyInfo, string filterType, object parameter)
         {
             _filterController.AddFilter(propertyInfo, filterType, parameter);
+        }
+
+        private void StoreUpdate(bool persist)
+        {
+            if (persist) WriteSystemCacheData(_allMemberTelemetries);
+            _currentMemberTelemetries = _filterController.ApplyFilters(_allMemberTelemetries);
+            _currentAveragedMemberTelemetry = TakeAverageOfDict(_currentMemberTelemetries);
         }
 
         private IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> FetchSystemCacheData()
@@ -95,48 +97,33 @@ namespace VSIX_InSituVisualization.TelemetryCollector
 
         private async void FetchNewRestData(object sender, ElapsedEventArgs e)
         {
-            try
+            var updateOccured = false;
+            var newRestData = await _azureTelemetry.GetNewTelemetriesTaskAsync();
+            AwaitConcreteMemberTelemetriesLock();
+            _isConcreteMemberTelemetriesLock = true;
+            foreach (ConcreteMemberTelemetry restReturnMember in newRestData)
             {
-                var updateOccured = false;
-                var newRestData = await _azureTelemetry.GetNewTelemetriesTaskAsync();
-                AwaitConcreteMemberTelemetriesLock();
-                _isConcreteMemberTelemetriesLock = true;
-                foreach (ConcreteMemberTelemetry restReturnMember in newRestData)
+                if (_allMemberTelemetries.ContainsKey(restReturnMember.MemberName))
                 {
-                    if (_allMemberTelemetries.ContainsKey(restReturnMember.MemberName))
+                    if (!_allMemberTelemetries[restReturnMember.MemberName].ContainsKey(restReturnMember.Id))
                     {
-                        if (!_allMemberTelemetries[restReturnMember.MemberName].ContainsKey(restReturnMember.Id))
-                        {
-                            //element is missing --> new element. Add it to the dict
-                            _allMemberTelemetries[restReturnMember.MemberName].Add(restReturnMember.Id, restReturnMember);
-                            updateOccured = true;
-                        } //else: already exists, no need to add it
-
-                    }
-                    else
-                    {
-                        //case methodname does not exist: add a new dict for the new method, put the element inside.
-                        var newDict = new Dictionary<string, ConcreteMemberTelemetry> {{restReturnMember.Id, restReturnMember}};
-                        _allMemberTelemetries.Add(restReturnMember.MemberName, newDict);
+                        //element is missing --> new element. Add it to the dict
+                        _allMemberTelemetries[restReturnMember.MemberName].Add(restReturnMember.Id, restReturnMember);
                         updateOccured = true;
-                    }
+                    } //else: already exists, no need to add it
 
                 }
-                _isConcreteMemberTelemetriesLock = false;
-                if (updateOccured)
+                else
                 {
-                    WriteSystemCacheData(_allMemberTelemetries);
-                    _currentMemberTelemetries = _filterController.ApplyFilters(_allMemberTelemetries);
-                    _currentAveragedMemberTelemetry = TakeAverageOfDict(_currentMemberTelemetries);
-                    
+                    //case methodname does not exist: add a new dict for the new method, put the element inside.
+                    var newDict = new Dictionary<string, ConcreteMemberTelemetry> { { restReturnMember.Id, restReturnMember } };
+                    _allMemberTelemetries.Add(restReturnMember.MemberName, newDict);
+                    updateOccured = true;
                 }
-                
+
             }
-            catch (Exception em)
-            {
-                Console.WriteLine(em);
-            }
-            
+            _isConcreteMemberTelemetriesLock = false;
+            if (updateOccured) StoreUpdate(true);
         }
 
         private Dictionary<string, TimeSpan> TakeAverageOfDict(IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> inputDict)

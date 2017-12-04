@@ -12,7 +12,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
     static class WritableSettingsStoreController
     {
         //TODO: Overload
-        public static void SetWritableSettingsStoreValue(String category, String name, object value)
+        public static void SetWritableSettingsStoreValue(string category, string name, object value)
         {
             if (!GetWritableSettingsStore().PropertyExists(category, name))
             {
@@ -22,7 +22,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             switch (value.GetType().ToString())
             {
                 case "System.String":
-                    GetWritableSettingsStore().SetString(category, name, (String)value);
+                    GetWritableSettingsStore().SetString(category, name, (string)value);
                     break;
                 case "System.Int32":
                     GetWritableSettingsStore().SetInt32(category, name, (int)value);
@@ -32,7 +32,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             }
         }
 
-        public static object GetWritableSettingsStoreValue(String category, String name, Type filetype)
+        public static object GetWritableSettingsStoreValue(string category, string name, Type filetype)
         {
             if (GetWritableSettingsStore().PropertyExists(category, name))
             {

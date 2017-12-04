@@ -25,11 +25,10 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
 
         public IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> ApplyFilter(IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> inDictionary)
         {
-            var outDictionary = new Dictionary<string, IDictionary<string, ConcreteMemberTelemetry>>(inDictionary);
-            var toRemoveMethodKeys = new List<string>();
+            var outDictionary = new Dictionary<string, IDictionary<string, ConcreteMemberTelemetry>>();
             foreach (var kvpMethod in inDictionary)
             {
-                var toRemoveMemberKeys = new List<string>();
+                outDictionary.Add(kvpMethod.Key, new Dictionary<string, ConcreteMemberTelemetry>());
                 foreach (var kvpMember in inDictionary[kvpMethod.Key])
                 {
                     var memberPropertyValue = (DateTime)_property.GetValue(kvpMember.Value);
@@ -38,37 +37,31 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
                         case DateTimeFilterType.IsEqual:
                             if (!memberPropertyValue.Equals(_filterString))
                             {
-                                toRemoveMemberKeys.Add(kvpMember.Key);
-                            }
+                                outDictionary[kvpMethod.Key].Add(kvpMember.Key, kvpMember.Value);
+                                }
                             break;
                         case DateTimeFilterType.IsGreaterEqualThen:
                             if (!(memberPropertyValue >= _filterString))
                             {
-                                toRemoveMemberKeys.Add(kvpMember.Key);
-                            }
+                                outDictionary[kvpMethod.Key].Add(kvpMember.Key, kvpMember.Value);
+                               }
                             break;
                         case DateTimeFilterType.IsSmallerEqualThen:
                             if (!(memberPropertyValue <= _filterString))
                             {
-                                toRemoveMemberKeys.Add(kvpMember.Key);
-                            }
+                                outDictionary[kvpMethod.Key].Add(kvpMember.Key, kvpMember.Value);                            }
+                            break;
+                        default:
                             break;
                     }
                 }
-                foreach (var removeKey in toRemoveMemberKeys)
-                {
-                    outDictionary[kvpMethod.Key].Remove(removeKey);
-                }
-                //check whether db on method level is empty --> remove
+                //TODO: If this section is removed, also methods with no filtering results will have some value to show.
                 if (outDictionary[kvpMethod.Key].Count <= 0)
                 {
-                    toRemoveMethodKeys.Add(kvpMethod.Key);
+                   outDictionary.Remove(kvpMethod.Key);
                 }
             }
-            foreach (var removeKey in toRemoveMethodKeys)
-            {
-                outDictionary.Remove(removeKey);
-            }
+            
             return outDictionary;
 
         }
