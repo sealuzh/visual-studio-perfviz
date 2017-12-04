@@ -7,7 +7,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
     /// </summary>
     internal class AverageMemberTelemetry : MemberTelemetry
     {
-        public AverageMemberTelemetry(string memberName, String nameSpace, TimeSpan duration) : base(memberName, nameSpace, duration)
+        public AverageMemberTelemetry(string memberName, string nameSpace, TimeSpan duration) : base(memberName, nameSpace, duration)
         {
         }
     }

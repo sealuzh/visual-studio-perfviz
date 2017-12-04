@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using VSIX_InSituVisualization.TelemetryCollector;
-
-namespace VSIX_InSituVisualization
+﻿namespace VSIX_InSituVisualization
 {
     internal static class TelemetryCache
     {

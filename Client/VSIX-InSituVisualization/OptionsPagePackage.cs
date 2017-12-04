@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell;
 
@@ -25,7 +24,7 @@ namespace VSIX_InSituVisualization
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [Guid(OptionsPagePackage.PackageGuidString)]
+    [Guid(PackageGuidString)]
     [ProvideOptionPage(typeof(OptionsPageGrid), "Performance Visualization", "General", 0, 0, true)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     public sealed class OptionsPagePackage : Package
@@ -50,7 +49,7 @@ namespace VSIX_InSituVisualization
         {
             get
             {
-                OptionsPageGrid page = (OptionsPageGrid)GetDialogPage(typeof(OptionsPageGrid));
+                var page = (OptionsPageGrid)GetDialogPage(typeof(OptionsPageGrid));
                 return page.AppId;
             }
         }
@@ -59,7 +58,7 @@ namespace VSIX_InSituVisualization
         {
             get
             {
-                OptionsPageGrid page = (OptionsPageGrid)GetDialogPage(typeof(OptionsPageGrid));
+                var page = (OptionsPageGrid)GetDialogPage(typeof(OptionsPageGrid));
                 return page.ApiKey;
             }
         }

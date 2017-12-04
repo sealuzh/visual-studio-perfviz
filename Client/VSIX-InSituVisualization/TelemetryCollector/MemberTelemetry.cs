@@ -4,7 +4,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
 {
     internal abstract class MemberTelemetry
     {
-        protected MemberTelemetry(string memberName, String nameSpace, TimeSpan duration)
+        protected MemberTelemetry(string memberName, string nameSpace, TimeSpan duration)
         {
             MemberName = memberName;
             NameSpace = nameSpace;

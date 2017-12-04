@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Markup;
 
 namespace VSIX_InSituVisualization.TelemetryCollector
 {
@@ -27,16 +23,16 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             IsEqual, IsGreaterEqualThen, IsSmallerEqualThen
         }
 
-        public Dictionary<string, Dictionary<string, ConcreteMemberTelemetry>> ApplyFilter(Dictionary<string, Dictionary<string, ConcreteMemberTelemetry>> inDictionary)
+        public IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> ApplyFilter(IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> inDictionary)
         {
-            Dictionary<string, Dictionary<string, ConcreteMemberTelemetry>> outDictionary = new Dictionary<string, Dictionary<string, ConcreteMemberTelemetry>>(inDictionary);
-            List<String> toRemoveMethodKeys = new List<String>();
-            foreach (KeyValuePair<String, Dictionary<String, ConcreteMemberTelemetry>> kvpMethod in inDictionary)
+            var outDictionary = new Dictionary<string, IDictionary<string, ConcreteMemberTelemetry>>(inDictionary);
+            var toRemoveMethodKeys = new List<string>();
+            foreach (var kvpMethod in inDictionary)
             {
-                List<String> toRemoveMemberKeys = new List<string>();
-                foreach (KeyValuePair<String, ConcreteMemberTelemetry> kvpMember in inDictionary[kvpMethod.Key])
+                var toRemoveMemberKeys = new List<string>();
+                foreach (var kvpMember in inDictionary[kvpMethod.Key])
                 {
-                    DateTime memberPropertyValue = (DateTime)_property.GetValue(kvpMember.Value);
+                    var memberPropertyValue = (DateTime)_property.GetValue(kvpMember.Value);
                     switch (_dateTimeFilterType)
                     {
                         case DateTimeFilterType.IsEqual:
@@ -62,7 +58,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                             break;
                     }
                 }
-                foreach (String removeKey in toRemoveMemberKeys)
+                foreach (var removeKey in toRemoveMemberKeys)
                 {
                     outDictionary[kvpMethod.Key].Remove(removeKey);
                 }
@@ -72,7 +68,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                     toRemoveMethodKeys.Add(kvpMethod.Key);
                 }
             }
-            foreach (String removeKey in toRemoveMethodKeys)
+            foreach (var removeKey in toRemoveMethodKeys)
             {
                 outDictionary.Remove(removeKey);
             }

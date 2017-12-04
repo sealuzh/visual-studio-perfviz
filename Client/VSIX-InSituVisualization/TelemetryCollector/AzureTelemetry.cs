@@ -32,7 +32,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             dynamic telemetryData = JsonConvert.DeserializeObject(telemetryJson);
 
             var performanceInfoList = new List<MemberTelemetry>();
-            foreach (dynamic obj in telemetryData.value.Children())
+            foreach (var obj in telemetryData.value.Children())
             {
                 var performanceInfo = new ConcreteMemberTelemetry(
                     (string)obj.id,

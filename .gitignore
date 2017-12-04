@@ -6,6 +6,9 @@
 *.user
 *.sln.docstates
 
+.*
+!/.gitignore
+
 # Build results
 
 [Dd]ebug/
@@ -131,27 +134,3 @@ $RECYCLE.BIN/
 .DS_Store
 
 _NCrunch*
-Client/.vs/VSIX-InSituVisualization/v15/Server/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/Server/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/Server/sqlite3/storage.ide-shm
-Client/.vs/VSIX-InSituVisualization/v15/Server/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/Server/sqlite3/storage.ide-wal
-Client/.vs/VSIX-InSituVisualization/v15/Server/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/sqlite3/storage.ide-shm
-Client/.vs/VSIX-InSituVisualization/v15/sqlite3/storage.ide-wal
-Client/.vs/VSIX-InSituVisualization/v15/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/Server/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/Server/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/Server/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/Server/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/Server/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/Server/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/Server/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/Server/sqlite3/storage.ide
-Client/.vs/VSIX-InSituVisualization/v15/sqlite3/storage.ide

@@ -63,12 +63,12 @@ namespace VSIX_InSituVisualization
             }
             else
             {
-                double hf = h / 60.0;
-                int i = (int)Math.Floor(hf);
-                double f = hf - i;
-                double pv = Value * (1 - Saturation);
-                double qv = Value * (1 - Saturation * f);
-                double tv = Value * (1 - Saturation * (1 - f));
+                var hf = h / 60.0;
+                var i = (int)Math.Floor(hf);
+                var f = hf - i;
+                var pv = Value * (1 - Saturation);
+                var qv = Value * (1 - Saturation * f);
+                var tv = Value * (1 - Saturation * (1 - f));
                 switch (i)
                 {
 

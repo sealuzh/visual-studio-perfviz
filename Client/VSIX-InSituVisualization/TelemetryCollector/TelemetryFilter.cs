@@ -1,48 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace VSIX_InSituVisualization.TelemetryCollector
 {
-    
-    class TelemetryFilter
+    internal class TelemetryFilter
     {
-
-        private List<PropertyInfo> _properties;
-        private readonly Dictionary<String, PropertyInfo> _propertyMap;
+        private readonly Dictionary<string, PropertyInfo> _propertyMap;
         private readonly List<IFilter> _currentFilters;
 
         public TelemetryFilter()
         {
-            _properties = new List<PropertyInfo>();
-            _propertyMap = new Dictionary<String, PropertyInfo>();
+            _propertyMap = new Dictionary<string, PropertyInfo>();
             _currentFilters = new List<IFilter>();
             var propertyInfoArray = typeof(ConcreteMemberTelemetry).GetProperties();
-            foreach (PropertyInfo prop in propertyInfoArray)
+            foreach (var prop in propertyInfoArray)
             {
-                _properties.Add(prop);
                 _propertyMap.Add(prop.Name, prop);
             }
-            
         }
 
-        public Dictionary<String, PropertyInfo> GetFilterProperties()
+        public Dictionary<string, PropertyInfo> GetFilterProperties()
         {
             return _propertyMap;
         }
 
-        public void AddFilter(PropertyInfo property, String filterType, Object parameter)
+        public void AddFilter(PropertyInfo property, string filterType, object parameter)
         {
             switch (property.PropertyType.ToString())
             {
                 case "System.String":
                     try
                     {
-                        StringFilter.StringFilterType type = (StringFilter.StringFilterType)Enum.Parse(typeof(StringFilter.StringFilterType), filterType);
+                        var type = (StringFilter.StringFilterType)Enum.Parse(typeof(StringFilter.StringFilterType), filterType);
                         IFilter newFilter = new StringFilter(property, type, parameter.ToString());
                         _currentFilters.Add(newFilter);
                     }
@@ -54,7 +44,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                 case "System.DateTime":
                     try
                     {
-                        DateTimeFilter.DateTimeFilterType type = (DateTimeFilter.DateTimeFilterType)Enum.Parse(typeof(DateTimeFilter.DateTimeFilterType), filterType);
+                        var type = (DateTimeFilter.DateTimeFilterType)Enum.Parse(typeof(DateTimeFilter.DateTimeFilterType), filterType);
                         IFilter newFilter = new DateTimeFilter(property, type, (DateTime)parameter);
                         _currentFilters.Add(newFilter);
                     }
@@ -68,15 +58,17 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             }
         }
 
-        public Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>> ApplyFilters(Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>> inDictionary)
+        public IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> ApplyFilters(IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> inDictionary)
         {
-            if (_currentFilters.Count <= 0) return inDictionary;
-            Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>> outDictionary = new Dictionary<string, Dictionary<string, ConcreteMemberTelemetry>>(inDictionary);
-            foreach (IFilter filter in _currentFilters)
+            if (_currentFilters.Count <= 0)
+            {
+                return inDictionary;
+            }
+            IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> outDictionary = null;
+            foreach (var filter in _currentFilters)
             {
                 outDictionary = filter.ApplyFilter(inDictionary);
             }
-
             return outDictionary;
         }
 

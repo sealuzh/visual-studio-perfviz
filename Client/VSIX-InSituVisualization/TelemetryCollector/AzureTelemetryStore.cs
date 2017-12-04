@@ -13,18 +13,18 @@ namespace VSIX_InSituVisualization.TelemetryCollector
     class AzureTelemetryStore
     {
         private readonly AzureTelemetry _azureTelemetry;
-        private String _apiKey;
-        private String _appId;
-        private readonly String _basePath;
-        private readonly Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>> _allMemberTelemetries;
-        private Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>> _currentMemberTelemetries;
+        private string _apiKey;
+        private string _appId;
+        private readonly string _basePath;
+        private readonly IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> _allMemberTelemetries;
+        private IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> _currentMemberTelemetries;
         private readonly TelemetryFilter _filter;
-        private Dictionary<String, TimeSpan> _currentAveragedMemberTelemetry;
-        private readonly int TIMERINTERVAL = 5000;
-        private Boolean _isAverageTelemetryLock;
-        private Boolean _isConcreteMemberTelemetriesLock;
+        private Dictionary<string, TimeSpan> _currentAveragedMemberTelemetry;
+        private const int Timerinterval = 5000;
+        private bool _isAverageTelemetryLock;
+        private bool _isConcreteMemberTelemetriesLock;
         
-        public AzureTelemetryStore(String appId, String apiKey)
+        public AzureTelemetryStore(string appId, string apiKey)
         {
             _appId = appId;
             _apiKey = apiKey;
@@ -45,26 +45,23 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             //Setup Timer Task that automatically updates the store via REST
             var timer = new Timer
             {
-                Interval = (TIMERINTERVAL)
+                Interval = Timerinterval
             };
             timer.Elapsed += FetchNewRestData;
             timer.Enabled = true;
             
         }
 
-        public Dictionary<String, TimeSpan> GetCurrentAveragedMemberTelemetry()
+        public Dictionary<string, TimeSpan> GetCurrentAveragedMemberTelemetry()
         {
             if (!_isAverageTelemetryLock)
             {
                 return _currentAveragedMemberTelemetry;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
-        public Dictionary<String, PropertyInfo> GetFilterProperties()
+        public Dictionary<string, PropertyInfo> GetFilterProperties()
         {
             return _filter.GetFilterProperties();
         }
@@ -74,38 +71,34 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             _filter.ResetFilter();
         }
 
-        public void AddFilter(PropertyInfo propertyInfo, String filterType, Object parameter)
+        public void AddFilter(PropertyInfo propertyInfo, string filterType, object parameter)
         {
             _filter.AddFilter(propertyInfo, filterType, parameter);
         }
 
-        private Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>> FetchSystemCacheData()
+        private IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> FetchSystemCacheData()
         {
-            if (System.IO.File.Exists(_basePath + "\\VSIXStore.json"))
+            if (File.Exists(_basePath + "\\VSIXStore.json"))
             {
-                String input = System.IO.File.ReadAllText(_basePath + "\\VSIXStore.json");
-                Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>> importedConcreteMemberTelemetires =
-                    JsonConvert.DeserializeObject<Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>>>(input);
+                var input = File.ReadAllText(_basePath + "\\VSIXStore.json");
+                var importedConcreteMemberTelemetires = JsonConvert.DeserializeObject<Dictionary<string, IDictionary<string, ConcreteMemberTelemetry>>>(input);
                 return importedConcreteMemberTelemetires;
             }
-            else
-            {
-                return new Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>>(); //first dict: Key Membername, second dict: Key RestSendID
-            }
+            return new Dictionary<string, IDictionary<string, ConcreteMemberTelemetry>>(); //first dict: Key Membername, second dict: Key RestSendID
         }
 
-        private void WriteSystemCacheData(Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>> toStoreTelemetryData)
+        private void WriteSystemCacheData(IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> toStoreTelemetryData)
         {
             //TODO: Find better path because this one is deleted upon startup.
-            String json = JsonConvert.SerializeObject(toStoreTelemetryData);
-            System.IO.File.WriteAllText(_basePath + "\\VSIXStore.json", json);
+            var json = JsonConvert.SerializeObject(toStoreTelemetryData);
+            File.WriteAllText(_basePath + "\\VSIXStore.json", json);
         }
 
         private async void FetchNewRestData(object sender, ElapsedEventArgs e)
         {
             try
             {
-                Boolean updateOccured = false;
+                var updateOccured = false;
                 var newRestData = await _azureTelemetry.GetNewTelemetriesTaskAsync();
                 AwaitConcreteMemberTelemetriesLock();
                 _isConcreteMemberTelemetriesLock = true;
@@ -124,7 +117,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                     else
                     {
                         //case methodname does not exist: add a new dict for the new method, put the element inside.
-                        Dictionary<String, ConcreteMemberTelemetry> newDict = new Dictionary<String, ConcreteMemberTelemetry>();
+                        var newDict = new Dictionary<string, ConcreteMemberTelemetry>();
                         newDict.Add(restReturnMember.Id, restReturnMember);
                         _allMemberTelemetries.Add(restReturnMember.MemberName, newDict);
                         updateOccured = true;
@@ -143,21 +136,21 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             }
             catch (Exception em)
             {
-                System.Console.WriteLine(em);
+                Console.WriteLine(em);
             }
             
         }
 
-        private Dictionary<String, TimeSpan> TakeAverageOfDict(Dictionary<String, Dictionary<String, ConcreteMemberTelemetry>> inputDict)
+        private Dictionary<string, TimeSpan> TakeAverageOfDict(IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> inputDict)
         {
             AwaitAverageMemberTelemetryLock();
             _isAverageTelemetryLock = true;
-            Dictionary<String, TimeSpan> averagedDictionary = new Dictionary<String, TimeSpan>();
-            foreach (Dictionary<String, ConcreteMemberTelemetry> method in inputDict.Values)
+            var averagedDictionary = new Dictionary<string, TimeSpan>();
+            foreach (var method in inputDict.Values)
             {
-                List<double> timeList = new List<double>();
-                string memberName = "";
-                foreach (ConcreteMemberTelemetry telemetry in method.Values)
+                var timeList = new List<double>();
+                var memberName = "";
+                foreach (var telemetry in method.Values)
                 {
                     timeList.Add(telemetry.Duration.TotalMilliseconds);
                     memberName = telemetry.MemberName;

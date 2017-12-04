@@ -34,7 +34,7 @@ namespace VSIX_InSituVisualization
         {
             _package = package ?? throw new ArgumentNullException(nameof(package));
 
-            OleMenuCommandService commandService = ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            var commandService = ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (commandService != null)
             {
                 var menuCommandId = new CommandID(CommandSet, CommandId);

@@ -16,13 +16,13 @@ namespace VSIX_InSituVisualization.Converters
             // For a more sophisticated converter, check also the targetType and react accordingly..
             if (value is Color)
             {
-                Color color = (Color)value;
+                var color = (Color)value;
                 return new SolidColorBrush(color);
             }
             // You can support here more source types if you wish
             // For the example I throw an exception
 
-            Type type = value.GetType();
+            var type = value.GetType();
             throw new InvalidOperationException("Unsupported type [" + type.Name + "]");
         }
 

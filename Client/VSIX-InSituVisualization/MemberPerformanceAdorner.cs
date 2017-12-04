@@ -6,7 +6,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Threading.Tasks;
 using VSIX_InSituVisualization.TelemetryCollector;
 
 namespace VSIX_InSituVisualization
@@ -55,9 +54,9 @@ namespace VSIX_InSituVisualization
             try
             {
                 // TODO RR: Do Real Mapping
-                AzureTelemetryStore dataStore = AzureTelemetryFactory.GetInstance();
+                var dataStore = AzureTelemetryFactory.GetInstance();
                 //dataStore.AddFilter(dataStore.GetFilterProperties()["City"], "IsEqual", "Zurich");
-                Dictionary<String, TimeSpan> averageMemberTelemetries = dataStore.GetCurrentAveragedMemberTelemetry();
+                var averageMemberTelemetries = dataStore.GetCurrentAveragedMemberTelemetry();
                 // is null when being written to at the same time
                 if (averageMemberTelemetries != null)
                 {
