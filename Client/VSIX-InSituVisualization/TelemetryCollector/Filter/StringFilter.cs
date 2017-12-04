@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 
-namespace VSIX_InSituVisualization.TelemetryCollector
+namespace VSIX_InSituVisualization.TelemetryCollector.Filter
 {
     class StringFilter : IFilter
     {

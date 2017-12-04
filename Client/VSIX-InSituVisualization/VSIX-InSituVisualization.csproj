@@ -76,11 +76,12 @@
     <Compile Include="TelemetryCollector\AzureTelemetryFactory.cs" />
     <Compile Include="TelemetryCollector\AzureTelemetryStore.cs" />
     <Compile Include="TelemetryCollector\ConcreteMemberTelemetry.cs" />
-    <Compile Include="TelemetryCollector\IFilter.cs" />
-    <Compile Include="TelemetryCollector\DateTimeFilter.cs" />
-    <Compile Include="TelemetryCollector\StringFilter.cs" />
+    <Compile Include="TelemetryCollector\Filter\IFilter.cs" />
+    <Compile Include="TelemetryCollector\Filter\DateTimeFilter.cs" />
+    <Compile Include="TelemetryCollector\Filter\StringFilter.cs" />
     <Compile Include="TelemetryCollector\MemberTelemetry.cs" />
-    <Compile Include="TelemetryCollector\TelemetryFilter.cs" />
+    <Compile Include="TelemetryCollector\Filter\FilterController.cs" />
+    <Compile Include="TelemetryCollector\WritableSettingsStoreController.cs" />
     <Compile Include="Views\PerformanceInfoDetailWindowControl.xaml.cs">
       <DependentUpon>PerformanceInfoDetailWindowControl.xaml</DependentUpon>
     </Compile>

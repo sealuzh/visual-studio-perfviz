@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace VSIX_InSituVisualization.TelemetryCollector
+namespace VSIX_InSituVisualization.TelemetryCollector.Filter
 {
-    internal class TelemetryFilter
+    internal class FilterController
     {
         private readonly Dictionary<string, PropertyInfo> _propertyMap;
         private readonly List<IFilter> _currentFilters;
 
-        public TelemetryFilter()
+        public FilterController()
         {
             _propertyMap = new Dictionary<string, PropertyInfo>();
             _currentFilters = new List<IFilter>();
@@ -64,10 +64,10 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             {
                 return inDictionary;
             }
-            IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> outDictionary = null;
+            IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> outDictionary = new Dictionary<string, IDictionary<string, ConcreteMemberTelemetry>>(inDictionary);
             foreach (var filter in _currentFilters)
             {
-                outDictionary = filter.ApplyFilter(inDictionary);
+                outDictionary = filter.ApplyFilter(outDictionary);
             }
             return outDictionary;
         }

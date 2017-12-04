@@ -54,9 +54,8 @@ namespace VSIX_InSituVisualization
             try
             {
                 // TODO RR: Do Real Mapping
-                var dataStore = AzureTelemetryFactory.GetInstance();
-                //dataStore.AddFilter(dataStore.GetFilterProperties()["City"], "IsEqual", "Zurich");
-                var averageMemberTelemetries = dataStore.GetCurrentAveragedMemberTelemetry();
+                var averageMemberTelemetries = AzureTelemetryFactory.GetInstance().GetCurrentAveragedMemberTelemetry();
+                //var averageMemberTelemetries = dataStore.GetCurrentAveragedMemberTelemetry();
                 // is null when being written to at the same time
                 if (averageMemberTelemetries != null)
                 {

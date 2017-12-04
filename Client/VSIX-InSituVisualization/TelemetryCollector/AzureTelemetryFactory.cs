@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Settings;
+﻿using System;
+using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Settings;
 
@@ -22,26 +23,15 @@ namespace VSIX_InSituVisualization.TelemetryCollector
         /// <returns>The current instance that is returned. Returns null if settings pane empty.</returns>
         public static AzureTelemetryStore GetInstance()
         {
-            var appId = "";
-            var apiKey = "";
-
-
-            if (!GetWritableSettingsStore().PropertyExists("Performance Visualization", "AppId") ||
-                !GetWritableSettingsStore().PropertyExists("Performance Visualization", "ApiKey"))
-            {
-                return null;
-            }
-
-            appId = GetWritableSettingsStore().GetString("Performance Visualization", "AppId");
-            apiKey = GetWritableSettingsStore().GetString("Performance Visualization", "ApiKey");
-
+            //TODO JO: Could be moved to AzureTelemetry but removes unnecessary loading times if left here if no key is provided
+            var appId = (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "AppId", typeof(String));
+            var apiKey = (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "ApiKey", typeof(String));
+   
             //check whether necessary variables are given - if not abort
             if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(appId))
             {
                 return null;
             }
-
-
 
             //create factory instance
             if (_telemetryInstance != null)
@@ -57,11 +47,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
         }
 
 
-        private static WritableSettingsStore GetWritableSettingsStore()
-        {
-            var shellSettingsManager = new ShellSettingsManager(ServiceProvider.GlobalProvider);
-            return shellSettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
-        }
+        
 
     }
 }

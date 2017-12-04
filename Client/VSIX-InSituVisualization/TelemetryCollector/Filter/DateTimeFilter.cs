@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace VSIX_InSituVisualization.TelemetryCollector
+namespace VSIX_InSituVisualization.TelemetryCollector.Filter
 {
     class DateTimeFilter : IFilter
     {
@@ -36,21 +36,18 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                     switch (_dateTimeFilterType)
                     {
                         case DateTimeFilterType.IsEqual:
-                            //TODO
                             if (!memberPropertyValue.Equals(_filterString))
                             {
                                 toRemoveMemberKeys.Add(kvpMember.Key);
                             }
                             break;
                         case DateTimeFilterType.IsGreaterEqualThen:
-                            //TODO
                             if (!(memberPropertyValue >= _filterString))
                             {
                                 toRemoveMemberKeys.Add(kvpMember.Key);
                             }
                             break;
                         case DateTimeFilterType.IsSmallerEqualThen:
-                            //TODO
                             if (!(memberPropertyValue <= _filterString))
                             {
                                 toRemoveMemberKeys.Add(kvpMember.Key);

@@ -14,21 +14,21 @@ namespace VSIX_InSituVisualization.TelemetryCollector
 
         private const string QueryType = "events";
         private const string QueryPath = "dependencies";
-        private const string ParameterString = "timespan=P30D&$orderby=timestamp%20desc&$top=10000";
-
+        private readonly string _parameterString = "timespan=P30D&$orderby=timestamp%20desc";
+        
         private readonly string _appId;
         private readonly string _apiKey;
-       
+        
         public AzureTelemetry(string appId, string apiKey)
         {
             _appId = appId;
             _apiKey = apiKey;
-            
+            _parameterString = _parameterString + "&$top=" + (int)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "MaxPullingAmount", typeof(int));
         }
 
         public async Task<IList<MemberTelemetry>> GetNewTelemetriesTaskAsync()
         {
-            var telemetryJson = await GetTelemetryAsync(_appId, _apiKey, QueryType, QueryPath, ParameterString);
+            var telemetryJson = await GetTelemetryAsync(_appId, _apiKey, QueryType, QueryPath, _parameterString);
             dynamic telemetryData = JsonConvert.DeserializeObject(telemetryJson);
 
             var performanceInfoList = new List<MemberTelemetry>();

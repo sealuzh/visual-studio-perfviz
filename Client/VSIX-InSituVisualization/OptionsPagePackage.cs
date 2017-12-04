@@ -63,6 +63,15 @@ namespace VSIX_InSituVisualization
             }
         }
 
+        public int MaxPullingAmount
+        {
+            get
+            {
+                var page = (OptionsPageGrid) GetDialogPage(typeof(OptionsPageGrid));
+                return page.MaxPullingAmount;
+            }
+        }
+
         #region Package Members
 
         /// <summary>

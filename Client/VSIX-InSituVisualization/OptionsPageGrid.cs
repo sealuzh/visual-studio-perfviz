@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel;
-using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Settings;
+using VSIX_InSituVisualization.TelemetryCollector;
+using System;
+using System.Diagnostics;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace VSIX_InSituVisualization
 {
@@ -24,67 +26,26 @@ namespace VSIX_InSituVisualization
         [Description("Azure Application Insights REST API: Application ID")]
         public string AppId
         {
-            get {
-                if (GetWritableSettingsStore().PropertyExists("Performance Visualization", "AppId"))
-                {
-                    return GetWritableSettingsStore().GetString("Performance Visualization", "AppId");
-                } else
-                {
-                    return null;
-                }
-                
-            }
-            set {
-                if (GetWritableSettingsStore().PropertyExists("Performance Visualization", "AppId"))
-                {
-                    GetWritableSettingsStore().SetString("Performance Visualization", "AppId", value);
-                }
-                else
-                {
-                    GetWritableSettingsStore().CreateCollection("Performance Visualization");
-                    GetWritableSettingsStore().SetString("Performance Visualization", "AppId", value);
-                }
-            }
+            get => (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "AppId", typeof(String));
+            set => WritableSettingsStoreController.SetWritableSettingsStoreValue("Performance Visualization", "AppId", value);
         }
 
-    [Category("Credentials")]
-    [DisplayName("Insights API Key")]
-    [Description("Azure Application Insights REST API: API Key")]
-    public string ApiKey
+        [Category("Credentials")]
+        [DisplayName("Insights API Key")]
+        [Description("Azure Application Insights REST API: API Key")]
+        public string ApiKey
         {
-            get
-            {
-                if (GetWritableSettingsStore().PropertyExists("Performance Visualization", "ApiKey"))
-                {
-                    return GetWritableSettingsStore().GetString("Performance Visualization", "ApiKey");
-                }
-                else
-                {
-                    return null;
-                }
-
-            }
-            set
-            {
-                if (GetWritableSettingsStore().PropertyExists("Performance Visualization", "ApiKey"))
-                {
-                    GetWritableSettingsStore().SetString("Performance Visualization", "ApiKey", value);
-                }
-                else
-                {
-                    GetWritableSettingsStore().CreateCollection("Performance Visualization");
-                    GetWritableSettingsStore().SetString("Performance Visualization", "ApiKey", value);
-                }
-            }
+            get => (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "ApiKey", typeof(String));
+            set => WritableSettingsStoreController.SetWritableSettingsStoreValue("Performance Visualization", "ApiKey", value);
         }
 
-
-
-        private static WritableSettingsStore GetWritableSettingsStore()
+        [Category("Settings")]
+        [DisplayName("Insights REST maximum pulling amount.")]
+        [Description("Maximum amount of performance elements to be downloaded per request.")]
+        public int MaxPullingAmount
         {
-            var shellSettingsManager = new ShellSettingsManager(ServiceProvider.GlobalProvider);
-            return shellSettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
+            get => (int)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "MaxPullingAmount", typeof(int));
+            set => WritableSettingsStoreController.SetWritableSettingsStoreValue("Performance Visualization", "MaxPullingAmount", value);
         }
-
     }
 }

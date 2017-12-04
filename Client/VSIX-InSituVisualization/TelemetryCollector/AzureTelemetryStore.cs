@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
 using Newtonsoft.Json;
+using VSIX_InSituVisualization.TelemetryCollector.Filter;
 
 namespace VSIX_InSituVisualization.TelemetryCollector
 {
@@ -13,12 +14,10 @@ namespace VSIX_InSituVisualization.TelemetryCollector
     class AzureTelemetryStore
     {
         private readonly AzureTelemetry _azureTelemetry;
-        private string _apiKey;
-        private string _appId;
         private readonly string _basePath;
         private readonly IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> _allMemberTelemetries;
         private IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> _currentMemberTelemetries;
-        private readonly TelemetryFilter _filter;
+        private readonly FilterController _filterController;
         private Dictionary<string, TimeSpan> _currentAveragedMemberTelemetry;
         private const int Timerinterval = 5000;
         private bool _isAverageTelemetryLock;
@@ -26,20 +25,18 @@ namespace VSIX_InSituVisualization.TelemetryCollector
         
         public AzureTelemetryStore(string appId, string apiKey)
         {
-            _appId = appId;
-            _apiKey = apiKey;
-            _basePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            _basePath = Path.GetDirectoryName(Path.GetTempPath()) + "\\InSitu";
             _isAverageTelemetryLock = false;
             _isConcreteMemberTelemetriesLock = false;
-            _filter = new TelemetryFilter();
+            _filterController = new FilterController();
 
-            AddFilter(GetFilterProperties()["City"], "IsEqual", "Zurich");
+            //AddFilter(GetFilterProperties()["City"], "IsEqual", "Zurich");
             AddFilter(GetFilterProperties()["Timestamp"], "IsGreaterEqualThen", new DateTime(2017, 11, 21));
 
             _azureTelemetry = new AzureTelemetry(appId, apiKey);
 
             _allMemberTelemetries = FetchSystemCacheData();
-            _currentMemberTelemetries = _filter.ApplyFilters(_allMemberTelemetries);
+            _currentMemberTelemetries = _filterController.ApplyFilters(_allMemberTelemetries);
             _currentAveragedMemberTelemetry = TakeAverageOfDict(_currentMemberTelemetries);
 
             //Setup Timer Task that automatically updates the store via REST
@@ -63,21 +60,22 @@ namespace VSIX_InSituVisualization.TelemetryCollector
 
         public Dictionary<string, PropertyInfo> GetFilterProperties()
         {
-            return _filter.GetFilterProperties();
+            return _filterController.GetFilterProperties();
         }
 
         public void ResetFilter()
         {
-            _filter.ResetFilter();
+            _filterController.ResetFilter();
         }
 
         public void AddFilter(PropertyInfo propertyInfo, string filterType, object parameter)
         {
-            _filter.AddFilter(propertyInfo, filterType, parameter);
+            _filterController.AddFilter(propertyInfo, filterType, parameter);
         }
 
         private IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> FetchSystemCacheData()
         {
+            //TODO: Filename has to match the project
             if (File.Exists(_basePath + "\\VSIXStore.json"))
             {
                 var input = File.ReadAllText(_basePath + "\\VSIXStore.json");
@@ -91,6 +89,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
         {
             //TODO: Find better path because this one is deleted upon startup.
             var json = JsonConvert.SerializeObject(toStoreTelemetryData);
+            Directory.CreateDirectory(_basePath);
             File.WriteAllText(_basePath + "\\VSIXStore.json", json);
         }
 
@@ -117,8 +116,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                     else
                     {
                         //case methodname does not exist: add a new dict for the new method, put the element inside.
-                        var newDict = new Dictionary<string, ConcreteMemberTelemetry>();
-                        newDict.Add(restReturnMember.Id, restReturnMember);
+                        var newDict = new Dictionary<string, ConcreteMemberTelemetry> {{restReturnMember.Id, restReturnMember}};
                         _allMemberTelemetries.Add(restReturnMember.MemberName, newDict);
                         updateOccured = true;
                     }
@@ -128,7 +126,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                 if (updateOccured)
                 {
                     WriteSystemCacheData(_allMemberTelemetries);
-                    _currentMemberTelemetries = _filter.ApplyFilters(_allMemberTelemetries);
+                    _currentMemberTelemetries = _filterController.ApplyFilters(_allMemberTelemetries);
                     _currentAveragedMemberTelemetry = TakeAverageOfDict(_currentMemberTelemetries);
                     
                 }
