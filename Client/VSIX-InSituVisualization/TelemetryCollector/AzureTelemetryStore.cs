@@ -6,50 +6,84 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
 using Newtonsoft.Json;
+using VSIX_InSituVisualization.TelemetryCollector.DataService;
 using VSIX_InSituVisualization.TelemetryCollector.Filter;
+using VSIX_InSituVisualization.TelemetryCollector.Persistance;
 
 namespace VSIX_InSituVisualization.TelemetryCollector
 {
 
     class AzureTelemetryStore
     {
-        private readonly AzureTelemetry _azureTelemetry;
-        private readonly string _basePath;
-        private IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> _allMemberTelemetries;
-        private IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> _currentMemberTelemetries;
-        private readonly FilterController _filterController;
+        //private readonly AzureTelemetry _azureTelemetry;
+
+        private static IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> _allMemberTelemetries;
+        private static IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> _currentMemberTelemetries;
+        
         private Dictionary<string, TimeSpan> _currentAveragedMemberTelemetry;
         private const int Timerinterval = 5000;
-        private bool _isAverageTelemetryLock;
-        private bool _isConcreteMemberTelemetriesLock;
 
-        public AzureTelemetryStore(string appId, string apiKey)
+        private readonly FilterController _filterController;
+        private readonly IList<IDataService> _dataServices;
+        
+        public AzureTelemetryStore()
         {
-            _basePath = Path.GetDirectoryName(Path.GetTempPath()) + "\\InSitu";
-            _isAverageTelemetryLock = false;
-            _isConcreteMemberTelemetriesLock = false;
-            _filterController = new FilterController();
+           _filterController = new FilterController();
+            _filterController.AddFilter(GetFilterProperties()["Timestamp"], "IsGreaterEqualThen", new DateTime(2017, 11, 21));
 
-            AddFilter(GetFilterProperties()["Timestamp"], "IsGreaterEqualThen", new DateTime(2017, 11, 21));
-
-            _azureTelemetry = new AzureTelemetry(appId, apiKey);
-
-            _allMemberTelemetries = FetchSystemCacheData();
-            StoreUpdate(false);
+            _dataServices = new List<IDataService>();
+            _dataServices.Add(new InsightsExternalReferencesRestApiDataService());
+            
+            _allMemberTelemetries = PersistanceService.FetchSystemCacheData();
+            UpdateStore(false);
 
             //Setup Timer Task that automatically updates the store via REST
             var timer = new Timer
             {
                 Interval = Timerinterval
             };
-            timer.Elapsed += FetchNewRestData;
+            timer.Elapsed += RunPipeline;
             timer.Enabled = true;
+        }
 
+        private async void RunPipeline(object sender, ElapsedEventArgs elapsedEventArgs)
+        {
+            var updateOccured = false;
+            foreach (IDataService service in _dataServices)
+            {
+                var newRestData = service.GetNewTelemetriesTaskAsync();
+                await newRestData;
+                PersistanceService.AwaitConcreteMemberTelemetriesLock();
+                PersistanceService.IsConcreteMemberTelemetriesLock = true;
+                foreach (ConcreteMemberTelemetry restReturnMember in newRestData.Result)
+                {
+                    if (_allMemberTelemetries.ContainsKey(restReturnMember.MemberName))
+                    {
+                        if (!_allMemberTelemetries[restReturnMember.MemberName].ContainsKey(restReturnMember.Id))
+                        {
+                            //element is missing --> new element. Add it to the dict
+                            _allMemberTelemetries[restReturnMember.MemberName].Add(restReturnMember.Id, restReturnMember);
+                            updateOccured = true;
+                        } //else: already exists, no need to add it
+
+                    }
+                    else
+                    {
+                        //case methodname does not exist: add a new dict for the new method, put the element inside.
+                        var newDict = new Dictionary<string, ConcreteMemberTelemetry> { { restReturnMember.Id, restReturnMember } };
+                        _allMemberTelemetries.Add(restReturnMember.MemberName, newDict);
+                        updateOccured = true;
+                    }
+
+                }
+                PersistanceService.IsConcreteMemberTelemetriesLock = false;  
+            }
+            if (updateOccured) UpdateStore(true);
         }
 
         public Dictionary<string, TimeSpan> GetCurrentAveragedMemberTelemetry()
         {
-            return !_isAverageTelemetryLock ? new Dictionary<string, TimeSpan>(_currentAveragedMemberTelemetry) : null;
+            return !PersistanceService.IsAverageTelemetryLock ? new Dictionary<string, TimeSpan>(_currentAveragedMemberTelemetry) : null;
         }
 
         public Dictionary<string, PropertyInfo> GetFilterProperties()
@@ -60,76 +94,58 @@ namespace VSIX_InSituVisualization.TelemetryCollector
         public void ResetFilter()
         {
             _filterController.ResetFilter();
-            StoreUpdate(false);
+            UpdateStore(false);
         }
 
-        public void AddFilter(PropertyInfo propertyInfo, string filterType, object parameter)
-        {
-            _filterController.AddFilter(propertyInfo, filterType, parameter);
-        }
+        //public void AddFilter(PropertyInfo propertyInfo, string filterType, object parameter)
+        //{
+        //    _filterController.AddFilter(propertyInfo, filterType, parameter);
+        //}
 
-        private void StoreUpdate(bool persist)
+        private void UpdateStore(bool persist)
         {
-            if (persist) WriteSystemCacheData(_allMemberTelemetries);
+            if (persist) PersistanceService.WriteSystemCacheData(_allMemberTelemetries);
             _currentMemberTelemetries = _filterController.ApplyFilters(_allMemberTelemetries);
             _currentAveragedMemberTelemetry = TakeAverageOfDict(_currentMemberTelemetries);
         }
 
-        private IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> FetchSystemCacheData()
-        {
-            //TODO: Filename has to match the project
-            if (File.Exists(_basePath + "\\VSIXStore.json"))
-            {
-                var input = File.ReadAllText(_basePath + "\\VSIXStore.json");
-                var importedConcreteMemberTelemetires = JsonConvert.DeserializeObject<Dictionary<string, IDictionary<string, ConcreteMemberTelemetry>>>(input);
-                return importedConcreteMemberTelemetires;
-            }
-            return new Dictionary<string, IDictionary<string, ConcreteMemberTelemetry>>(); //first dict: Key Membername, second dict: Key RestSendID
-        }
+        
 
-        private void WriteSystemCacheData(IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> toStoreTelemetryData)
-        {
-            //TODO: Find better path because this one is deleted upon startup.
-            var json = JsonConvert.SerializeObject(toStoreTelemetryData);
-            Directory.CreateDirectory(_basePath);
-            File.WriteAllText(_basePath + "\\VSIXStore.json", json);
-        }
+        //private async void FetchNewRestData(object sender, ElapsedEventArgs e)
+        //{
+        //    var updateOccured = false;
+        //    var newRestData = await _azureTelemetry.GetNewTelemetriesTaskAsync();
+        //    PersistanceService.AwaitConcreteMemberTelemetriesLock();
+        //    PersistanceService.IsConcreteMemberTelemetriesLock = true;
+        //    foreach (ConcreteMemberTelemetry restReturnMember in newRestData)
+        //    {
+        //        if (_allMemberTelemetries.ContainsKey(restReturnMember.MemberName))
+        //        {
+        //            if (!_allMemberTelemetries[restReturnMember.MemberName].ContainsKey(restReturnMember.Id))
+        //            {
+        //                //element is missing --> new element. Add it to the dict
+        //                _allMemberTelemetries[restReturnMember.MemberName].Add(restReturnMember.Id, restReturnMember);
+        //                updateOccured = true;
+        //            } //else: already exists, no need to add it
 
-        private async void FetchNewRestData(object sender, ElapsedEventArgs e)
-        {
-            var updateOccured = false;
-            var newRestData = await _azureTelemetry.GetNewTelemetriesTaskAsync();
-            AwaitConcreteMemberTelemetriesLock();
-            _isConcreteMemberTelemetriesLock = true;
-            foreach (ConcreteMemberTelemetry restReturnMember in newRestData)
-            {
-                if (_allMemberTelemetries.ContainsKey(restReturnMember.MemberName))
-                {
-                    if (!_allMemberTelemetries[restReturnMember.MemberName].ContainsKey(restReturnMember.Id))
-                    {
-                        //element is missing --> new element. Add it to the dict
-                        _allMemberTelemetries[restReturnMember.MemberName].Add(restReturnMember.Id, restReturnMember);
-                        updateOccured = true;
-                    } //else: already exists, no need to add it
+        //        }
+        //        else
+        //        {
+        //            //case methodname does not exist: add a new dict for the new method, put the element inside.
+        //            var newDict = new Dictionary<string, ConcreteMemberTelemetry> { { restReturnMember.Id, restReturnMember } };
+        //            _allMemberTelemetries.Add(restReturnMember.MemberName, newDict);
+        //            updateOccured = true;
+        //        }
 
-                }
-                else
-                {
-                    //case methodname does not exist: add a new dict for the new method, put the element inside.
-                    var newDict = new Dictionary<string, ConcreteMemberTelemetry> { { restReturnMember.Id, restReturnMember } };
-                    _allMemberTelemetries.Add(restReturnMember.MemberName, newDict);
-                    updateOccured = true;
-                }
-
-            }
-            _isConcreteMemberTelemetriesLock = false;
-            if (updateOccured) StoreUpdate(true);
-        }
+        //    }
+        //    PersistanceService.IsConcreteMemberTelemetriesLock = false;
+        //    if (updateOccured) UpdateStore(true);
+        //}
 
         private Dictionary<string, TimeSpan> TakeAverageOfDict(IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> inputDict)
         {
-            AwaitAverageMemberTelemetryLock();
-            _isAverageTelemetryLock = true;
+            PersistanceService.AwaitAverageMemberTelemetryLock();
+            PersistanceService.IsAverageTelemetryLock = true;
             var averagedDictionary = new Dictionary<string, TimeSpan>();
             foreach (var method in inputDict.Values)
             {
@@ -142,25 +158,11 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                 }
                 averagedDictionary.Add(memberName, TimeSpan.FromMilliseconds(timeList.Average()));
             }
-            _isAverageTelemetryLock = false;
+            PersistanceService.IsAverageTelemetryLock = false;
             return averagedDictionary;
         }
 
-        private void AwaitConcreteMemberTelemetriesLock()
-        {
-            while (_isConcreteMemberTelemetriesLock)
-            {
-                Task.Delay(50);
-            }
-        }
 
-        private void AwaitAverageMemberTelemetryLock()
-        {
-            while (_isAverageTelemetryLock)
-            {
-                Task.Delay(50);
-            }
-        }
 
     }
 }

@@ -26,7 +26,7 @@ namespace VSIX_InSituVisualization
         [Description("Azure Application Insights REST API: Application ID")]
         public string AppId
         {
-            get => (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "AppId", typeof(String));
+            get => (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "AppId", typeof(string));
             set => WritableSettingsStoreController.SetWritableSettingsStoreValue("Performance Visualization", "AppId", value);
         }
 
@@ -35,7 +35,7 @@ namespace VSIX_InSituVisualization
         [Description("Azure Application Insights REST API: API Key")]
         public string ApiKey
         {
-            get => (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "ApiKey", typeof(String));
+            get => (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "ApiKey", typeof(string));
             set => WritableSettingsStoreController.SetWritableSettingsStoreValue("Performance Visualization", "ApiKey", value);
         }
 

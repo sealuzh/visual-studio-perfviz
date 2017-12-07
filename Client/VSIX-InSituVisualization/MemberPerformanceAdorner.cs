@@ -51,8 +51,8 @@ namespace VSIX_InSituVisualization
             }
 
             var memberName = memberDeclaraitonSyntax.GetMemberIdentifier().ToString();
-            try
-            {
+            //try
+            //{
                 // TODO RR: Do Real Mapping
                 var averageMemberTelemetries = AzureTelemetryFactory.GetInstance().GetCurrentAveragedMemberTelemetry();
                 //var averageMemberTelemetries = dataStore.GetCurrentAveragedMemberTelemetry();
@@ -79,11 +79,11 @@ namespace VSIX_InSituVisualization
                 {
                     return null;
                 }
-            }
-            catch
-            {
-                return null;
-            }
+            //}
+            //catch
+            //{
+            //    return null;
+            //}
         }
 
 

@@ -23,16 +23,6 @@ namespace VSIX_InSituVisualization.TelemetryCollector
         /// <returns>The current instance that is returned. Returns null if settings pane empty.</returns>
         public static AzureTelemetryStore GetInstance()
         {
-            //TODO JO: Could be moved to AzureTelemetry but removes unnecessary loading times if left here if no key is provided
-            var appId = (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "AppId", typeof(String));
-            var apiKey = (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "ApiKey", typeof(String));
-   
-            //check whether necessary variables are given - if not abort
-            if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(appId))
-            {
-                return null;
-            }
-
             //create factory instance
             if (_telemetryInstance != null)
             {
@@ -40,7 +30,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             }
             else
             {
-                _telemetryInstance = new AzureTelemetryStore(appId, apiKey);
+                _telemetryInstance = new AzureTelemetryStore();
                 return _telemetryInstance;
 
             }
