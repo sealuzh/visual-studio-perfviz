@@ -5,7 +5,7 @@
         //private static readonly TimeSpan UpdateInterval = TimeSpan.FromMinutes(5);
 
 
-        //private static IList<AverageMemberTelemetry> _averageMemberTelemeties;
+        //private static IList<AveragedTelemetry> _averageMemberTelemeties;
         //private static DateTime LastUpdate { get; } = DateTime.MinValue;
 
         ///// <summary>

@@ -12,6 +12,7 @@ namespace VSIX_InSituVisualization
         private double _memberTime;
         private TimeSpan _totalExecutionTime;
         private TimeSpan _meanExecutionTime;
+        private int _memberCount;
 
         public PerformanceInfo(string identifierName)
         {
@@ -59,6 +60,12 @@ namespace VSIX_InSituVisualization
         {
             get => _meanExecutionTime;
             set => SetProperty(ref _meanExecutionTime, value);
+        }
+
+        public int MemberCount
+        {
+            get => _memberCount;
+            set => SetProperty(ref _memberCount, value);
         }
 
         public virtual ObservableCollection<PerformanceInfo> CallerPerformanceInfo { get; } = new ObservableCollection<PerformanceInfo>();

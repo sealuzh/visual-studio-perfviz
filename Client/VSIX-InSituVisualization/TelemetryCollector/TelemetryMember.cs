@@ -2,9 +2,9 @@
 
 namespace VSIX_InSituVisualization.TelemetryCollector
 {
-    internal abstract class MemberTelemetry
+    internal abstract class TelemetryMember
     {
-        protected MemberTelemetry(string memberName, string nameSpace, TimeSpan duration)
+        protected TelemetryMember(string memberName, string nameSpace, TimeSpan duration)
         {
             MemberName = memberName;
             NameSpace = nameSpace;

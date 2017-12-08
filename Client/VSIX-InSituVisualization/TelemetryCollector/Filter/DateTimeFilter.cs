@@ -23,12 +23,12 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
             IsEqual, IsGreaterEqualThen, IsSmallerEqualThen
         }
 
-        public IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> ApplyFilter(IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> inDictionary)
+        public IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> ApplyFilter(IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> inDictionary)
         {
-            var outDictionary = new Dictionary<string, IDictionary<string, ConcreteMemberTelemetry>>();
+            var outDictionary = new Dictionary<string, IDictionary<string, ConcreteTelemetryMember>>();
             foreach (var kvpMethod in inDictionary)
             {
-                outDictionary.Add(kvpMethod.Key, new Dictionary<string, ConcreteMemberTelemetry>());
+                outDictionary.Add(kvpMethod.Key, new Dictionary<string, ConcreteTelemetryMember>());
                 foreach (var kvpMember in inDictionary[kvpMethod.Key])
                 {
                     var memberPropertyValue = (DateTime)_property.GetValue(kvpMember.Value);
@@ -41,13 +41,13 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
                                 }
                             break;
                         case DateTimeFilterType.IsGreaterEqualThen:
-                            if (!(memberPropertyValue >= _filterString))
+                            if (!(memberPropertyValue <= _filterString))
                             {
                                 outDictionary[kvpMethod.Key].Add(kvpMember.Key, kvpMember.Value);
                                }
                             break;
                         case DateTimeFilterType.IsSmallerEqualThen:
-                            if (!(memberPropertyValue <= _filterString))
+                            if (!(memberPropertyValue >= _filterString))
                             {
                                 outDictionary[kvpMethod.Key].Add(kvpMember.Key, kvpMember.Value);                            }
                             break;

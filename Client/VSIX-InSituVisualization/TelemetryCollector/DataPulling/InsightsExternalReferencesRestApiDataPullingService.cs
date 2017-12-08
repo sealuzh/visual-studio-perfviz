@@ -1,40 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace VSIX_InSituVisualization.TelemetryCollector
+namespace VSIX_InSituVisualization.TelemetryCollector.DataPulling
 {
-    //[ProvideBindingPath]
-    internal class AzureTelemetry
+    class InsightsExternalReferencesRestApiDataPullingService : IDataPullingService
     {
         private const string Url = "https://api.applicationinsights.io/v1/apps/{0}/{1}/{2}?{3}";
 
         private const string QueryType = "events";
         private const string QueryPath = "dependencies";
         private readonly string _parameterString = "timespan=P30D&$orderby=timestamp%20desc";
-        
+
         private readonly string _appId;
         private readonly string _apiKey;
         
-        public AzureTelemetry(string appId, string apiKey)
+
+        public InsightsExternalReferencesRestApiDataPullingService()
         {
-            _appId = appId;
-            _apiKey = apiKey;
-            _parameterString = _parameterString + "&$top=" + (int)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "MaxPullingAmount", typeof(int));
+            _appId = (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "AppId", typeof(string));
+            _apiKey = (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "ApiKey", typeof(string));
+            var maxPullingAmount = (int) WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "MaxPullingAmount", typeof(int));
+            
+            _parameterString = _parameterString + "&$top=" + maxPullingAmount;
         }
 
-        public async Task<IList<MemberTelemetry>> GetNewTelemetriesTaskAsync()
+        public async Task<IList<ConcreteTelemetryMember>> GetNewTelemetriesTaskAsync()
         {
+            //check whether necessary variables are given - if not abort
+            if (string.IsNullOrWhiteSpace(_apiKey) || string.IsNullOrWhiteSpace(_appId))
+            {
+                return null;
+            }
+
             var telemetryJson = await GetTelemetryAsync(_appId, _apiKey, QueryType, QueryPath, _parameterString);
             dynamic telemetryData = JsonConvert.DeserializeObject(telemetryJson);
 
-            var performanceInfoList = new List<MemberTelemetry>();
+            var performanceInfoList = new List<ConcreteTelemetryMember>();
             foreach (var obj in telemetryData.value.Children())
             {
-                var performanceInfo = new ConcreteMemberTelemetry(
+                var performanceInfo = new ConcreteTelemetryMember(
                     (string)obj.id,
                     Convert.ToDateTime(obj.timestamp),
                     (string)obj.dependency.target,

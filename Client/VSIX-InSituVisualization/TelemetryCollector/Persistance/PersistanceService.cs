@@ -15,19 +15,19 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Persistance
         public static bool IsAverageTelemetryLock = false;
         public static bool IsConcreteMemberTelemetriesLock = false;
         
-        public static IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> FetchSystemCacheData()
+        public static IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> FetchSystemCacheData()
         {
             //TODO: Filename has to match the project
             if (File.Exists(BasePath + "\\VSIXStore.json"))
             {
                 var input = File.ReadAllText(BasePath + "\\VSIXStore.json");
-                var importedConcreteMemberTelemetires = JsonConvert.DeserializeObject<Dictionary<string, IDictionary<string, ConcreteMemberTelemetry>>>(input);
+                var importedConcreteMemberTelemetires = JsonConvert.DeserializeObject<Dictionary<string, IDictionary<string, ConcreteTelemetryMember>>>(input);
                 return importedConcreteMemberTelemetires;
             }
-            return new Dictionary<string, IDictionary<string, ConcreteMemberTelemetry>>(); //first dict: Key Membername, second dict: Key RestSendID
+            return new Dictionary<string, IDictionary<string, ConcreteTelemetryMember>>(); //first dict: Key Membername, second dict: Key RestSendID
         }
 
-        public static void WriteSystemCacheData(IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> toStoreTelemetryData)
+        public static void WriteSystemCacheData(IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> toStoreTelemetryData)
         {
             //TODO: Find better path because this one is deleted upon startup.
             var json = JsonConvert.SerializeObject(toStoreTelemetryData);

@@ -71,19 +71,17 @@
     <Compile Include="PerformanceInfoDetailWindow.cs" />
     <Compile Include="PerformanceInfoDetailWindowCommand.cs" />
     <Compile Include="TelemetryCache.cs" />
-    <Compile Include="TelemetryCollector\AverageMemberTelemety.cs" />
-    <Compile Include="TelemetryCollector\AzureTelemetry.cs" />
+    <Compile Include="TelemetryCollector\AveragedTelemety.cs" />
     <Compile Include="TelemetryCollector\AzureTelemetryFactory.cs" />
     <Compile Include="TelemetryCollector\AzureTelemetryStore.cs" />
-    <Compile Include="TelemetryCollector\ConcreteMemberTelemetry.cs" />
-    <Compile Include="TelemetryCollector\DataService\DataGatheringController.cs" />
+    <Compile Include="TelemetryCollector\ConcreteTelemetryMember.cs" />
     <Compile Include="TelemetryCollector\Filter\IFilter.cs" />
     <Compile Include="TelemetryCollector\Filter\DateTimeFilter.cs" />
     <Compile Include="TelemetryCollector\Filter\StringFilter.cs" />
-    <Compile Include="TelemetryCollector\DataService\IDataService.cs" />
-    <Compile Include="TelemetryCollector\DataService\InsightsExternalReferencesRestApiDataService.cs" />
-    <Compile Include="TelemetryCollector\DataService\InsightsProfilerRestApiDataService.cs" />
-    <Compile Include="TelemetryCollector\MemberTelemetry.cs" />
+    <Compile Include="TelemetryCollector\DataService\IDataPullingService.cs" />
+    <Compile Include="TelemetryCollector\DataService\InsightsExternalReferencesRestApiDataPullingService.cs" />
+    <Compile Include="TelemetryCollector\DataService\InsightsProfilerRestApiDataPullingService.cs" />
+    <Compile Include="TelemetryCollector\TelemetryMember.cs" />
     <Compile Include="TelemetryCollector\Filter\FilterController.cs" />
     <Compile Include="TelemetryCollector\Persistance\PersistanceService.cs" />
     <Compile Include="TelemetryCollector\WritableSettingsStoreController.cs" />
@@ -289,6 +287,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Design" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.4.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO">
       <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>

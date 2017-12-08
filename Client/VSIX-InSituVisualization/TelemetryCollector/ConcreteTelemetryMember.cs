@@ -5,9 +5,9 @@ namespace VSIX_InSituVisualization.TelemetryCollector
     /// <summary>
     /// Telemetry collected from single run
     /// </summary>
-    internal class ConcreteMemberTelemetry : MemberTelemetry
+    internal class ConcreteTelemetryMember : TelemetryMember
     {
-        public ConcreteMemberTelemetry(string id, DateTime timestamp, string memberName, TimeSpan duration, string city, string completeAssemblyName, string nameSpace) : base(memberName, nameSpace, duration)
+        public ConcreteTelemetryMember(string id, DateTime timestamp, string memberName, TimeSpan duration, string city, string completeAssemblyName, string nameSpace) : base(memberName, nameSpace, duration)
         {
             Id = id;
             Timestamp = timestamp;

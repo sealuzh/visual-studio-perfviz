@@ -13,7 +13,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
         {
             _propertyMap = new Dictionary<string, PropertyInfo>();
             _currentFilters = new List<IFilter>();
-            var propertyInfoArray = typeof(ConcreteMemberTelemetry).GetProperties();
+            var propertyInfoArray = typeof(ConcreteTelemetryMember).GetProperties();
             foreach (var prop in propertyInfoArray)
             {
                 _propertyMap.Add(prop.Name, prop);
@@ -58,13 +58,13 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
             }
         }
 
-        public IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> ApplyFilters(IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> inDictionary)
+        public IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> ApplyFilters(IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> inDictionary)
         {
             if (_currentFilters.Count <= 0)
             {
                 return inDictionary;
             }
-            IDictionary<string, IDictionary<string, ConcreteMemberTelemetry>> outDictionary = new Dictionary<string, IDictionary<string, ConcreteMemberTelemetry>>(inDictionary);
+            IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> outDictionary = new Dictionary<string, IDictionary<string, ConcreteTelemetryMember>>(inDictionary);
             foreach (var filter in _currentFilters)
             {
                 outDictionary = filter.ApplyFilter(outDictionary);

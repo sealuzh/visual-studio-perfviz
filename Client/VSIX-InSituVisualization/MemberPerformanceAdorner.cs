@@ -41,18 +41,15 @@ namespace VSIX_InSituVisualization
 
 
 
-        private PerformanceInfo GetPerformanceInfo(MemberDeclarationSyntax memberDeclaraitonSyntax)
+        private PerformanceInfo GetPerformanceInfo(MemberDeclarationSyntax memberDeclarationSyntax)
         {
             // TODO RR: Use SyntaxAnnotation https://joshvarty.wordpress.com/2015/09/18/learn-roslyn-now-part-13-keeping-track-of-syntax-nodes-with-syntax-annotations/
             // TODO RR: Do one Dictionary per Class/File
-            if (_performanceInfos.TryGetValue(memberDeclaraitonSyntax, out var perfInfo))
-            {
-                return perfInfo;
-            }
 
-            var memberName = memberDeclaraitonSyntax.GetMemberIdentifier().ToString();
-            //try
-            //{
+
+            var memberName = memberDeclarationSyntax.GetMemberIdentifier().ToString();
+            try
+            {
                 // TODO RR: Do Real Mapping
                 var averageMemberTelemetries = AzureTelemetryFactory.GetInstance().GetCurrentAveragedMemberTelemetry();
                 //var averageMemberTelemetries = dataStore.GetCurrentAveragedMemberTelemetry();
@@ -68,22 +65,32 @@ namespace VSIX_InSituVisualization
                     {
                         var performanceInfo = new PerformanceInfo(memberName)
                         {
-                            MeanExecutionTime = averageMemberTelemetries[memberName]
+                            MeanExecutionTime = averageMemberTelemetries[memberName].Duration,
+                            //TODO RR: integrate MemberCount in interface.
+                            MemberCount = averageMemberTelemetries[memberName].MemberCount
                         };
 
-                        _performanceInfos.Add(memberDeclaraitonSyntax, performanceInfo);
+                        if (_performanceInfos.ContainsKey(memberDeclarationSyntax))
+                        {
+                            _performanceInfos.Remove(memberDeclarationSyntax);
+                        }
+                        _performanceInfos.Add(memberDeclarationSyntax, performanceInfo);
                         return performanceInfo;
                     }
                 }
                 else
                 {
+                    if (_performanceInfos.TryGetValue(memberDeclarationSyntax, out var perfInfo))
+                    {
+                        return perfInfo;
+                    }
                     return null;
                 }
-            //}
-            //catch
-            //{
-            //    return null;
-            //}
+            }
+            catch
+            {
+                return null;
+            }
         }
 
 
