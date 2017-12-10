@@ -35,8 +35,8 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             _dataPullingServices.Add(new InsightsExternalReferencesRestApiDataPullingService());
             
             _allMemberTelemetries = new Dictionary<string, IDictionary<string, ConcreteTelemetryMember>>();
-            //_allMemberTelemetries = PersistanceService.FetchSystemCacheData();
-            //UpdateStore(false);
+            _allMemberTelemetries = PersistanceService.FetchSystemCacheData();
+            UpdateStore(false);
 
             //Setup Timer Task that automatically updates the store via REST
             var timer = new Timer
@@ -110,14 +110,10 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             foreach (var method in inputDict.Values)
             {
                 var timeList = new List<double>();
-                //var memberName = "";
-                //var nameSpace = "";
                 
                 foreach (var telemetry in method.Values)
                 {
                     timeList.Add(telemetry.Duration.TotalMilliseconds);
-                    //memberName = telemetry.MemberName;
-                    //nameSpace = telemetry.NameSpace;
                 }
                 averagedDictionary.Add(method.Values.ElementAt(0).MemberName, new AveragedTelemetry(method.Values.ElementAt(0).MemberName, method.Values.ElementAt(0).NameSpace, TimeSpan.FromMilliseconds(timeList.Average()), timeList.Count()));
             }

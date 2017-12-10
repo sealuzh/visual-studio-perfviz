@@ -78,9 +78,9 @@
     <Compile Include="TelemetryCollector\Filter\IFilter.cs" />
     <Compile Include="TelemetryCollector\Filter\DateTimeFilter.cs" />
     <Compile Include="TelemetryCollector\Filter\StringFilter.cs" />
-    <Compile Include="TelemetryCollector\DataService\IDataPullingService.cs" />
-    <Compile Include="TelemetryCollector\DataService\InsightsExternalReferencesRestApiDataPullingService.cs" />
-    <Compile Include="TelemetryCollector\DataService\InsightsProfilerRestApiDataPullingService.cs" />
+    <Compile Include="TelemetryCollector\DataPulling\IDataPullingService.cs" />
+    <Compile Include="TelemetryCollector\DataPulling\InsightsExternalReferencesRestApiDataPullingService.cs" />
+    <Compile Include="TelemetryCollector\DataPulling\InsightsProfilerRestApiDataPullingService.cs" />
     <Compile Include="TelemetryCollector\TelemetryMember.cs" />
     <Compile Include="TelemetryCollector\Filter\FilterController.cs" />
     <Compile Include="TelemetryCollector\Persistance\PersistanceService.cs" />
