@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSIX-InSituVisualization", "VSIX-InSituVisualization\VSIX-InSituVisualization.csproj", "{EFA6A3EB-20CC-4834-A426-AF893887AED1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InSituCodeInject", "InSituCodeInject\InSituCodeInject.csproj", "{2EC5E599-F430-4C61-A8C9-487AA5337DFD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{EFA6A3EB-20CC-4834-A426-AF893887AED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFA6A3EB-20CC-4834-A426-AF893887AED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFA6A3EB-20CC-4834-A426-AF893887AED1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EC5E599-F430-4C61-A8C9-487AA5337DFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EC5E599-F430-4C61-A8C9-487AA5337DFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EC5E599-F430-4C61-A8C9-487AA5337DFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EC5E599-F430-4C61-A8C9-487AA5337DFD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
