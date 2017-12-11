@@ -14,12 +14,15 @@ namespace VSIX_InSituVisualization
     /// </summary>
     internal sealed class MemberPerformanceAdorner
     {
+        private readonly CustomSpanProvider _spanProvider;
+
         /// <summary>
         /// Text textView where the adornment is created.
         /// </summary>
         private readonly IWpfTextView _textView;
         private readonly ITelemetryDataMapper _telemetryDataMapper;
         private readonly MethodAdornmentLayer _methodAdornerLayer;
+        private CachedTelemetryDataMapper _cachedTelemetryDataMapper;
 
         private SnapshotPoint CaretPosition => _textView.Caret.Position.BufferPosition;
 
@@ -30,12 +33,15 @@ namespace VSIX_InSituVisualization
         /// </summary>
         /// <param name="textView">Text textView to create the adornment for</param>
         /// <param name="telemetryDataMapper"></param>
-        public MemberPerformanceAdorner(IWpfTextView textView, ITelemetryDataMapper telemetryDataMapper)
+        /// <param name="spanProvider"></param>
+        public MemberPerformanceAdorner(IWpfTextView textView, ITelemetryDataMapper telemetryDataMapper, CustomSpanProvider spanProvider)
         {
+            _spanProvider = spanProvider ?? throw new ArgumentNullException(nameof(spanProvider));
             _textView = textView ?? throw new ArgumentNullException(nameof(textView));
             _telemetryDataMapper = telemetryDataMapper ?? throw new ArgumentNullException(nameof(textView));
             _textView.LayoutChanged += OnLayoutChanged;
             _methodAdornerLayer = new MethodAdornmentLayer(textView);
+            _cachedTelemetryDataMapper = new CachedTelemetryDataMapper(telemetryDataMapper);
         }
 
 
@@ -56,17 +62,16 @@ namespace VSIX_InSituVisualization
             }
 
             var root = await Document.GetSyntaxRootAsync();
-            var memberDeclarationSyntaxs = root.DescendantNodes().OfType<MemberDeclarationSyntax>();
-            var customSpanObtainer = new CustomSpanProvider();
+            var memberDeclarationSyntaxs = root.DescendantNodes().OfType<MethodDeclarationSyntax>();
             foreach (var memberDeclarationSyntax in memberDeclarationSyntaxs)
             {
-                var performanceInfo = _telemetryDataMapper.GetPerformanceInfo(memberDeclarationSyntax);
+                var performanceInfo = _cachedTelemetryDataMapper.GetPerformanceInfo(memberDeclarationSyntax);
                 if (performanceInfo == null)
                 {
                     continue;
                 }
 
-                var methodSyntaxSpan = customSpanObtainer.GetSpan(memberDeclarationSyntax);
+                var methodSyntaxSpan = _spanProvider.GetSpan(memberDeclarationSyntax);
                 if (methodSyntaxSpan == default(Span))
                 {
                     continue;
@@ -76,14 +81,16 @@ namespace VSIX_InSituVisualization
                 _methodAdornerLayer.DrawRedSpan(snapshotSpan);
 #endif
 
-                _methodAdornerLayer.DrawMethodDeclarationPerformanceInfo(new SnapshotSpan(_textView.TextSnapshot, methodSyntaxSpan), performanceInfo);
+                _methodAdornerLayer.DrawMethodDeclarationPerformanceInfo(memberDeclarationSyntax, new SnapshotSpan(_textView.TextSnapshot, methodSyntaxSpan), performanceInfo);
 
-                var invocationExpressionSyntaxs = memberDeclarationSyntax.DescendantNodes().OfType<InvocationExpressionSyntax>();
+                var invocationExpressionSyntaxs = memberDeclarationSyntax.DescendantNodes(node => true).OfType<InvocationExpressionSyntax>();
                 foreach (var invocationExpressionSyntax in invocationExpressionSyntaxs)
                 {
-                    var invocationSynataxSpan = customSpanObtainer.GetSpan(invocationExpressionSyntax);
-
-                    _methodAdornerLayer.DrawMethodInvocationPerformanceInfo(new SnapshotSpan(_textView.TextSnapshot, invocationSynataxSpan), performanceInfo);
+                    var invocationPerformanceInfo = _telemetryDataMapper.GetPerformanceInfo(invocationExpressionSyntax.ToString());
+                    var invocationSynataxSpan = _spanProvider.GetSpan(invocationExpressionSyntax);
+                    var invocationSnapshotSpan = new SnapshotSpan(_textView.TextSnapshot, invocationSynataxSpan);
+                    _methodAdornerLayer.DrawRedSpan(invocationSnapshotSpan);
+                    _methodAdornerLayer.DrawMethodInvocationPerformanceInfo(invocationExpressionSyntax, invocationSnapshotSpan, invocationPerformanceInfo);
                 }
 
                 // Setting PerformanceInfo to Method from Caret

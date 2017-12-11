@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using VSIX_InSituVisualization.ViewModels;
@@ -29,11 +30,10 @@ namespace VSIX_InSituVisualization
             _layer = textView.GetAdornmentLayer("MemberPerformanceAdorner");
         }
 
-        private readonly IDictionary<PerformanceInfo, MethodPerformanceInfoControl> _methodPerformanceInfoControls = new Dictionary<PerformanceInfo, MethodPerformanceInfoControl>();
-        private readonly IDictionary<PerformanceInfo, MethodInvocationPerformanceInfoControl> _methodInvocationPerformanceInfoControls = new Dictionary<PerformanceInfo, MethodInvocationPerformanceInfoControl>();
+        private readonly IDictionary<MethodDeclarationSyntax, MethodPerformanceInfoControl> _methodPerformanceInfoControls = new Dictionary<MethodDeclarationSyntax, MethodPerformanceInfoControl>();
+        private readonly IDictionary<InvocationExpressionSyntax, MethodInvocationPerformanceInfoControl> _methodInvocationPerformanceInfoControls = new Dictionary<InvocationExpressionSyntax, MethodInvocationPerformanceInfoControl>();
 
-
-        public void DrawMethodDeclarationPerformanceInfo(SnapshotSpan span, PerformanceInfo performanceInfo)
+        public void DrawMethodDeclarationPerformanceInfo(MethodDeclarationSyntax methodDeclarationSyntax, SnapshotSpan span, PerformanceInfo performanceInfo)
         {
             var geometry = _textView.TextViewLines.GetMarkerGeometry(span);
             if (geometry == null)
@@ -54,16 +54,16 @@ namespace VSIX_InSituVisualization
             DrawTextRelative(span, newControl);
 
             // Removing old Controls
-            if (_methodPerformanceInfoControls.TryGetValue(performanceInfo, out var existingControl))
+            if (_methodPerformanceInfoControls.TryGetValue(methodDeclarationSyntax, out var existingControl))
             {
                 // remove old existing control
                 _layer.RemoveAdornment(existingControl);
-                _methodPerformanceInfoControls.Remove(performanceInfo);
+                _methodPerformanceInfoControls.Remove(methodDeclarationSyntax);
             }
-            _methodPerformanceInfoControls[performanceInfo] = newControl;
+            _methodPerformanceInfoControls[methodDeclarationSyntax] = newControl;
         }
 
-        public void DrawMethodInvocationPerformanceInfo(SnapshotSpan span, PerformanceInfo performanceInfo)
+        public void DrawMethodInvocationPerformanceInfo(InvocationExpressionSyntax invocationExpressionSyntax, SnapshotSpan span, PerformanceInfo performanceInfo)
         {
             var geometry = _textView.TextViewLines.GetMarkerGeometry(span);
             if (geometry == null)
@@ -83,14 +83,15 @@ namespace VSIX_InSituVisualization
             // Drawing new Coontrol
             DrawTextRelative(span, newControl);
 
+
             // Removing old Controls
-            if (_methodInvocationPerformanceInfoControls.TryGetValue(performanceInfo, out var existingControl))
+            if (_methodInvocationPerformanceInfoControls.TryGetValue(invocationExpressionSyntax, out var existingControl))
             {
                 // remove old existing control
                 _layer.RemoveAdornment(existingControl);
-                _methodInvocationPerformanceInfoControls.Remove(performanceInfo);
+                _methodInvocationPerformanceInfoControls.Remove(invocationExpressionSyntax);
             }
-            _methodInvocationPerformanceInfoControls[performanceInfo] = newControl;
+            _methodInvocationPerformanceInfoControls[invocationExpressionSyntax] = newControl;
         }
 
         public void DrawRedSpan(SnapshotSpan span)

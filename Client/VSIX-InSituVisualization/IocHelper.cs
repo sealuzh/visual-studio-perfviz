@@ -1,5 +1,4 @@
 ﻿#define TestMapping
-
 using DryIoc;
 using VSIX_InSituVisualization.TelemetryCollector;
 
@@ -18,7 +17,8 @@ namespace VSIX_InSituVisualization
 
         public static void Register()
         {
-
+            Container.Register<CustomSpanProvider>();
+            Container.Register<MemberPerformanceAdorner>();
 #if TestMapping
             Container.Register<ITelemetryDataMapper, RandomTelemetryDataMapper>(Reuse.Singleton);
 #else

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Composition;
+﻿using System;
+using System.ComponentModel.Composition;
 using DryIoc;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -40,7 +41,8 @@ namespace VSIX_InSituVisualization
         {
             ;
             // The adornment will listen to any event that changes the layout (text changes, scrolling, etc)
-            var adorner = new MemberPerformanceAdorner(textView, IocHelper.Container.Resolve<ITelemetryDataMapper>());
+            var adornerResolveFunc = IocHelper.Container.Resolve<Func<IWpfTextView, MemberPerformanceAdorner>>();
+            var adorner = adornerResolveFunc(textView);
         }
 
         #endregion
