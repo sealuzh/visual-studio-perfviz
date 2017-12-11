@@ -93,6 +93,10 @@
     <Compile Include="TelemetryCollector\Persistance\PersistanceService.cs" />
     <Compile Include="TelemetryCollector\WritableSettingsStoreController.cs" />
     <Compile Include="TelemetryDataMapper.cs" />
+    <Compile Include="ViewModels\MethodInvocationPerformanceInfoControlViewModel.cs" />
+    <Compile Include="Views\MethodInvocationPerformanceInfoControl.xaml.cs">
+      <DependentUpon>MethodInvocationPerformanceInfoControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PerformanceInfoDetailWindowControl.xaml.cs">
       <DependentUpon>PerformanceInfoDetailWindowControl.xaml</DependentUpon>
     </Compile>
@@ -100,10 +104,10 @@
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\PerformanceInfoDetailWindowViewModel.cs" />
-    <Compile Include="Views\PerfVizControl.xaml.cs">
-      <DependentUpon>PerfVizControl.xaml</DependentUpon>
+    <Compile Include="Views\MethodPerformanceInfoControl.xaml.cs">
+      <DependentUpon>MethodPerformanceInfoControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\PerfVizViewModel.cs" />
+    <Compile Include="ViewModels\MethodPerformanceInfoControlViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomPerformanceInfo.cs" />
     <Compile Include="CustomSpanProvider.cs" />
@@ -328,11 +332,15 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\MethodInvocationPerformanceInfoControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\PerformanceInfoDetailWindowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\PerfVizControl.xaml">
+    <Page Include="Views\MethodPerformanceInfoControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

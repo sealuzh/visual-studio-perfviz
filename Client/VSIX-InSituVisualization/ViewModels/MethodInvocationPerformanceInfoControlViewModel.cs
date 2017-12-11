@@ -4,9 +4,9 @@ using System.Windows.Media;
 
 namespace VSIX_InSituVisualization.ViewModels
 {
-    public class PerfVizViewModel : ViewModelBase
+    public class MethodInvocationPerformanceInfoControlViewModel : ViewModelBase
     {
-        public PerfVizViewModel(PerformanceInfo performanceInfo)
+        public MethodInvocationPerformanceInfoControlViewModel(PerformanceInfo performanceInfo)
         {
             PerformanceInfo = performanceInfo ?? throw new ArgumentNullException(nameof(performanceInfo));
             OpenDetailViewCommand = new RelayCommand<object>(obj => OnOpenDetailViewCommand());

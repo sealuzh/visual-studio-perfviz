@@ -10,6 +10,34 @@ namespace VSIX_InSituVisualization
     internal sealed class CustomSpanProvider
     {
 
+        public Span GetSpan(InvocationExpressionSyntax invocationExpressionSyntax)
+        {
+            var lineSyntax = GetLineSyntax(invocationExpressionSyntax);
+            return Span.FromBounds(lineSyntax.SpanStart, lineSyntax.FullSpan.End);
+        }
+
+        private SyntaxNode GetLineSyntax(SyntaxNode syntaxNode)
+        {
+            if (syntaxNode.Parent == null)
+            {
+                return syntaxNode;
+            }
+
+            var parent = syntaxNode.Parent;
+            if (parent.HasTrailingTrivia)
+            {
+                var syntaxTriviaList = parent.GetTrailingTrivia();
+                foreach (var trailingTrivia in syntaxTriviaList)
+                {
+                    if (trailingTrivia.ToFullString().Contains("\n"))
+                    {
+                        return parent;
+                    }
+                }
+            }
+            return GetLineSyntax(parent);
+        }
+
         public Span GetSpan(MemberDeclarationSyntax memberDeclarationSyntax)
         {
             switch (memberDeclarationSyntax)

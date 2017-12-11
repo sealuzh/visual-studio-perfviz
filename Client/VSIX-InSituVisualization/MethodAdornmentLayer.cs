@@ -6,6 +6,7 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using VSIX_InSituVisualization.ViewModels;
+using VSIX_InSituVisualization.Views;
 
 namespace VSIX_InSituVisualization
 {
@@ -28,9 +29,11 @@ namespace VSIX_InSituVisualization
             _layer = textView.GetAdornmentLayer("MemberPerformanceAdorner");
         }
 
-        private readonly IDictionary<PerformanceInfo, PerfVizControl> _controls = new Dictionary<PerformanceInfo, PerfVizControl>();
+        private readonly IDictionary<PerformanceInfo, MethodPerformanceInfoControl> _methodPerformanceInfoControls = new Dictionary<PerformanceInfo, MethodPerformanceInfoControl>();
+        private readonly IDictionary<PerformanceInfo, MethodInvocationPerformanceInfoControl> _methodInvocationPerformanceInfoControls = new Dictionary<PerformanceInfo, MethodInvocationPerformanceInfoControl>();
 
-        public void DrawPerformanceInfo(SnapshotSpan span, PerformanceInfo performanceInfo)
+
+        public void DrawMethodDeclarationPerformanceInfo(SnapshotSpan span, PerformanceInfo performanceInfo)
         {
             var geometry = _textView.TextViewLines.GetMarkerGeometry(span);
             if (geometry == null)
@@ -39,9 +42,9 @@ namespace VSIX_InSituVisualization
             }
 
             // TODO RR: Take care of the old PerfViz Control? dispose?
-            var newControl = new PerfVizControl
+            var newControl = new MethodPerformanceInfoControl
             {
-                DataContext = new PerfVizViewModel(performanceInfo)
+                DataContext = new MethodPerformanceInfoControlViewModel(performanceInfo)
             };
             // Align the bounds of the text geometry
             Canvas.SetLeft(newControl, geometry.Bounds.Right);
@@ -51,13 +54,43 @@ namespace VSIX_InSituVisualization
             DrawTextRelative(span, newControl);
 
             // Removing old Controls
-            if (_controls.TryGetValue(performanceInfo, out var existingControl))
+            if (_methodPerformanceInfoControls.TryGetValue(performanceInfo, out var existingControl))
             {
                 // remove old existing control
                 _layer.RemoveAdornment(existingControl);
-                _controls.Remove(performanceInfo);
+                _methodPerformanceInfoControls.Remove(performanceInfo);
             }
-            _controls[performanceInfo] = newControl;
+            _methodPerformanceInfoControls[performanceInfo] = newControl;
+        }
+
+        public void DrawMethodInvocationPerformanceInfo(SnapshotSpan span, PerformanceInfo performanceInfo)
+        {
+            var geometry = _textView.TextViewLines.GetMarkerGeometry(span);
+            if (geometry == null)
+            {
+                return;
+            }
+
+            // TODO RR: Take care of the old PerfViz Control? dispose?
+            var newControl = new MethodInvocationPerformanceInfoControl
+            {
+                DataContext = new MethodInvocationPerformanceInfoControlViewModel(performanceInfo)
+            };
+            // Align the bounds of the text geometry
+            Canvas.SetLeft(newControl, geometry.Bounds.Right);
+            Canvas.SetTop(newControl, geometry.Bounds.Top);
+
+            // Drawing new Coontrol
+            DrawTextRelative(span, newControl);
+
+            // Removing old Controls
+            if (_methodInvocationPerformanceInfoControls.TryGetValue(performanceInfo, out var existingControl))
+            {
+                // remove old existing control
+                _layer.RemoveAdornment(existingControl);
+                _methodInvocationPerformanceInfoControls.Remove(performanceInfo);
+            }
+            _methodInvocationPerformanceInfoControls[performanceInfo] = newControl;
         }
 
         public void DrawRedSpan(SnapshotSpan span)

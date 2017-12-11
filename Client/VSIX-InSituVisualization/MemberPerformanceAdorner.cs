@@ -66,19 +66,25 @@ namespace VSIX_InSituVisualization
                     continue;
                 }
 
-                var span = customSpanObtainer.GetSpan(memberDeclarationSyntax);
-                if (span == default(Span))
+                var methodSyntaxSpan = customSpanObtainer.GetSpan(memberDeclarationSyntax);
+                if (methodSyntaxSpan == default(Span))
                 {
                     continue;
                 }
-
-                var snapshotSpan = new SnapshotSpan(_textView.TextSnapshot, span);
 
 #if DEBUG_SPANS
                 _methodAdornerLayer.DrawRedSpan(snapshotSpan);
 #endif
 
-                _methodAdornerLayer.DrawPerformanceInfo(snapshotSpan, performanceInfo);
+                _methodAdornerLayer.DrawMethodDeclarationPerformanceInfo(new SnapshotSpan(_textView.TextSnapshot, methodSyntaxSpan), performanceInfo);
+
+                var invocationExpressionSyntaxs = memberDeclarationSyntax.DescendantNodes().OfType<InvocationExpressionSyntax>();
+                foreach (var invocationExpressionSyntax in invocationExpressionSyntaxs)
+                {
+                    var invocationSynataxSpan = customSpanObtainer.GetSpan(invocationExpressionSyntax);
+
+                    _methodAdornerLayer.DrawMethodInvocationPerformanceInfo(new SnapshotSpan(_textView.TextSnapshot, invocationSynataxSpan), performanceInfo);
+                }
 
                 // Setting PerformanceInfo to Method from Caret
                 if (CaretPosition.Position > memberDeclarationSyntax.SpanStart &&

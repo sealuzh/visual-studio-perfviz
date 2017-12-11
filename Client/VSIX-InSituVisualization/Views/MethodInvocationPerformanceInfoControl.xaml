@@ -1,11 +1,11 @@
-﻿<UserControl x:Class="VSIX_InSituVisualization.PerfVizControl"
+﻿<UserControl x:Class="VSIX_InSituVisualization.Views.MethodInvocationPerformanceInfoControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:VSIX_InSituVisualization"
+             xmlns:local="clr-namespace:VSIX_InSituVisualization.Views"
              xmlns:converters="clr-namespace:VSIX_InSituVisualization.Converters"
-             mc:Ignorable="d"
+             mc:Ignorable="d" 
              d:DesignHeight="50" d:DesignWidth="300">
 
     <UserControl.Resources>
@@ -40,4 +40,3 @@
 
 
 </UserControl>
-
