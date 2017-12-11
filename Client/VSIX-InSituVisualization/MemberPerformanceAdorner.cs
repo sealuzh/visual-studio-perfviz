@@ -1,28 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using VSIX_InSituVisualization.TelemetryCollector;
 
 namespace VSIX_InSituVisualization
 {
     /// <summary>
     /// MemberPerformanceAdorner shows the PerformanceInfo on the specified Members
+    /// There is one <see cref="MemberPerformanceAdorner"/> per open document.
     /// </summary>
     internal sealed class MemberPerformanceAdorner
     {
-
         /// <summary>
         /// Text textView where the adornment is created.
         /// </summary>
         private readonly IWpfTextView _textView;
+        private readonly ITelemetryDataMapper _telemetryDataMapper;
         private readonly MethodAdornmentLayer _methodAdornerLayer;
-
-        private readonly Dictionary<MemberDeclarationSyntax, PerformanceInfo> _performanceInfos = new Dictionary<MemberDeclarationSyntax, PerformanceInfo>();
 
         private SnapshotPoint CaretPosition => _textView.Caret.Position.BufferPosition;
 
@@ -32,65 +29,13 @@ namespace VSIX_InSituVisualization
         /// Initializes a new instance of the <see cref="MemberPerformanceAdorner"/> class.
         /// </summary>
         /// <param name="textView">Text textView to create the adornment for</param>
-        public MemberPerformanceAdorner(IWpfTextView textView)
+        /// <param name="telemetryDataMapper"></param>
+        public MemberPerformanceAdorner(IWpfTextView textView, ITelemetryDataMapper telemetryDataMapper)
         {
             _textView = textView ?? throw new ArgumentNullException(nameof(textView));
+            _telemetryDataMapper = telemetryDataMapper ?? throw new ArgumentNullException(nameof(textView));
             _textView.LayoutChanged += OnLayoutChanged;
             _methodAdornerLayer = new MethodAdornmentLayer(textView);
-        }
-
-
-
-        private PerformanceInfo GetPerformanceInfo(MemberDeclarationSyntax memberDeclarationSyntax)
-        {
-            // TODO RR: Use SyntaxAnnotation https://joshvarty.wordpress.com/2015/09/18/learn-roslyn-now-part-13-keeping-track-of-syntax-nodes-with-syntax-annotations/
-            // TODO RR: Do one Dictionary per Class/File
-
-
-            var memberName = memberDeclarationSyntax.GetMemberIdentifier().ToString();
-            try
-            {
-                // TODO RR: Do Real Mapping
-                var averageMemberTelemetries = AzureTelemetryFactory.GetInstance().GetCurrentAveragedMemberTelemetry();
-                //var averageMemberTelemetries = dataStore.GetCurrentAveragedMemberTelemetry();
-                // is null when being written to at the same time
-                if (averageMemberTelemetries != null)
-                {
-                    // if no information given for this method it does not exist in dict
-                    if (!averageMemberTelemetries.ContainsKey(memberName))
-                    {
-                        return null;
-                    }
-                    else
-                    {
-                        var performanceInfo = new PerformanceInfo(memberName)
-                        {
-                            MeanExecutionTime = averageMemberTelemetries[memberName].Duration,
-                            //TODO RR: integrate MemberCount in interface.
-                            MemberCount = averageMemberTelemetries[memberName].MemberCount
-                        };
-
-                        if (_performanceInfos.ContainsKey(memberDeclarationSyntax))
-                        {
-                            _performanceInfos.Remove(memberDeclarationSyntax);
-                        }
-                        _performanceInfos.Add(memberDeclarationSyntax, performanceInfo);
-                        return performanceInfo;
-                    }
-                }
-                else
-                {
-                    if (_performanceInfos.TryGetValue(memberDeclarationSyntax, out var perfInfo))
-                    {
-                        return perfInfo;
-                    }
-                    return null;
-                }
-            }
-            catch
-            {
-                return null;
-            }
         }
 
 
@@ -115,7 +60,7 @@ namespace VSIX_InSituVisualization
             var customSpanObtainer = new CustomSpanProvider();
             foreach (var memberDeclarationSyntax in memberDeclarationSyntaxs)
             {
-                var performanceInfo = GetPerformanceInfo(memberDeclarationSyntax);
+                var performanceInfo = _telemetryDataMapper.GetPerformanceInfo(memberDeclarationSyntax);
                 if (performanceInfo == null)
                 {
                     continue;

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Composition;
+using DryIoc;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
@@ -23,21 +24,23 @@ namespace VSIX_InSituVisualization
         [Export(typeof(AdornmentLayerDefinition))]
         [Name("MemberPerformanceAdorner")]
         [Order(After = PredefinedAdornmentLayers.Selection, Before = PredefinedAdornmentLayers.Text)]
-        private AdornmentLayerDefinition editorAdornmentLayer;
+        private AdornmentLayerDefinition _editorAdornmentLayer;
 
 #pragma warning restore 649, 169
 
         #region IWpfTextViewCreationListener
 
+        /// <inheritdoc />
         /// <summary>
         /// Called when a text view having matching roles is created over a text data model having a matching content type.
         /// Instantiates a MemberPerformanceAdorner manager when the textView is created.
         /// </summary>
-        /// <param name="textView">The <see cref="IWpfTextView"/> upon which the adornment should be placed</param>
+        /// <param name="textView">The <see cref="T:Microsoft.VisualStudio.Text.Editor.IWpfTextView" /> upon which the adornment should be placed</param>
         public void TextViewCreated(IWpfTextView textView)
         {
+            ;
             // The adornment will listen to any event that changes the layout (text changes, scrolling, etc)
-            new MemberPerformanceAdorner(textView);
+            var adorner = new MemberPerformanceAdorner(textView, IocHelper.Container.Resolve<ITelemetryDataMapper>());
         }
 
         #endregion

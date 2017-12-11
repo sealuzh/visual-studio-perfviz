@@ -55,7 +55,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DryIoc\AsyncExecutionFlowScopeContext.cs" />
+    <Compile Include="DryIoc\Container.cs" />
+    <Compile Include="DryIoc\FastExpressionCompiler.cs" />
+    <Compile Include="DryIoc\ImTools.cs" />
     <Compile Include="HsvColor.cs" />
+    <Compile Include="IocHelper.cs" />
+    <Compile Include="ITelemetryDataMapper.cs" />
+    <Compile Include="ITelemetryDataProvider.cs" />
     <Compile Include="MethodAdornmentLayer.cs" />
     <Compile Include="Converters\ColorToSolidColorBrushValueConverter.cs" />
     <Compile Include="MemberDeclarationSyntaxExtensions.cs" />
@@ -70,9 +77,9 @@
     <Compile Include="PerformanceInfo.cs" />
     <Compile Include="PerformanceInfoDetailWindow.cs" />
     <Compile Include="PerformanceInfoDetailWindowCommand.cs" />
+    <Compile Include="RandomTelemetryDataMapper.cs" />
     <Compile Include="TelemetryCache.cs" />
     <Compile Include="TelemetryCollector\AveragedTelemety.cs" />
-    <Compile Include="TelemetryCollector\AzureTelemetryFactory.cs" />
     <Compile Include="TelemetryCollector\AzureTelemetryStore.cs" />
     <Compile Include="TelemetryCollector\ConcreteTelemetryMember.cs" />
     <Compile Include="TelemetryCollector\Filter\IFilter.cs" />
@@ -85,6 +92,7 @@
     <Compile Include="TelemetryCollector\Filter\FilterController.cs" />
     <Compile Include="TelemetryCollector\Persistance\PersistanceService.cs" />
     <Compile Include="TelemetryCollector\WritableSettingsStoreController.cs" />
+    <Compile Include="TelemetryDataMapper.cs" />
     <Compile Include="Views\PerformanceInfoDetailWindowControl.xaml.cs">
       <DependentUpon>PerformanceInfoDetailWindowControl.xaml</DependentUpon>
     </Compile>

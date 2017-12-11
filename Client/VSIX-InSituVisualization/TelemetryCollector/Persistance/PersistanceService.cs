@@ -35,19 +35,19 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Persistance
             File.WriteAllText(BasePath + "\\VSIXStore.json", json);
         }
 
-        public static void AwaitConcreteMemberTelemetriesLock()
+        public static async Task AwaitConcreteMemberTelemetriesLock()
         {
             while (IsConcreteMemberTelemetriesLock)
             {
-                Task.Delay(50);
+                await Task.Delay(50);
             }
         }
 
-        public static void AwaitAverageMemberTelemetryLock()
+        public static async Task AwaitAverageMemberTelemetryLock()
         {
             while (IsAverageTelemetryLock)
             {
-                Task.Delay(50);
+                await Task.Delay(50);
             }
         }
     }
