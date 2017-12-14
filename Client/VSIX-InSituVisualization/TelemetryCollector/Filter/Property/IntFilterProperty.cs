@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VSIX_InSituVisualization.TelemetryCollector.Filter.Property
 {
@@ -13,11 +9,16 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter.Property
         public const int IsGreaterEqualThen = 1;
         public const int IsSmallerEqualThen = 2;
 
-        public IList<string> FilterParameter;
+        private readonly List<string> _filterParameterList;
 
         public IntFilterProperty(PropertyInfo propertyInfo) : base(propertyInfo)
         {
-            FilterParameter = new List<string> { "IsEqual", "IsGreaterEqualThen", "IsSmallerEqualThen" };
+            _filterParameterList = new List<string> { "IsEqual", "IsGreaterEqualThen", "IsSmallerEqualThen" };
+        }
+
+        public override List<string> GetFilterParameterList()
+        {
+            return _filterParameterList;
         }
     }
 }

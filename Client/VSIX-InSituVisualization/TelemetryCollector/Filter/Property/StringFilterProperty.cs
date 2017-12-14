@@ -10,11 +10,16 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter.Property
         public const int IsEqual = 0;
         public const int Contains = 1;
 
-        public IList<string> FilterParameter;
+        private readonly List<string> _filterParameterList;
         
         public StringFilterProperty(PropertyInfo propertyInfo) : base(propertyInfo)
         {
-            FilterParameter = new List<string> {"IsEqual", "Contains"};
+            _filterParameterList = new List<string> {"IsEqual", "Contains"};
+        }
+
+        public override List<string> GetFilterParameterList()
+        {
+            return _filterParameterList;
         }
     }
 }

@@ -27,9 +27,11 @@ namespace VSIX_InSituVisualization.TelemetryCollector
         public AzureTelemetryStore()
         {
             _filterController = new FilterController();
-            //_filterController.AddFilter(GetFilterProperties()["Timestamp"], "IsGreaterEqualThen", new DateTime(2017, 11, 21));
+
+            //As second attribute return the position inside the _filterController.GetFilterProperties()[0].GetFilterParameterList() list, which is used for displaying possible filterparameters.
             _filterController.AddFilterGlobal(_filterController.GetFilterProperties()[1], DateTimeFilterProperty.IsGreaterEqualThen, new DateTime(2017, 11, 21));
             _filterController.AddFilterGlobal(_filterController.GetFilterProperties()[6], IntFilterProperty.IsGreaterEqualThen, 100);
+            _filterController.AddFilterLocal(_filterController.GetFilterProperties()[6], IntFilterProperty.IsGreaterEqualThen, 1000, "Counter2");
 
             _dataPullingServices = new List<IDataPullingService> { new InsightsExternalReferencesRestApiDataPullingService() };
             //TODO JO: After FetchingSystemCacheData is called, the store is not updated.
@@ -131,16 +133,5 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             return _filterController;
         }
 
-
-        //public List<FilterProperty> GetFilterProperties()
-        //{
-        //    return _filterController.GetFilterProperties();
-        //}
-
-        //public async Task ResetFilter()
-        //{
-        //    _filterController.ResetFilter();
-        //    await UpdateStore(false);
-        //}
     }
 }

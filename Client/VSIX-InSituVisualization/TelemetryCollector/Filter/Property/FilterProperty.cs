@@ -5,14 +5,15 @@ using System.Reflection;
 namespace VSIX_InSituVisualization.TelemetryCollector.Filter.Property
 {
     //Contains all info concerning one variable in ConcreteTelemetryMember. Intended to be used statically.
-    class FilterProperty : IFilterProperty
+    abstract class FilterProperty : IFilterProperty
     {
+        public abstract List<string> GetFilterParameterList();
+
         public Type FilterType;
         private readonly PropertyInfo _propertyInfo;
         public string FilterName;
-
         
-        public FilterProperty(PropertyInfo propertyInfo)
+        protected FilterProperty(PropertyInfo propertyInfo)
         {
             FilterType = propertyInfo.PropertyType;
             _propertyInfo = propertyInfo;
@@ -23,5 +24,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter.Property
         {
             return _propertyInfo;
         }
+
+        
     }
 }

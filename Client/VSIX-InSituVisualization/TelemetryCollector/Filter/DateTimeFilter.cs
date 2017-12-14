@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using VSIX_InSituVisualization.TelemetryCollector.Filter.Property;
@@ -46,25 +47,18 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
                 {
                     if (kvpMethod.Key != _toFilterMethodFullName)
                     {
-                        outDictionary.Add(kvpMethod.Key, kvpMethod.Value);
+                        outDictionary.Add(kvpMethod.Key, new ConcurrentDictionary<string, ConcreteTelemetryMember>(kvpMethod.Value));
                     }
                     else
                     {
                         outDictionary.Add(kvpMethod.Key, ApplyFilterMethodLevel(kvpMethod.Key, inDictionary[kvpMethod.Key]));
                     }
                 }
-
-
-                ////TODO: If this section is removed, also methods with no filtering results will have some value to show.
-                //if (outDictionary[kvpMethod.Key].Count <= 0)
-                //{
-                //    outDictionary.Remove(kvpMethod.Key);
-                //}
             }
             return outDictionary;
         }
 
-        private Dictionary<string, ConcreteTelemetryMember> ApplyFilterMethodLevel(string kvpMethodKey, IDictionary<string, ConcreteTelemetryMember> inDictionary)
+        private IDictionary<string, ConcreteTelemetryMember> ApplyFilterMethodLevel(string kvpMethodKey, IDictionary<string, ConcreteTelemetryMember> inDictionary)
         {
             var outDictionary = new Dictionary<string, ConcreteTelemetryMember>();
             foreach (var kvpMember in inDictionary)
