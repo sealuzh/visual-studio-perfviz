@@ -19,12 +19,12 @@ namespace VSIX_InSituVisualization
         {
             Container.Register<CustomSpanProvider>();
             Container.Register<MemberPerformanceAdorner>();
-#if TestMapping
-            Container.Register<ITelemetryDataMapper, RandomTelemetryDataMapper>(Reuse.Singleton);
-#else
+//#if TestMapping
+//            Container.Register<ITelemetryDataMapper, RandomTelemetryDataMapper>(Reuse.Singleton);
+//#else
             Container.Register<ITelemetryDataProvider, AzureTelemetryStore>(Reuse.Singleton);
             Container.Register<ITelemetryDataMapper, TelemetryDataMapper>(Reuse.Singleton);
-#endif
+//#endif
         }
     }
 }

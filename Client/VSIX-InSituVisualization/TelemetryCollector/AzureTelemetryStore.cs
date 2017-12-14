@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using VSIX_InSituVisualization.TelemetryCollector.DataPulling;
 using VSIX_InSituVisualization.TelemetryCollector.Filter;
+using VSIX_InSituVisualization.TelemetryCollector.Filter.Property;
 using VSIX_InSituVisualization.TelemetryCollector.Persistance;
 
 namespace VSIX_InSituVisualization.TelemetryCollector
@@ -26,12 +27,15 @@ namespace VSIX_InSituVisualization.TelemetryCollector
         public AzureTelemetryStore()
         {
             _filterController = new FilterController();
-            _filterController.AddFilter(GetFilterProperties()["Timestamp"], "IsGreaterEqualThen", new DateTime(2017, 11, 21));
+            //_filterController.AddFilter(GetFilterProperties()["Timestamp"], "IsGreaterEqualThen", new DateTime(2017, 11, 21));
+            _filterController.AddFilterGlobal(_filterController.GetFilterProperties()[1], DateTimeFilterProperty.IsGreaterEqualThen, new DateTime(2017, 11, 21));
+            _filterController.AddFilterGlobal(_filterController.GetFilterProperties()[6], IntFilterProperty.IsGreaterEqualThen, 100);
 
             _dataPullingServices = new List<IDataPullingService> { new InsightsExternalReferencesRestApiDataPullingService() };
-
-            _allMemberTelemetries = PersistanceService.FetchSystemCacheData();
-
+            //TODO JO: After FetchingSystemCacheData is called, the store is not updated.
+            _allMemberTelemetries = new Dictionary<string, IDictionary<string, ConcreteTelemetryMember>>();
+            //_allMemberTelemetries = PersistanceService.FetchSystemCacheData();
+            
             //Setup Timer Task that automatically updates the store via REST
             var timer = new Timer
             {
@@ -109,7 +113,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
 
                 foreach (var telemetry in method.Values)
                 {
-                    timeList.Add(telemetry.Duration.TotalMilliseconds);
+                    timeList.Add(telemetry.Duration);
                 }
                 averagedDictionary.Add(method.Values.ElementAt(0).MemberName, new AveragedTelemetry(method.Values.ElementAt(0).MemberName, method.Values.ElementAt(0).NameSpace, TimeSpan.FromMilliseconds(timeList.Average()), timeList.Count()));
             }
@@ -122,20 +126,21 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             return !PersistanceService.IsAverageTelemetryLock ? new Dictionary<string, AveragedTelemetry>(_currentAveragedMemberTelemetry) : null;
         }
 
-        public void AddFilter(PropertyInfo propertyInfo, string filterType, object parameter)
+        public FilterController GetFilterController()
         {
-            _filterController.AddFilter(propertyInfo, filterType, parameter);
+            return _filterController;
         }
 
-        public Dictionary<string, PropertyInfo> GetFilterProperties()
-        {
-            return _filterController.GetFilterProperties();
-        }
 
-        public async Task ResetFilter()
-        {
-            _filterController.ResetFilter();
-            await UpdateStore(false);
-        }
+        //public List<FilterProperty> GetFilterProperties()
+        //{
+        //    return _filterController.GetFilterProperties();
+        //}
+
+        //public async Task ResetFilter()
+        //{
+        //    _filterController.ResetFilter();
+        //    await UpdateStore(false);
+        //}
     }
 }

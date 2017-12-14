@@ -65,6 +65,7 @@ namespace VSIX_InSituVisualization
             var memberDeclarationSyntaxs = root.DescendantNodes().OfType<MethodDeclarationSyntax>();
             foreach (var memberDeclarationSyntax in memberDeclarationSyntaxs)
             {
+                //TODO RR: Hier muss zuerst auf neue Inhalte geprüft werden - ansonsten wenn einmal null --> immer null.
                 var performanceInfo = _cachedTelemetryDataMapper.GetPerformanceInfo(memberDeclarationSyntax);
                 if (performanceInfo == null)
                 {

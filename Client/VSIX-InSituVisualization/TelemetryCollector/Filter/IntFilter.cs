@@ -5,27 +5,27 @@ using VSIX_InSituVisualization.TelemetryCollector.Filter.Property;
 
 namespace VSIX_InSituVisualization.TelemetryCollector.Filter
 {
-    class DateTimeFilter : IFilter
+    class IntFilter : IFilter
     {
 
-        private readonly DateTime _filterString;
-        private readonly DateTimeFilterProperty _filterProperty;
+        private readonly int _filterString;
+        private readonly IntFilterProperty _filterProperty;
         private readonly bool _isGlobalFilter;
         private readonly string _toFilterMethodFullName;
         private readonly int _toFilterType;
 
-        public DateTimeFilter(IFilterProperty filterProperty, DateTime filterString, int toFilterType)
+        public IntFilter(IFilterProperty filterProperty, int filterString, int toFilterType)
         {
             _filterString = filterString;
-            _filterProperty = (DateTimeFilterProperty)filterProperty;
+            _filterProperty = (IntFilterProperty)filterProperty;
             _toFilterType = toFilterType;
             _isGlobalFilter = true;
         }
 
-        public DateTimeFilter(IFilterProperty filterProperty, DateTime filterString, int toFilterType, string toFilterMethodFullName)
+        public IntFilter(IFilterProperty filterProperty, int filterString, int toFilterType, string toFilterMethodFullName)
         {
             _filterString = filterString;
-            _filterProperty = (DateTimeFilterProperty) filterProperty;
+            _filterProperty = (IntFilterProperty)filterProperty;
             _toFilterType = toFilterType;
             _isGlobalFilter = false;
             _toFilterMethodFullName = toFilterMethodFullName;
@@ -69,22 +69,22 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
             var outDictionary = new Dictionary<string, ConcreteTelemetryMember>();
             foreach (var kvpMember in inDictionary)
             {
-                var memberPropertyValue = (DateTime)_filterProperty.GetPropertyInfo().GetValue(kvpMember.Value);
+                var memberPropertyValue = (int)_filterProperty.GetPropertyInfo().GetValue(kvpMember.Value);
                 switch (_toFilterType)
                 {
-                    case DateTimeFilterProperty.IsEqual:
+                    case IntFilterProperty.IsEqual:
                         if (!memberPropertyValue.Equals(_filterString))
                         {
                             outDictionary.Add(kvpMember.Key, kvpMember.Value);
                         }
                         break;
-                    case DateTimeFilterProperty.IsGreaterEqualThen:
+                    case IntFilterProperty.IsGreaterEqualThen:
                         if (!(memberPropertyValue <= _filterString))
                         {
                             outDictionary.Add(kvpMember.Key, kvpMember.Value);
                         }
                         break;
-                    case DateTimeFilterProperty.IsSmallerEqualThen:
+                    case IntFilterProperty.IsSmallerEqualThen:
                         if (!(memberPropertyValue >= _filterString))
                         {
                             outDictionary.Add(kvpMember.Key, kvpMember.Value);

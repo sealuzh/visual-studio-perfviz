@@ -1,71 +1,104 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using VSIX_InSituVisualization.TelemetryCollector.Filter.Property;
 
 namespace VSIX_InSituVisualization.TelemetryCollector.Filter
 {
     internal class FilterController
     {
-        private readonly Dictionary<string, PropertyInfo> _propertyMap;
-        private readonly List<IFilter> _currentFilters;
+        //private readonly Dictionary<string, PropertyInfo> _propertyMap;
+        private readonly List<IFilter> _activeFilters;
+        private readonly List<FilterProperty> _filterProperties;
 
         public FilterController()
         {
-            _propertyMap = new Dictionary<string, PropertyInfo>();
-            _currentFilters = new List<IFilter>();
+            //_propertyMap = new Dictionary<string, PropertyInfo>();
+            _activeFilters = new List<IFilter>();
+            _filterProperties = new List<FilterProperty>();
+
             var propertyInfoArray = typeof(ConcreteTelemetryMember).GetProperties();
             foreach (var prop in propertyInfoArray)
             {
-                _propertyMap.Add(prop.Name, prop);
+                switch (prop.PropertyType.ToString())
+                {
+                    case "System.String":
+                        _filterProperties.Add(new StringFilterProperty(prop));
+                        break;
+                    case "System.DateTime":
+                        _filterProperties.Add(new DateTimeFilterProperty(prop));
+                        break;
+                    case "System.Int32":
+                        _filterProperties.Add(new IntFilterProperty(prop));
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
-        public Dictionary<string, PropertyInfo> GetFilterProperties()
+        //Returs a list of FilterPropertyObjects that describe all possible variables in ConcreteTelemetryMember to filter on.
+        public List<FilterProperty> GetFilterProperties()
         {
-            return _propertyMap;
+            return _filterProperties;
         }
 
-        public void AddFilter(PropertyInfo property, string filterType, object parameter)
+        //Adds a Filter that is used over all different methods available in the syntax
+        public void AddFilterGlobal(IFilterProperty filterProperty, int filterType, object parameter)
         {
-            switch (property.PropertyType.ToString())
+            IFilter newFilter;
+            switch (filterProperty.GetPropertyInfo().PropertyType.ToString())
             {
                 case "System.String":
-                    try
-                    {
-                        var type = (StringFilter.StringFilterType)Enum.Parse(typeof(StringFilter.StringFilterType), filterType);
-                        IFilter newFilter = new StringFilter(property, type, parameter.ToString());
-                        _currentFilters.Add(newFilter);
-                    }
-                    catch
-                    {
-
-                    }
+                    newFilter = new StringFilter(filterProperty, (string)parameter, filterType);
+                    _activeFilters.Add(newFilter);
                     break;
                 case "System.DateTime":
-                    try
-                    {
-                        var type = (DateTimeFilter.DateTimeFilterType)Enum.Parse(typeof(DateTimeFilter.DateTimeFilterType), filterType);
-                        IFilter newFilter = new DateTimeFilter(property, type, (DateTime)parameter);
-                        _currentFilters.Add(newFilter);
-                    }
-                    catch
-                    {
-
-                    }
+                    newFilter = new DateTimeFilter(filterProperty, (DateTime)parameter, filterType);
+                    _activeFilters.Add(newFilter);
+                    break;
+                case "System.Int32":
+                    newFilter = new IntFilter(filterProperty, (int)parameter, filterType);
+                    _activeFilters.Add(newFilter);
                     break;
                 default:
                     break;
             }
         }
 
+        //Adds a Filter that only applies to a single method in the syntax.
+        public void AddFilterLocal(IFilterProperty filterProperty, int filterType, object parameter, string filterMethodFullName)
+        {
+            IFilter newFilter;
+            switch (filterProperty.GetPropertyInfo().PropertyType.ToString())
+            {
+                case "System.String":
+                    newFilter = new StringFilter(filterProperty, (string)parameter, filterType, filterMethodFullName);
+                    _activeFilters.Add(newFilter);
+                    break;
+                case "System.DateTime":
+                    newFilter = new DateTimeFilter(filterProperty, (DateTime)parameter, filterType, filterMethodFullName);
+                    _activeFilters.Add(newFilter);
+                    break;
+                case "System.Int32":
+                    newFilter = new IntFilter(filterProperty, (int)parameter, filterType, filterMethodFullName);
+                    _activeFilters.Add(newFilter);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        //Applies the filters currently stored in _activeFilters.
         public IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> ApplyFilters(IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> inDictionary)
         {
-            if (_currentFilters.Count <= 0)
+            if (_activeFilters.Count <= 0)
             {
                 return inDictionary;
             }
             IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> outDictionary = new Dictionary<string, IDictionary<string, ConcreteTelemetryMember>>(inDictionary);
-            foreach (var filter in _currentFilters)
+            foreach (var filter in _activeFilters)
             {
                 outDictionary = filter.ApplyFilter(outDictionary);
             }
@@ -74,7 +107,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
 
         public void ResetFilter()
         {
-            _currentFilters.Clear();
+            _activeFilters.Clear();
         }
 
     }

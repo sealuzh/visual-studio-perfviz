@@ -48,7 +48,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector.DataPulling
                     (string)obj.id,
                     Convert.ToDateTime(obj.timestamp),
                     (string)obj.dependency.target,
-                    TimeSpan.FromMilliseconds((double)obj.dependency.duration),
+                    TimeSpan.FromMilliseconds((double)obj.dependency.duration).Milliseconds,
                     (string)obj.client.city,
                     (string)obj.dependency.name,
                     (string)obj.dependency.type);
