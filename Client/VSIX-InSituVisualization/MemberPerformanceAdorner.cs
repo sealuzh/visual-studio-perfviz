@@ -22,7 +22,6 @@ namespace VSIX_InSituVisualization
         private readonly IWpfTextView _textView;
         private readonly ITelemetryDataMapper _telemetryDataMapper;
         private readonly MethodAdornmentLayer _methodAdornerLayer;
-        private CachedTelemetryDataMapper _cachedTelemetryDataMapper;
 
         private SnapshotPoint CaretPosition => _textView.Caret.Position.BufferPosition;
 
@@ -41,7 +40,6 @@ namespace VSIX_InSituVisualization
             _telemetryDataMapper = telemetryDataMapper ?? throw new ArgumentNullException(nameof(textView));
             _textView.LayoutChanged += OnLayoutChanged;
             _methodAdornerLayer = new MethodAdornmentLayer(textView);
-            _cachedTelemetryDataMapper = new CachedTelemetryDataMapper(telemetryDataMapper);
         }
 
 
@@ -60,13 +58,18 @@ namespace VSIX_InSituVisualization
             {
                 return;
             }
-
             var root = await Document.GetSyntaxRootAsync();
+            var semanticModel = await Document.GetSemanticModelAsync();
+            DrawTelemetryData(root, semanticModel);
+        }
+
+        private void DrawTelemetryData(SyntaxNode root, SemanticModel semanticModel)
+        {
             var memberDeclarationSyntaxs = root.DescendantNodes().OfType<MethodDeclarationSyntax>();
             foreach (var memberDeclarationSyntax in memberDeclarationSyntaxs)
             {
                 //TODO RR: Hier muss zuerst auf neue Inhalte geprüft werden - ansonsten wenn einmal null --> immer null.
-                var performanceInfo = _cachedTelemetryDataMapper.GetPerformanceInfo(memberDeclarationSyntax);
+                var performanceInfo = _telemetryDataMapper.GetPerformanceInfo(memberDeclarationSyntax.GetMemberIdentifier().ToString());
                 if (performanceInfo == null)
                 {
                     continue;
@@ -82,16 +85,20 @@ namespace VSIX_InSituVisualization
                 _methodAdornerLayer.DrawRedSpan(snapshotSpan);
 #endif
 
-                _methodAdornerLayer.DrawMethodDeclarationPerformanceInfo(memberDeclarationSyntax, new SnapshotSpan(_textView.TextSnapshot, methodSyntaxSpan), performanceInfo);
+                _methodAdornerLayer.DrawMethodDeclarationPerformanceInfo(memberDeclarationSyntax,
+                    new SnapshotSpan(_textView.TextSnapshot, methodSyntaxSpan), performanceInfo);
 
-                var invocationExpressionSyntaxs = memberDeclarationSyntax.DescendantNodes(node => true).OfType<InvocationExpressionSyntax>();
+                var invocationExpressionSyntaxs = memberDeclarationSyntax.DescendantNodes(node => true)
+                    .OfType<InvocationExpressionSyntax>();
                 foreach (var invocationExpressionSyntax in invocationExpressionSyntaxs)
                 {
-                    var invocationPerformanceInfo = _telemetryDataMapper.GetPerformanceInfo(invocationExpressionSyntax.ToString());
+                    var invocationPerformanceInfo =
+                        _telemetryDataMapper.GetPerformanceInfo(invocationExpressionSyntax.ToString());
                     var invocationSynataxSpan = _spanProvider.GetSpan(invocationExpressionSyntax);
                     var invocationSnapshotSpan = new SnapshotSpan(_textView.TextSnapshot, invocationSynataxSpan);
                     _methodAdornerLayer.DrawRedSpan(invocationSnapshotSpan);
-                    _methodAdornerLayer.DrawMethodInvocationPerformanceInfo(invocationExpressionSyntax, invocationSnapshotSpan, invocationPerformanceInfo);
+                    _methodAdornerLayer.DrawMethodInvocationPerformanceInfo(invocationExpressionSyntax, invocationSnapshotSpan,
+                        invocationPerformanceInfo);
                 }
 
                 // Setting PerformanceInfo to Method from Caret
