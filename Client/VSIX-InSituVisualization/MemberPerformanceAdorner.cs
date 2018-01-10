@@ -85,8 +85,8 @@ namespace VSIX_InSituVisualization
                     continue;
                 }
                 //TODO RR: Hier muss zuerst auf neue Inhalte geprüft werden - ansonsten wenn einmal null --> immer null.
-                var methodPerformanceInfo = _telemetryDataMapper.GetMethodPerformanceInfo(methodSymbol);
-                _methodAdornerLayer.DrawMethodDeclarationPerformanceInfo(memberDeclarationSyntax, GetSnapshotSpan(memberDeclarationSyntax), methodPerformanceInfo);
+                var methodPerformanceInfo = _telemetryDataMapper.GetMethodPerformanceInfo(memberDeclarationSyntax, methodSymbol);
+                _methodAdornerLayer.DrawPerformanceInfo(memberDeclarationSyntax, GetSnapshotSpan(memberDeclarationSyntax), methodPerformanceInfo);
 #if DEBUG_SPANS
                 _methodAdornerLayer.DrawRedSpan(snapshotSpan);
 #endif
@@ -101,11 +101,11 @@ namespace VSIX_InSituVisualization
                     {
                         continue;
                     }
-                    var invocationPerformanceInfo = _telemetryDataMapper.GetMethodPerformanceInfo(invokedMethodSymbol);
+                    var invocationPerformanceInfo = _telemetryDataMapper.GetMethodPerformanceInfo(invocationExpressionSyntax, invokedMethodSymbol);
                     // Setting Caller and CalleeInformation
                     invocationPerformanceInfo.CallerPerformanceInfo.Add(methodPerformanceInfo);
                     methodPerformanceInfo.CalleePerformanceInfo.Add(invocationPerformanceInfo);
-                    _methodAdornerLayer.DrawMethodInvocationPerformanceInfo(invocationExpressionSyntax, GetSnapshotSpan(invocationExpressionSyntax), invocationPerformanceInfo);
+                    _methodAdornerLayer.DrawPerformanceInfo(invocationExpressionSyntax, GetSnapshotSpan(invocationExpressionSyntax), invocationPerformanceInfo);
                 }
             }
         }

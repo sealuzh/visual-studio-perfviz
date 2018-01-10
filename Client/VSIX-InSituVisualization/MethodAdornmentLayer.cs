@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -24,15 +24,18 @@ namespace VSIX_InSituVisualization
         /// </summary>
         private readonly IAdornmentLayer _layer;
 
+        private readonly IDictionary<CSharpSyntaxNode, MethodInvocationPerformanceInfoControl> _controls = new Dictionary<CSharpSyntaxNode, MethodInvocationPerformanceInfoControl>();
+
+
         public MethodAdornmentLayer(IWpfTextView textView)
         {
             _textView = textView ?? throw new ArgumentNullException(nameof(textView));
             _layer = textView.GetAdornmentLayer("MemberPerformanceAdorner");
         }
 
-        public void DrawMethodDeclarationPerformanceInfo(MethodDeclarationSyntax methodDeclarationSyntax, SnapshotSpan span, MethodPerformanceInfo methodPerformanceInfo)
+        public void DrawPerformanceInfo(CSharpSyntaxNode syntaxNode, SnapshotSpan span, MethodPerformanceInfo methodPerformanceInfo)
         {
-            if (methodDeclarationSyntax == null)
+            if (syntaxNode == null)
             {
                 return;
             }
@@ -51,50 +54,38 @@ namespace VSIX_InSituVisualization
             }
 
             // TODO RR: Take care of the old PerfViz Control? dispose?
-            var newControl = new MethodPerformanceInfoControl
+            UserControl control;
+            switch (syntaxNode)
             {
-                DataContext = new MethodPerformanceInfoControlViewModel(methodPerformanceInfo)
-            };
+                case MethodDeclarationSyntax _:
+                    control = new MethodPerformanceInfoControl
+                    {
+                        DataContext = new MethodPerformanceInfoControlViewModel(methodPerformanceInfo)
+                    };
+                    break;
+                default:
+                    control = new MethodInvocationPerformanceInfoControl
+                    {
+                        DataContext = new MethodInvocationPerformanceInfoControlViewModel(methodPerformanceInfo)
+                    };
+                    break;
+            }
+
+            // Removing old Controls
+            if (_controls.TryGetValue(syntaxNode, out var existingControl))
+            {
+                // remove old existing control
+                existingControl.DataContext = control.DataContext;
+                return;
+            }
+
             // Align the bounds of the text geometry
-            Canvas.SetLeft(newControl, geometry.Bounds.Right);
-            Canvas.SetTop(newControl, geometry.Bounds.Top);
+            Canvas.SetLeft(control, geometry.Bounds.Right);
+            Canvas.SetTop(control, geometry.Bounds.Top);
 
             // Drawing new Coontrol
-            DrawTextRelative(span, newControl);
-        }
-
-        public void DrawMethodInvocationPerformanceInfo(InvocationExpressionSyntax invocationExpressionSyntax, SnapshotSpan span, MethodPerformanceInfo methodPerformanceInfo)
-        {
-            if (invocationExpressionSyntax == null)
-            {
-                return;
-            }
-            if (methodPerformanceInfo == null)
-            {
-                return;
-            }
-            if (span == default(SnapshotSpan))
-            {
-                return;
-            }
-
-            var geometry = _textView.TextViewLines.GetMarkerGeometry(span);
-            if (geometry == null)
-            {
-                return;
-            }
-
-            // TODO RR: Take care of the old PerfViz Control? dispose?
-            var newControl = new MethodInvocationPerformanceInfoControl
-            {
-                DataContext = new MethodInvocationPerformanceInfoControlViewModel(methodPerformanceInfo)
-            };
-            // Align the bounds of the text geometry
-            Canvas.SetLeft(newControl, geometry.Bounds.Right);
-            Canvas.SetTop(newControl, geometry.Bounds.Top);
-
-            // Drawing new Coontrol
-            DrawTextRelative(span, newControl);
+            _layer.RemoveAdornmentsByVisualSpan(span);
+            _layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, control, null);
         }
 
         public void DrawRedSpan(SnapshotSpan span)
@@ -130,12 +121,6 @@ namespace VSIX_InSituVisualization
             Canvas.SetTop(image, geometry.Bounds.Top);
             _layer.RemoveAdornmentsByVisualSpan(span);
             _layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
-        }
-
-
-        public void DrawTextRelative(SnapshotSpan span, UIElement control)
-        {
-            _layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, control, null);
         }
     }
 }
