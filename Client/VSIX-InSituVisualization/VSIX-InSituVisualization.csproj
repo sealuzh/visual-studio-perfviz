@@ -55,7 +55,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="SetCollection.cs" />
     <Compile Include="DryIoc\AsyncExecutionFlowScopeContext.cs" />
     <Compile Include="DryIoc\Container.cs" />
     <Compile Include="DryIoc\FastExpressionCompiler.cs" />

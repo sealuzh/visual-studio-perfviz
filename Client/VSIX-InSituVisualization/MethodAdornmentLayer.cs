@@ -30,9 +30,6 @@ namespace VSIX_InSituVisualization
             _layer = textView.GetAdornmentLayer("MemberPerformanceAdorner");
         }
 
-        private readonly IDictionary<MethodDeclarationSyntax, MethodPerformanceInfoControl> _methodPerformanceInfoControls = new Dictionary<MethodDeclarationSyntax, MethodPerformanceInfoControl>();
-        private readonly IDictionary<InvocationExpressionSyntax, MethodInvocationPerformanceInfoControl> _methodInvocationPerformanceInfoControls = new Dictionary<InvocationExpressionSyntax, MethodInvocationPerformanceInfoControl>();
-
         public void DrawMethodDeclarationPerformanceInfo(MethodDeclarationSyntax methodDeclarationSyntax, SnapshotSpan span, MethodPerformanceInfo methodPerformanceInfo)
         {
             if (methodDeclarationSyntax == null)
@@ -64,15 +61,6 @@ namespace VSIX_InSituVisualization
 
             // Drawing new Coontrol
             DrawTextRelative(span, newControl);
-
-            // Removing old Controls
-            if (_methodPerformanceInfoControls.TryGetValue(methodDeclarationSyntax, out var existingControl))
-            {
-                // remove old existing control
-                _layer.RemoveAdornment(existingControl);
-                _methodPerformanceInfoControls.Remove(methodDeclarationSyntax);
-            }
-            _methodPerformanceInfoControls[methodDeclarationSyntax] = newControl;
         }
 
         public void DrawMethodInvocationPerformanceInfo(InvocationExpressionSyntax invocationExpressionSyntax, SnapshotSpan span, MethodPerformanceInfo methodPerformanceInfo)
@@ -107,16 +95,6 @@ namespace VSIX_InSituVisualization
 
             // Drawing new Coontrol
             DrawTextRelative(span, newControl);
-
-
-            // Removing old Controls
-            if (_methodInvocationPerformanceInfoControls.TryGetValue(invocationExpressionSyntax, out var existingControl))
-            {
-                // remove old existing control
-                _layer.RemoveAdornment(existingControl);
-                _methodInvocationPerformanceInfoControls.Remove(invocationExpressionSyntax);
-            }
-            _methodInvocationPerformanceInfoControls[invocationExpressionSyntax] = newControl;
         }
 
         public void DrawRedSpan(SnapshotSpan span)
@@ -150,7 +128,7 @@ namespace VSIX_InSituVisualization
             // Align the image with the top of the bounds of the text geometry
             Canvas.SetLeft(image, geometry.Bounds.Left);
             Canvas.SetTop(image, geometry.Bounds.Top);
-
+            _layer.RemoveAdornmentsByVisualSpan(span);
             _layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
         }
 
