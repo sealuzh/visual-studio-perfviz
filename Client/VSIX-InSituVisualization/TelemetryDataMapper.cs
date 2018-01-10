@@ -1,4 +1,6 @@
-﻿namespace VSIX_InSituVisualization
+﻿using Microsoft.CodeAnalysis;
+
+namespace VSIX_InSituVisualization
 {
 
     // ReSharper disable once ClassNeverInstantiated.Global Justification: IoC
@@ -10,8 +12,10 @@
         {
             _telemetryDataProvider = telemetryDataProvider;
         }
-        public PerformanceInfo GetPerformanceInfo(string memberIdentification)
+        public MethodPerformanceInfo GetMethodPerformanceInfo(IMethodSymbol methodSymbol)
         {
+            var memberIdentification = methodSymbol.MetadataName;
+
             // TODO RR: Use SyntaxAnnotation https://joshvarty.wordpress.com/2015/09/18/learn-roslyn-now-part-13-keeping-track-of-syntax-nodes-with-syntax-annotations/
             // TODO RR: Do one Dictionary per Class/File
             try
@@ -29,7 +33,7 @@
                 {
                     return null;
                 }
-                var performanceInfo = new PerformanceInfo(memberIdentification)
+                var performanceInfo = new MethodPerformanceInfo(methodSymbol)
                 {
                     MeanExecutionTime = averageMemberTelemetries[memberIdentification].Duration,
                     //TODO RR: integrate MemberCount in interface.

@@ -18,7 +18,7 @@
                 Width ="60" 
                 Height="17"
                 Command="{Binding Path=OpenDetailViewCommand}"
-                Content="{Binding Path=PerformanceInfo.MeanExecutionTime.TotalMilliseconds}"
+                Content="{Binding Path=MethodPerformanceInfo.MeanExecutionTime.TotalMilliseconds}"
                 ContentStringFormat="{}{0} ms "
                 VerticalContentAlignment="Top"
                 HorizontalContentAlignment="Right"

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis.Text;
@@ -60,7 +62,15 @@ namespace VSIX_InSituVisualization
             }
             var root = await Document.GetSyntaxRootAsync();
             var semanticModel = await Document.GetSemanticModelAsync();
-            DrawTelemetryData(root, semanticModel);
+            try
+            {
+                DrawTelemetryData(root, semanticModel);
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine(exception);
+            }
+
         }
 
         private void DrawTelemetryData(SyntaxNode root, SemanticModel semanticModel)
@@ -68,47 +78,42 @@ namespace VSIX_InSituVisualization
             var memberDeclarationSyntaxs = root.DescendantNodes().OfType<MethodDeclarationSyntax>();
             foreach (var memberDeclarationSyntax in memberDeclarationSyntaxs)
             {
+                // Method
+                var methodSymbol = semanticModel.GetDeclaredSymbol(memberDeclarationSyntax);
+                if (methodSymbol == null)
+                {
+                    continue;
+                }
                 //TODO RR: Hier muss zuerst auf neue Inhalte geprüft werden - ansonsten wenn einmal null --> immer null.
-                var performanceInfo = _telemetryDataMapper.GetPerformanceInfo(memberDeclarationSyntax.GetMemberIdentifier().ToString());
-                if (performanceInfo == null)
-                {
-                    continue;
-                }
-
-                var methodSyntaxSpan = _spanProvider.GetSpan(memberDeclarationSyntax);
-                if (methodSyntaxSpan == default(Span))
-                {
-                    continue;
-                }
-
+                var methodPerformanceInfo = _telemetryDataMapper.GetMethodPerformanceInfo(methodSymbol);
+                _methodAdornerLayer.DrawMethodDeclarationPerformanceInfo(memberDeclarationSyntax, GetSnapshotSpan(memberDeclarationSyntax), methodPerformanceInfo);
 #if DEBUG_SPANS
                 _methodAdornerLayer.DrawRedSpan(snapshotSpan);
 #endif
 
-                _methodAdornerLayer.DrawMethodDeclarationPerformanceInfo(memberDeclarationSyntax,
-                    new SnapshotSpan(_textView.TextSnapshot, methodSyntaxSpan), performanceInfo);
-
-                var invocationExpressionSyntaxs = memberDeclarationSyntax.DescendantNodes(node => true)
-                    .OfType<InvocationExpressionSyntax>();
+                // Invocations in Method
+                var invocationExpressionSyntaxs = memberDeclarationSyntax.DescendantNodes(node => true).OfType<InvocationExpressionSyntax>();
                 foreach (var invocationExpressionSyntax in invocationExpressionSyntaxs)
                 {
-                    var invocationPerformanceInfo =
-                        _telemetryDataMapper.GetPerformanceInfo(invocationExpressionSyntax.ToString());
-                    var invocationSynataxSpan = _spanProvider.GetSpan(invocationExpressionSyntax);
-                    var invocationSnapshotSpan = new SnapshotSpan(_textView.TextSnapshot, invocationSynataxSpan);
-                    _methodAdornerLayer.DrawRedSpan(invocationSnapshotSpan);
-                    _methodAdornerLayer.DrawMethodInvocationPerformanceInfo(invocationExpressionSyntax, invocationSnapshotSpan,
-                        invocationPerformanceInfo);
-                }
-
-                // Setting PerformanceInfo to Method from Caret
-                if (CaretPosition.Position > memberDeclarationSyntax.SpanStart &&
-                    CaretPosition.Position < memberDeclarationSyntax.FullSpan.End &&
-                    Settings.PerformanceInfoDetailWindowViewModel != null)
-                {
-                    Settings.PerformanceInfoDetailWindowViewModel.PerformanceInfo = performanceInfo;
+                    var invokedMethodSymbol = semanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol as IMethodSymbol;
+                    // Only Drawing invocationSymbols that refer to the current assembly. Not drawing Information about other assemblies...
+                    if (invokedMethodSymbol == null || !Equals(semanticModel.Compilation.Assembly, invokedMethodSymbol.ContainingAssembly) )
+                    {
+                        continue;
+                    }
+                    var invocationPerformanceInfo = _telemetryDataMapper.GetMethodPerformanceInfo(invokedMethodSymbol);
+                    // Setting Caller and CalleeInformation
+                    invocationPerformanceInfo.CallerPerformanceInfo.Add(methodPerformanceInfo);
+                    methodPerformanceInfo.CalleePerformanceInfo.Add(invocationPerformanceInfo);
+                    _methodAdornerLayer.DrawMethodInvocationPerformanceInfo(invocationExpressionSyntax, GetSnapshotSpan(invocationExpressionSyntax), invocationPerformanceInfo);
                 }
             }
+        }
+
+        private SnapshotSpan GetSnapshotSpan(CSharpSyntaxNode syntax)
+        {
+            var methodSyntaxSpan = _spanProvider.GetSpan(syntax);
+            return new SnapshotSpan(_textView.TextSnapshot, methodSyntaxSpan);
         }
     }
 }

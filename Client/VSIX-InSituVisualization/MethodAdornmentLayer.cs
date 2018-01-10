@@ -33,8 +33,20 @@ namespace VSIX_InSituVisualization
         private readonly IDictionary<MethodDeclarationSyntax, MethodPerformanceInfoControl> _methodPerformanceInfoControls = new Dictionary<MethodDeclarationSyntax, MethodPerformanceInfoControl>();
         private readonly IDictionary<InvocationExpressionSyntax, MethodInvocationPerformanceInfoControl> _methodInvocationPerformanceInfoControls = new Dictionary<InvocationExpressionSyntax, MethodInvocationPerformanceInfoControl>();
 
-        public void DrawMethodDeclarationPerformanceInfo(MethodDeclarationSyntax methodDeclarationSyntax, SnapshotSpan span, PerformanceInfo performanceInfo)
+        public void DrawMethodDeclarationPerformanceInfo(MethodDeclarationSyntax methodDeclarationSyntax, SnapshotSpan span, MethodPerformanceInfo methodPerformanceInfo)
         {
+            if (methodDeclarationSyntax == null)
+            {
+                return;
+            }
+            if (methodPerformanceInfo == null)
+            {
+                return;
+            }
+            if (span == default(SnapshotSpan))
+            {
+                return;
+            }
             var geometry = _textView.TextViewLines.GetMarkerGeometry(span);
             if (geometry == null)
             {
@@ -44,7 +56,7 @@ namespace VSIX_InSituVisualization
             // TODO RR: Take care of the old PerfViz Control? dispose?
             var newControl = new MethodPerformanceInfoControl
             {
-                DataContext = new MethodPerformanceInfoControlViewModel(performanceInfo)
+                DataContext = new MethodPerformanceInfoControlViewModel(methodPerformanceInfo)
             };
             // Align the bounds of the text geometry
             Canvas.SetLeft(newControl, geometry.Bounds.Right);
@@ -63,8 +75,21 @@ namespace VSIX_InSituVisualization
             _methodPerformanceInfoControls[methodDeclarationSyntax] = newControl;
         }
 
-        public void DrawMethodInvocationPerformanceInfo(InvocationExpressionSyntax invocationExpressionSyntax, SnapshotSpan span, PerformanceInfo performanceInfo)
+        public void DrawMethodInvocationPerformanceInfo(InvocationExpressionSyntax invocationExpressionSyntax, SnapshotSpan span, MethodPerformanceInfo methodPerformanceInfo)
         {
+            if (invocationExpressionSyntax == null)
+            {
+                return;
+            }
+            if (methodPerformanceInfo == null)
+            {
+                return;
+            }
+            if (span == default(SnapshotSpan))
+            {
+                return;
+            }
+
             var geometry = _textView.TextViewLines.GetMarkerGeometry(span);
             if (geometry == null)
             {
@@ -74,7 +99,7 @@ namespace VSIX_InSituVisualization
             // TODO RR: Take care of the old PerfViz Control? dispose?
             var newControl = new MethodInvocationPerformanceInfoControl
             {
-                DataContext = new MethodInvocationPerformanceInfoControlViewModel(performanceInfo)
+                DataContext = new MethodInvocationPerformanceInfoControlViewModel(methodPerformanceInfo)
             };
             // Align the bounds of the text geometry
             Canvas.SetLeft(newControl, geometry.Bounds.Right);

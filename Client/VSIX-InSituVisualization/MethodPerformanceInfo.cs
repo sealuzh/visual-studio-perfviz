@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using Microsoft.CodeAnalysis;
 
 namespace VSIX_InSituVisualization
 {
-    public class PerformanceInfo : ModelBase
+    public class MethodPerformanceInfo : ModelBase
     {
-
+        private readonly IMethodSymbol _methodSymbol;
         private int _numberOfCalls;
         private string _mostFrequentCallerName;
         private int _recursionDepth;
@@ -14,12 +15,16 @@ namespace VSIX_InSituVisualization
         private TimeSpan _meanExecutionTime;
         private int _memberCount;
 
-        public PerformanceInfo(string identifierName)
+        public MethodPerformanceInfo(IMethodSymbol methodSymbol)
         {
-            IdentifierName = identifierName;
+            _methodSymbol = methodSymbol ?? throw new ArgumentNullException(nameof(methodSymbol));
+            MethodName = methodSymbol.MetadataName;
+            ContainingType = methodSymbol.ContainingType?.Name;
         }
 
-        public string IdentifierName { get; }
+        public string MethodName { get; }
+
+        public string ContainingType { get; }
 
         public int NumberOfCalls
         {
@@ -68,9 +73,9 @@ namespace VSIX_InSituVisualization
             set => SetProperty(ref _memberCount, value);
         }
 
-        public virtual ObservableCollection<PerformanceInfo> CallerPerformanceInfo { get; } = new ObservableCollection<PerformanceInfo>();
+        public ObservableCollection<MethodPerformanceInfo> CallerPerformanceInfo { get; } = new SetCollection<MethodPerformanceInfo>();
 
-        public virtual ObservableCollection<PerformanceInfo> CalleePerformanceInfo { get; } = new ObservableCollection<PerformanceInfo>();
+        public ObservableCollection<MethodPerformanceInfo> CalleePerformanceInfo { get; } = new SetCollection<MethodPerformanceInfo>();
 
     }
 }

@@ -10,38 +10,13 @@ namespace VSIX_InSituVisualization
     internal sealed class CustomSpanProvider
     {
 
-        public Span GetSpan(InvocationExpressionSyntax invocationExpressionSyntax)
-        {
-            var lineSyntax = GetLineSyntax(invocationExpressionSyntax);
-            return Span.FromBounds(lineSyntax.SpanStart, lineSyntax.FullSpan.End);
-        }
-
-        private SyntaxNode GetLineSyntax(SyntaxNode syntaxNode)
-        {
-            if (syntaxNode.Parent == null)
-            {
-                return syntaxNode;
-            }
-
-            var parent = syntaxNode.Parent;
-            if (parent.HasTrailingTrivia)
-            {
-                var syntaxTriviaList = parent.GetTrailingTrivia();
-                foreach (var trailingTrivia in syntaxTriviaList)
-                {
-                    if (trailingTrivia.ToFullString().Contains("\n"))
-                    {
-                        return parent;
-                    }
-                }
-            }
-            return GetLineSyntax(parent);
-        }
-
-        public Span GetSpan(MemberDeclarationSyntax memberDeclarationSyntax)
+        public Span GetSpan(CSharpSyntaxNode memberDeclarationSyntax)
         {
             switch (memberDeclarationSyntax)
             {
+                case InvocationExpressionSyntax invocationExpressionSyntax:
+                    var lineSyntax = GetLineSyntaxNode(invocationExpressionSyntax);
+                    return Span.FromBounds(lineSyntax.SpanStart, lineSyntax.FullSpan.End);
                 case MethodDeclarationSyntax methodDeclarationSyntax:
                     return GetMethodSpan(methodDeclarationSyntax);
                 case ConstructorDeclarationSyntax constructorDeclarationSyntax:
@@ -52,6 +27,23 @@ namespace VSIX_InSituVisualization
                     Debug.WriteLine($"MemberDeclarationSyntax not implemented: {memberDeclarationSyntax.GetType().Name}");
                     return default(Span);
             }
+        }
+
+
+        private static SyntaxNode GetLineSyntaxNode(SyntaxNode syntaxNode)
+        {
+            var syntaxTriviaList = syntaxNode.GetTrailingTrivia();
+            foreach (var trailingTrivia in syntaxTriviaList)
+            {
+                if (trailingTrivia.ToFullString().Contains("\n"))
+                {
+                    return syntaxNode;
+                }
+            }
+
+            var parent = syntaxNode.Parent;
+            // ReSharper disable once TailRecursiveCall
+            return parent == null ? syntaxNode : GetLineSyntaxNode(parent);
         }
 
         private static Span GetConstructorSpan(ConstructorDeclarationSyntax constructorDeclarationSyntax)

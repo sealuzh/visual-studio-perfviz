@@ -2,19 +2,19 @@
 {
     public class PerformanceInfoDetailWindowViewModel : ViewModelBase
     {
-        private PerformanceInfo _performanceInfo;
+        private MethodPerformanceInfo _methodPerformanceInfo;
 
-        public PerformanceInfo PerformanceInfo
+        public MethodPerformanceInfo MethodPerformanceInfo
         {
-            get => _performanceInfo;
+            get => _methodPerformanceInfo;
             set
             {
-                SetProperty(ref _performanceInfo, value);
+                SetProperty(ref _methodPerformanceInfo, value);
                 OnPropertyChanged(nameof(MemberName));
             }
         }
 
-        public string MemberName => PerformanceInfo?.IdentifierName;
+        public string MemberName => MethodPerformanceInfo?.MethodName;
 
     }
 }

@@ -33,29 +33,31 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Column="0" Grid.Row="0" >
-            <Label FontWeight="Bold">Member Name</Label>
+            <Label FontWeight="Bold">Method</Label>
+            <Label FontWeight="Bold">Type</Label>
             <Label FontWeight="Bold">MemberTime</Label>
             <Label FontWeight="Bold">Mean Time</Label>
             <Label FontWeight="Bold">Number of Calls</Label>
         </StackPanel>
         <StackPanel Grid.Column="1" Grid.Row="0">
             <Label Content="{Binding MemberName}" />
+            <Label Content="{Binding MethodPerformanceInfo.ContainingType}" />
             <WrapPanel>
-                <Label Content="{Binding PerformanceInfo.TotalExecutionTime}" ContentStringFormat="{}{0:hh}:{0:mm}:{0:ss}" />
-                <Label Content="{Binding PerformanceInfo.MemberTime}" ContentStringFormat="{} ({0:P2})" />
+                <Label Content="{Binding MethodPerformanceInfo.TotalExecutionTime}" ContentStringFormat="{}{0:hh}:{0:mm}:{0:ss}" />
+                <Label Content="{Binding MethodPerformanceInfo.MemberTime}" ContentStringFormat="{} ({0:P2})" />
             </WrapPanel>
-            <Label Content="{Binding PerformanceInfo.MeanExecutionTime}" ContentStringFormat="{}{0:hh}:{0:mm}:{0:ss}" />
-            <Label Content="{Binding PerformanceInfo.NumberOfCalls}" />
+            <Label Content="{Binding MethodPerformanceInfo.MeanExecutionTime}" ContentStringFormat="{}{0:hh}:{0:mm}:{0:ss}" />
+            <Label Content="{Binding MethodPerformanceInfo.NumberOfCalls}" />
         </StackPanel>
         <Separator Grid.Column ="0" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Top" Foreground="{DynamicResource VsBrush.WindowText}"/>
 
         <StackPanel Grid.Column="0" Grid.Row="1">
             <Label  FontWeight="Bold">Callers</Label>
-            <ListBox ItemsSource="{Binding PerformanceInfo.CallerPerformanceInfo}" >
+            <ListBox ItemsSource="{Binding MethodPerformanceInfo.CallerPerformanceInfo}" >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <WrapPanel>
-                            <Label Content="{Binding IdentifierName}"/>
+                            <Label Content="{Binding MethodName}"/>
                             <Label Content="{Binding MemberTime}" ContentStringFormat="{} ({0:P2})" />
                         </WrapPanel>
                     </DataTemplate>
@@ -65,11 +67,11 @@
 
         <StackPanel Grid.Column="1" Grid.Row="1">
             <Label FontWeight="Bold">Callees</Label>
-            <ListBox ItemsSource="{Binding PerformanceInfo.CalleePerformanceInfo}">
+            <ListBox ItemsSource="{Binding MethodPerformanceInfo.CalleePerformanceInfo}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <WrapPanel>
-                            <Label Content="{Binding IdentifierName}"/>
+                            <Label Content="{Binding MethodName}"/>
                             <Label Content="{Binding MemberTime}" ContentStringFormat="{} ({0:P2})" />
                         </WrapPanel>
                     </DataTemplate>
