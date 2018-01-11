@@ -13,8 +13,8 @@ namespace VSIX_InSituVisualization
             MostFrequentCallerName = "Any";
             RecursionDepth = Random.Next();
             MemberTime = Random.NextDouble();
-            TotalExecutionTime = TimeSpan.FromMinutes(Random.Next());
-            MeanExecutionTime = TimeSpan.FromMilliseconds(Random.Next());
+            TotalExecutionTime = TimeSpan.FromMinutes(Random.Next(100));
+            MeanExecutionTime = TimeSpan.FromMilliseconds(Random.Next(100));
         }
     }
 }

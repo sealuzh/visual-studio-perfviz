@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 
 namespace VSIX_InSituVisualization
 {
@@ -13,7 +12,7 @@ namespace VSIX_InSituVisualization
         {
             _telemetryDataProvider = telemetryDataProvider;
         }
-        public MethodPerformanceInfo GetMethodPerformanceInfo(CSharpSyntaxNode syntaxNode, IMethodSymbol methodSymbol)
+        public MethodPerformanceInfo GetMethodPerformanceInfo(IMethodSymbol methodSymbol)
         {
             var memberIdentification = methodSymbol.MetadataName;
 
