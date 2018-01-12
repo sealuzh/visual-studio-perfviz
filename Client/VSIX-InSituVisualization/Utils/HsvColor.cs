@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Media;
 
-namespace VSIX_InSituVisualization
+namespace VSIX_InSituVisualization.Utils
 {
     public class HsvColor
     {

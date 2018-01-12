@@ -1,4 +1,6 @@
-﻿namespace VSIX_InSituVisualization.ViewModels
+﻿using VSIX_InSituVisualization.Model;
+
+namespace VSIX_InSituVisualization.ViewModels
 {
     public class PerformanceInfoDetailWindowViewModel : ViewModelBase
     {

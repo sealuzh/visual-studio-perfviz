@@ -1,6 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
+using VSIX_InSituVisualization.Model;
+using VSIX_InSituVisualization.TelemetryCollector;
 
-namespace VSIX_InSituVisualization
+namespace VSIX_InSituVisualization.TelemetryMapper
 {
 
     // ReSharper disable once ClassNeverInstantiated.Global Justification: IoC

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 using System.Windows.Media;
+using VSIX_InSituVisualization.Model;
 
 namespace VSIX_InSituVisualization.ViewModels
 {

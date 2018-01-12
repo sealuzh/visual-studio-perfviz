@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace VSIX_InSituVisualization
+namespace VSIX_InSituVisualization.Model
 {
-    public abstract class ViewModelBase : INotifyPropertyChanged
+    public class ModelBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

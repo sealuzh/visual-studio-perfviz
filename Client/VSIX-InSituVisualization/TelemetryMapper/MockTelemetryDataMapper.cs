@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
+using VSIX_InSituVisualization.Model;
 
-namespace VSIX_InSituVisualization
+namespace VSIX_InSituVisualization.TelemetryMapper
 {
     /// <summary>
     /// Returns Mock MethodTelemetry Data

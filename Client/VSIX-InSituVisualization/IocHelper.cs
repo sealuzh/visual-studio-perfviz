@@ -1,6 +1,7 @@
 ﻿#define TestMapping
 using DryIoc;
 using VSIX_InSituVisualization.TelemetryCollector;
+using VSIX_InSituVisualization.TelemetryMapper;
 
 namespace VSIX_InSituVisualization
 {

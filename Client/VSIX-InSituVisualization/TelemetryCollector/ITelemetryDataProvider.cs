@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using VSIX_InSituVisualization.TelemetryCollector;
 
-namespace VSIX_InSituVisualization
+namespace VSIX_InSituVisualization.TelemetryCollector
 {
     internal interface ITelemetryDataProvider
     {

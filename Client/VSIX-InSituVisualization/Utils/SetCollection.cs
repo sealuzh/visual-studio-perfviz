@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace VSIX_InSituVisualization
+namespace VSIX_InSituVisualization.Utils
 {
     public class SetCollection<T> : ObservableCollection<T>
     {

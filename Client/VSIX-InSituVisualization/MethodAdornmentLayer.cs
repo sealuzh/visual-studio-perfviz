@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using VSIX_InSituVisualization.Model;
 using VSIX_InSituVisualization.ViewModels;
 using VSIX_InSituVisualization.Views;
 
@@ -23,9 +23,6 @@ namespace VSIX_InSituVisualization
         /// The layer of the adornment.
         /// </summary>
         private readonly IAdornmentLayer _layer;
-
-        private readonly IDictionary<CSharpSyntaxNode, MethodInvocationPerformanceInfoControl> _controls = new Dictionary<CSharpSyntaxNode, MethodInvocationPerformanceInfoControl>();
-
 
         public MethodAdornmentLayer(IWpfTextView textView)
         {
@@ -69,14 +66,6 @@ namespace VSIX_InSituVisualization
                         DataContext = new MethodInvocationPerformanceInfoControlViewModel(methodPerformanceInfo)
                     };
                     break;
-            }
-
-            // Removing old Controls
-            if (_controls.TryGetValue(syntaxNode, out var existingControl))
-            {
-                // remove old existing control
-                existingControl.DataContext = control.DataContext;
-                return;
             }
 
             // Align the bounds of the text geometry

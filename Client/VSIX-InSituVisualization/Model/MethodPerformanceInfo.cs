@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using Microsoft.CodeAnalysis;
+using VSIX_InSituVisualization.Utils;
 
-namespace VSIX_InSituVisualization
+namespace VSIX_InSituVisualization.Model
 {
     public class MethodPerformanceInfo : ModelBase
     {

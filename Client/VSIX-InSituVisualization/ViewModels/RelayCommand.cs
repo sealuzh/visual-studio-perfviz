@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace VSIX_InSituVisualization
+namespace VSIX_InSituVisualization.ViewModels
 {
     public class RelayCommand<T> : ICommand
     {

@@ -1,11 +1,8 @@
 ﻿using System.ComponentModel;
 using Microsoft.VisualStudio.Shell;
 using VSIX_InSituVisualization.TelemetryCollector;
-using System;
-using System.Diagnostics;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace VSIX_InSituVisualization
+namespace VSIX_InSituVisualization.Views
 {
 
     /// <summary>

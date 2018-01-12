@@ -117,7 +117,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                 {
                     timeList.Add(telemetry.Duration);
                 }
-                averagedDictionary.Add(method.Values.ElementAt(0).DocumentationCommentId, new AveragedMethodTelemetry(method.Values.ElementAt(0).DocumentationCommentId, TimeSpan.FromMilliseconds(timeList.Average()), timeList.Count()));
+                averagedDictionary.Add(method.Values.ElementAt(0).DocumentationCommentId, new AveragedMethodTelemetry(method.Values.ElementAt(0).DocumentationCommentId, TimeSpan.FromMilliseconds(timeList.Average()), timeList.Count));
             }
             PersistanceService.IsAverageTelemetryLock = false;
             return averagedDictionary;
