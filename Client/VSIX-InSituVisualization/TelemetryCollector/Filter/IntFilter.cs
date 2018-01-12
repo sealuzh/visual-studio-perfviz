@@ -33,9 +33,9 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
 
 
 
-        public IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> ApplyFilter(IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> inDictionary)
+        public IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> ApplyFilter(IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> inDictionary)
         {
-            var outDictionary = new Dictionary<string, IDictionary<string, ConcreteTelemetryMember>>();
+            var outDictionary = new Dictionary<string, IDictionary<string, ConcreteMethodTelemetry>>();
             foreach (var kvpMethod in inDictionary)
             {
                 if (_isGlobalFilter)
@@ -46,7 +46,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
                 {
                     if (kvpMethod.Key != _toFilterMethodFullName)
                     {
-                        outDictionary.Add(kvpMethod.Key, new Dictionary<string, ConcreteTelemetryMember>(kvpMethod.Value));
+                        outDictionary.Add(kvpMethod.Key, new Dictionary<string, ConcreteMethodTelemetry>(kvpMethod.Value));
                     }
                     else
                     {
@@ -57,9 +57,9 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
             return outDictionary;
         }
 
-        private IDictionary<string, ConcreteTelemetryMember> ApplyFilterMethodLevel(string kvpMethodKey, IDictionary<string, ConcreteTelemetryMember> inDictionary)
+        private IDictionary<string, ConcreteMethodTelemetry> ApplyFilterMethodLevel(string kvpMethodKey, IDictionary<string, ConcreteMethodTelemetry> inDictionary)
         {
-            var outDictionary = new Dictionary<string, ConcreteTelemetryMember>();
+            var outDictionary = new Dictionary<string, ConcreteMethodTelemetry>();
             foreach (var kvpMember in inDictionary)
             {
                 var memberPropertyValue = (int)_filterProperty.GetPropertyInfo().GetValue(kvpMember.Value);

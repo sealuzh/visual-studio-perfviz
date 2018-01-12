@@ -15,10 +15,10 @@ namespace VSIX_InSituVisualization.TelemetryCollector
     {
         //private readonly AzureTelemetry _azureTelemetry;
 
-        private static IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> _allMemberTelemetries;
-        private static IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> _currentMemberTelemetries;
+        private static IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> _allMemberTelemetries;
+        private static IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> _currentMemberTelemetries;
 
-        private Dictionary<string, AveragedTelemetry> _currentAveragedMemberTelemetry;
+        private Dictionary<string, AveragedMethodTelemetry> _currentAveragedMemberTelemetry;
         private const int Timerinterval = 5000;
 
         private readonly FilterController _filterController;
@@ -35,7 +35,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
 
             _dataPullingServices = new List<IDataPullingService> { new InsightsExternalReferencesRestApiDataPullingService() };
             //TODO JO: After FetchingSystemCacheData is called, the store is not updated.
-            _allMemberTelemetries = new Dictionary<string, IDictionary<string, ConcreteTelemetryMember>>();
+            _allMemberTelemetries = new Dictionary<string, IDictionary<string, ConcreteMethodTelemetry>>();
             //_allMemberTelemetries = PersistanceService.FetchSystemCacheData();
             
             //Setup Timer Task that automatically updates the store via REST
@@ -58,14 +58,14 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                     await newRestData;
                     await PersistanceService.AwaitConcreteMemberTelemetriesLock();
                     PersistanceService.IsConcreteMemberTelemetriesLock = true;
-                    foreach (ConcreteTelemetryMember restReturnMember in newRestData.Result)
+                    foreach (ConcreteMethodTelemetry restReturnMember in newRestData.Result)
                     {
-                        if (_allMemberTelemetries.ContainsKey(restReturnMember.MemberName))
+                        if (_allMemberTelemetries.ContainsKey(restReturnMember.DocumentationCommentId))
                         {
-                            if (!_allMemberTelemetries[restReturnMember.MemberName].ContainsKey(restReturnMember.Id))
+                            if (!_allMemberTelemetries[restReturnMember.DocumentationCommentId].ContainsKey(restReturnMember.Id))
                             {
                                 //element is missing --> new element. Add it to the dict
-                                _allMemberTelemetries[restReturnMember.MemberName]
+                                _allMemberTelemetries[restReturnMember.DocumentationCommentId]
                                     .Add(restReturnMember.Id, restReturnMember);
                                 updateOccured = true;
                             } //else: already exists, no need to add it
@@ -75,11 +75,11 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                         {
                             //case methodname does not exist: add a new dict for the new method, put the element inside.
                             var newDict =
-                                new Dictionary<string, ConcreteTelemetryMember>
+                                new Dictionary<string, ConcreteMethodTelemetry>
                                 {
                                     {restReturnMember.Id, restReturnMember}
                                 };
-                            _allMemberTelemetries.Add(restReturnMember.MemberName, newDict);
+                            _allMemberTelemetries.Add(restReturnMember.DocumentationCommentId, newDict);
                             updateOccured = true;
                         }
 
@@ -104,11 +104,11 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             _currentAveragedMemberTelemetry = await TakeAverageOfDict(_currentMemberTelemetries);
         }
 
-        private static async Task<Dictionary<string, AveragedTelemetry>> TakeAverageOfDict(IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> inputDict)
+        private static async Task<Dictionary<string, AveragedMethodTelemetry>> TakeAverageOfDict(IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> inputDict)
         {
             await PersistanceService.AwaitAverageMemberTelemetryLock();
             PersistanceService.IsAverageTelemetryLock = true;
-            var averagedDictionary = new Dictionary<string, AveragedTelemetry>();
+            var averagedDictionary = new Dictionary<string, AveragedMethodTelemetry>();
             foreach (var method in inputDict.Values)
             {
                 var timeList = new List<double>();
@@ -117,15 +117,15 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                 {
                     timeList.Add(telemetry.Duration);
                 }
-                averagedDictionary.Add(method.Values.ElementAt(0).MemberName, new AveragedTelemetry(method.Values.ElementAt(0).MemberName, method.Values.ElementAt(0).NameSpace, TimeSpan.FromMilliseconds(timeList.Average()), timeList.Count()));
+                averagedDictionary.Add(method.Values.ElementAt(0).DocumentationCommentId, new AveragedMethodTelemetry(method.Values.ElementAt(0).DocumentationCommentId, TimeSpan.FromMilliseconds(timeList.Average()), timeList.Count()));
             }
             PersistanceService.IsAverageTelemetryLock = false;
             return averagedDictionary;
         }
 
-        public Dictionary<string, AveragedTelemetry> GetAveragedMemberTelemetry()
+        public Dictionary<string, AveragedMethodTelemetry> GetAveragedMemberTelemetry()
         {
-            return !PersistanceService.IsAverageTelemetryLock ? new Dictionary<string, AveragedTelemetry>(_currentAveragedMemberTelemetry) : null;
+            return !PersistanceService.IsAverageTelemetryLock ? new Dictionary<string, AveragedMethodTelemetry>(_currentAveragedMemberTelemetry) : null;
         }
 
         public FilterController GetFilterController()

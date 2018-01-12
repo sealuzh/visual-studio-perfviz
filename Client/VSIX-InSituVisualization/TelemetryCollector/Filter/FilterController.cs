@@ -18,7 +18,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
             _activeFilters = new List<IFilter>();
             _filterProperties = new List<FilterProperty>();
 
-            var propertyInfoArray = typeof(ConcreteTelemetryMember).GetProperties();
+            var propertyInfoArray = typeof(ConcreteMethodTelemetry).GetProperties();
             foreach (var prop in propertyInfoArray)
             {
                 switch (prop.PropertyType.ToString())
@@ -38,7 +38,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
             }
         }
 
-        //Returs a list of FilterPropertyObjects that describe all possible variables in ConcreteTelemetryMember to filter on.
+        //Returs a list of FilterPropertyObjects that describe all possible variables in ConcreteMethodTelemetry to filter on.
         public List<FilterProperty> GetFilterProperties()
         {
             return _filterProperties;
@@ -91,13 +91,13 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
         }
 
         //Applies the filters currently stored in _activeFilters.
-        public IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> ApplyFilters(IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> inDictionary)
+        public IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> ApplyFilters(IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> inDictionary)
         {
             if (_activeFilters.Count <= 0)
             {
                 return inDictionary;
             }
-            IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> outDictionary = new Dictionary<string, IDictionary<string, ConcreteTelemetryMember>>(inDictionary);
+            IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> outDictionary = new Dictionary<string, IDictionary<string, ConcreteMethodTelemetry>>(inDictionary);
             foreach (var filter in _activeFilters)
             {
                 outDictionary = filter.ApplyFilter(outDictionary);

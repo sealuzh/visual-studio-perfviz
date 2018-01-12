@@ -9,7 +9,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector.DataPulling
     class InsightsProfilerRestApiDataPullingService : IDataPullingService
     {
 
-        Task<IList<ConcreteTelemetryMember>> IDataPullingService.GetNewTelemetriesTaskAsync()
+        Task<IList<ConcreteMethodTelemetry>> IDataPullingService.GetNewTelemetriesTaskAsync()
         {
             throw new NotImplementedException();
             

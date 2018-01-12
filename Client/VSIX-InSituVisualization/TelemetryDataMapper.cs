@@ -12,9 +12,10 @@ namespace VSIX_InSituVisualization
         {
             _telemetryDataProvider = telemetryDataProvider;
         }
+
         public MethodPerformanceInfo GetMethodPerformanceInfo(IMethodSymbol methodSymbol)
         {
-            var memberIdentification = methodSymbol.MetadataName;
+            var documentationCommentId = methodSymbol.GetDocumentationCommentId();
 
             // TODO RR: Use SyntaxAnnotation https://joshvarty.wordpress.com/2015/09/18/learn-roslyn-now-part-13-keeping-track-of-syntax-nodes-with-syntax-annotations/
             // TODO RR: Do one Dictionary per Class/File
@@ -29,15 +30,15 @@ namespace VSIX_InSituVisualization
                     return null;
                 }
                 // if no information given for this method it does not exist in dict
-                if (!averageMemberTelemetries.ContainsKey(memberIdentification))
+                if (!averageMemberTelemetries.ContainsKey(documentationCommentId))
                 {
                     return null;
                 }
                 var performanceInfo = new MethodPerformanceInfo(methodSymbol)
                 {
-                    MeanExecutionTime = averageMemberTelemetries[memberIdentification].Duration,
+                    MeanExecutionTime = averageMemberTelemetries[documentationCommentId].Duration,
                     //TODO RR: integrate MemberCount in interface.
-                    MemberCount = averageMemberTelemetries[memberIdentification].MemberCount
+                    MemberCount = averageMemberTelemetries[documentationCommentId].MemberCount
                 };
                 return performanceInfo;
             }

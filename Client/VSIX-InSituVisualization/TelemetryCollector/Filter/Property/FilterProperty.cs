@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace VSIX_InSituVisualization.TelemetryCollector.Filter.Property
 {
-    //Contains all info concerning one variable in ConcreteTelemetryMember. Intended to be used statically.
+    //Contains all info concerning one variable in ConcreteMethodTelemetry. Intended to be used statically.
     abstract class FilterProperty : IFilterProperty
     {
         public abstract List<string> GetFilterParameterList();

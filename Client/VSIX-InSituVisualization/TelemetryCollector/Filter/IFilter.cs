@@ -4,6 +4,6 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
 {
     interface IFilter
     {
-        IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> ApplyFilter(IDictionary<string, IDictionary<string, ConcreteTelemetryMember>> inDictionary);
+        IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> ApplyFilter(IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> inDictionary);
     }
 }

@@ -5,6 +5,6 @@ namespace VSIX_InSituVisualization
 {
     internal interface ITelemetryDataProvider
     {
-        Dictionary<string, AveragedTelemetry> GetAveragedMemberTelemetry();
+        Dictionary<string, AveragedMethodTelemetry> GetAveragedMemberTelemetry();
     }
 }

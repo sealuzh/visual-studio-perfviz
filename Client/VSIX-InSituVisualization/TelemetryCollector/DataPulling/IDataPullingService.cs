@@ -8,6 +8,6 @@ namespace VSIX_InSituVisualization.TelemetryCollector.DataPulling
 {
     interface IDataPullingService
     {
-        Task<IList<ConcreteTelemetryMember>> GetNewTelemetriesTaskAsync();
+        Task<IList<ConcreteMethodTelemetry>> GetNewTelemetriesTaskAsync();
     }
 }
