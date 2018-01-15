@@ -1,29 +1,23 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 using VSIX_InSituVisualization.TelemetryMapper;
 
 namespace VSIX_InSituVisualization
 {
-    class PerformanceSyntaxWalker : CSharpSyntaxWalker
+    internal class PerformanceSyntaxWalker : CSharpSyntaxWalker
     {
-        private readonly IWpfTextView _textView;
         private readonly SemanticModel _semanticModel;
         private readonly ITelemetryDataMapper _telemetryDataMapper;
         private readonly MethodAdornmentLayer _methodAdornmentLayer;
-        private readonly CustomSpanProvider _spanProvider;
 
-        public PerformanceSyntaxWalker(IWpfTextView textView, SemanticModel semanticModel, ITelemetryDataMapper telemetryDataMapper, MethodAdornmentLayer methodAdornmentLayer, CustomSpanProvider spanProvider)
+        public PerformanceSyntaxWalker(SemanticModel semanticModel, ITelemetryDataMapper telemetryDataMapper, MethodAdornmentLayer methodAdornmentLayer)
         {
-            _textView = textView;
-            _semanticModel = semanticModel;
-            _telemetryDataMapper = telemetryDataMapper;
-            _methodAdornmentLayer = methodAdornmentLayer;
-            _spanProvider = spanProvider;
+            _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
+            _telemetryDataMapper = telemetryDataMapper ?? throw new ArgumentNullException(nameof(telemetryDataMapper));
+            _methodAdornmentLayer = methodAdornmentLayer ?? throw new ArgumentNullException(nameof(methodAdornmentLayer)); ;
         }
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax memberDeclarationSyntax)
@@ -36,11 +30,7 @@ namespace VSIX_InSituVisualization
             }
 
             var methodPerformanceInfo = _telemetryDataMapper.GetMethodPerformanceInfo(methodSymbol);
-            _methodAdornmentLayer.DrawMethodPerformanceInfo(GetSnapshotSpan(memberDeclarationSyntax), methodPerformanceInfo);
-
-#if DEBUG_SPANS
-            _methodAdornerLayer.DrawRedSpan(snapshotSpan);
-#endif
+            _methodAdornmentLayer.DrawMethodPerformanceInfo(memberDeclarationSyntax, methodPerformanceInfo);
 
             // Invocations in Method
             var invocationExpressionSyntaxs = memberDeclarationSyntax.DescendantNodes(node => true).OfType<InvocationExpressionSyntax>();
@@ -56,18 +46,11 @@ namespace VSIX_InSituVisualization
                 // Setting Caller and CalleeInformation
                 invocationPerformanceInfo.CallerPerformanceInfo.Add(methodPerformanceInfo);
                 methodPerformanceInfo.CalleePerformanceInfo.Add(invocationPerformanceInfo);
-                _methodAdornmentLayer.DrawMethodInvocationPerformanceInfo(GetSnapshotSpan(invocationExpressionSyntax), invocationPerformanceInfo);
+                _methodAdornmentLayer.DrawMethodInvocationPerformanceInfo(invocationExpressionSyntax, invocationPerformanceInfo);
             }
 
             // Loops
             // TODO RR:
-        }
-
-
-        private SnapshotSpan GetSnapshotSpan(CSharpSyntaxNode syntax)
-        {
-            var methodSyntaxSpan = _spanProvider.GetSpan(syntax);
-            return new SnapshotSpan(_textView.TextSnapshot, methodSyntaxSpan);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using VSIX_InSituVisualization.Model;
@@ -11,8 +12,9 @@ using VSIX_InSituVisualization.Views;
 
 namespace VSIX_InSituVisualization
 {
-    public class MethodAdornmentLayer
+    internal class MethodAdornmentLayer
     {
+        private readonly CustomSpanProvider _spanProvider;
 
         /// <summary>
         /// Text textView where the adornment is created.
@@ -24,13 +26,14 @@ namespace VSIX_InSituVisualization
         /// </summary>
         private readonly IAdornmentLayer _layer;
 
-        public MethodAdornmentLayer(IWpfTextView textView)
+        public MethodAdornmentLayer(IWpfTextView textView, CustomSpanProvider spanProvider)
         {
             _textView = textView ?? throw new ArgumentNullException(nameof(textView));
             _layer = textView.GetAdornmentLayer("MemberPerformanceAdorner");
+            _spanProvider = spanProvider ?? throw new ArgumentNullException(nameof(spanProvider));
         }
 
-        public void DrawMethodPerformanceInfo(SnapshotSpan span, MethodPerformanceInfo methodPerformanceInfo)
+        public void DrawMethodPerformanceInfo(CSharpSyntaxNode node, MethodPerformanceInfo methodPerformanceInfo)
         {
             if (methodPerformanceInfo == null)
             {
@@ -42,10 +45,10 @@ namespace VSIX_InSituVisualization
             {
                 DataContext = new MethodPerformanceInfoControlViewModel(methodPerformanceInfo)
             };
-            DrawControl(span, control);
+            DrawControl(node, control);
         }
 
-        public void DrawMethodInvocationPerformanceInfo(SnapshotSpan span, MethodPerformanceInfo methodPerformanceInfo)
+        public void DrawMethodInvocationPerformanceInfo(CSharpSyntaxNode node, MethodPerformanceInfo methodPerformanceInfo)
         {
             if (methodPerformanceInfo == null)
             {
@@ -57,21 +60,28 @@ namespace VSIX_InSituVisualization
             {
                 DataContext = new MethodInvocationPerformanceInfoControlViewModel(methodPerformanceInfo)
             };
-            DrawControl(span, control);
+            DrawControl(node, control);
         }
 
-        public void DrawLoopPerformanceInfo(SnapshotSpan span, IList<MethodPerformanceInfo> methodPerformanceInfos)
+        public void DrawLoopPerformanceInfo(CSharpSyntaxNode node, IList<MethodPerformanceInfo> methodPerformanceInfos)
         {
             var control = new LoopPerformanceInfoControl
             {
                 DataContext = new LoopPerformanceInfoControlViewModel(methodPerformanceInfos)
             };
 
-            DrawControl(span, control);
+            DrawControl(node, control);
         }
 
-        private void DrawControl(SnapshotSpan span, UIElement control)
+        private SnapshotSpan GetSnapshotSpan(CSharpSyntaxNode syntax)
         {
+            var methodSyntaxSpan = _spanProvider.GetSpan(syntax);
+            return new SnapshotSpan(_textView.TextSnapshot, methodSyntaxSpan);
+        }
+
+        private void DrawControl(CSharpSyntaxNode node, UIElement control)
+        {
+            var span = GetSnapshotSpan(node);
             if (span == default(SnapshotSpan))
             {
                 return;

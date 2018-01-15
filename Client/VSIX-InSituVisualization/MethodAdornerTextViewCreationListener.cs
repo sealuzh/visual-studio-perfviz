@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using DryIoc;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
+using VSIX_InSituVisualization.TelemetryMapper;
 
 namespace VSIX_InSituVisualization
 {
@@ -43,6 +44,7 @@ namespace VSIX_InSituVisualization
             var adornerResolveFunc = IocHelper.Container.Resolve<Func<IWpfTextView, MemberPerformanceAdorner>>();
             var adorner = adornerResolveFunc(textView);
         }
+
 
         #endregion
     }

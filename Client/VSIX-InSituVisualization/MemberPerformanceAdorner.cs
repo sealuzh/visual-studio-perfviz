@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
+using DryIoc;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using VSIX_InSituVisualization.TelemetryMapper;
 
 namespace VSIX_InSituVisualization
@@ -17,13 +15,10 @@ namespace VSIX_InSituVisualization
     /// </summary>
     internal sealed class MemberPerformanceAdorner
     {
-        private readonly CustomSpanProvider _spanProvider;
-
         /// <summary>
         /// Text textView where the adornment is created.
         /// </summary>
         private readonly IWpfTextView _textView;
-        private readonly ITelemetryDataMapper _telemetryDataMapper;
         private readonly MethodAdornmentLayer _methodAdornerLayer;
 
         private SnapshotPoint CaretPosition => _textView.Caret.Position.BufferPosition;
@@ -34,15 +29,12 @@ namespace VSIX_InSituVisualization
         /// Initializes a new instance of the <see cref="MemberPerformanceAdorner"/> class.
         /// </summary>
         /// <param name="textView">Text textView to create the adornment for</param>
-        /// <param name="telemetryDataMapper"></param>
-        /// <param name="spanProvider"></param>
-        public MemberPerformanceAdorner(IWpfTextView textView, ITelemetryDataMapper telemetryDataMapper, CustomSpanProvider spanProvider)
+        public MemberPerformanceAdorner(IWpfTextView textView)
         {
-            _spanProvider = spanProvider ?? throw new ArgumentNullException(nameof(spanProvider));
             _textView = textView ?? throw new ArgumentNullException(nameof(textView));
-            _telemetryDataMapper = telemetryDataMapper ?? throw new ArgumentNullException(nameof(textView));
             _textView.LayoutChanged += OnLayoutChanged;
-            _methodAdornerLayer = new MethodAdornmentLayer(textView);
+            var spanProvider = IocHelper.Container.Resolve<CustomSpanProvider>();
+            _methodAdornerLayer = new MethodAdornmentLayer(textView, spanProvider);
         }
 
 
@@ -61,70 +53,25 @@ namespace VSIX_InSituVisualization
             {
                 return;
             }
-            var root = await Document.GetSyntaxRootAsync();
-            var semanticModel = await Document.GetSemanticModelAsync();
+
             try
             {
-                var performanceSyntaxWalker = new PerformanceSyntaxWalker(
-                    _textView, 
-                    semanticModel,
-                    _telemetryDataMapper, 
-                    _methodAdornerLayer, 
-                    _spanProvider);
+                var semanticModel = await Document.GetSemanticModelAsync();
 
+                var telemetryDataMapper = IocHelper.Container.Resolve<ITelemetryDataMapper>();
+
+                var performanceSyntaxWalker = new PerformanceSyntaxWalker(
+                    semanticModel, 
+                    _methodAdornerLayer, 
+                    telemetryDataMapper);
+
+                var root = await Document.GetSyntaxRootAsync();
                 performanceSyntaxWalker.Visit(root);
-                //DrawTelemetryData(root, semanticModel);
             }
             catch (Exception exception)
             {
                 Debug.WriteLine(exception);
             }
-        }
-
-        private void DrawTelemetryData(SyntaxNode root, SemanticModel semanticModel)
-        {
-            var memberDeclarationSyntaxs = root.DescendantNodes().OfType<MethodDeclarationSyntax>();
-            foreach (var memberDeclarationSyntax in memberDeclarationSyntaxs)
-            {
-                // Method
-                var methodSymbol = semanticModel.GetDeclaredSymbol(memberDeclarationSyntax);
-                if (methodSymbol == null)
-                {
-                    continue;
-                }
-                //TODO RR: Hier muss zuerst auf neue Inhalte geprüft werden - ansonsten wenn einmal null --> immer null.
-                var methodPerformanceInfo = _telemetryDataMapper.GetMethodPerformanceInfo(methodSymbol);
-                _methodAdornerLayer.DrawMethodPerformanceInfo(GetSnapshotSpan(memberDeclarationSyntax), methodPerformanceInfo);
-#if DEBUG_SPANS
-                _methodAdornerLayer.DrawRedSpan(snapshotSpan);
-#endif
-
-                // Invocations in Method
-                var invocationExpressionSyntaxs = memberDeclarationSyntax.DescendantNodes(node => true).OfType<InvocationExpressionSyntax>();
-                foreach (var invocationExpressionSyntax in invocationExpressionSyntaxs)
-                {
-                    var invokedMethodSymbol = semanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol as IMethodSymbol;
-                    // Only Drawing invocationSymbols that refer to the current assembly. Not drawing Information about other assemblies...
-                    if (invokedMethodSymbol == null || !Equals(semanticModel.Compilation.Assembly, invokedMethodSymbol.ContainingAssembly) )
-                    {
-                        continue;
-                    }
-                    var invocationPerformanceInfo = _telemetryDataMapper.GetMethodPerformanceInfo(invokedMethodSymbol);
-                    // Setting Caller and CalleeInformation
-                    invocationPerformanceInfo.CallerPerformanceInfo.Add(methodPerformanceInfo);
-                    methodPerformanceInfo.CalleePerformanceInfo.Add(invocationPerformanceInfo);
-                    _methodAdornerLayer.DrawMethodInvocationPerformanceInfo(GetSnapshotSpan(invocationExpressionSyntax), invocationPerformanceInfo);
-                }
-
-                // Loops
-                // TODO RR:
-            }
-        }
-
-        private SnapshotSpan GetSnapshotSpan(CSharpSyntaxNode syntax)
-        {
-            var methodSyntaxSpan = _spanProvider.GetSpan(syntax);
-            return new SnapshotSpan(_textView.TextSnapshot, methodSyntaxSpan);
         }
     }
 }
