@@ -1,12 +1,12 @@
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Text;
 
-namespace VSIX_InSituVisualization
+namespace VSIX_InSituVisualization.Utils
 {
+    // ReSharper disable once ClassNeverInstantiated.Global Justification: Ioc
     internal sealed class CustomSpanProvider
     {
 

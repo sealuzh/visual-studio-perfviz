@@ -2,7 +2,7 @@
 
 namespace VSIX_InSituVisualization.ViewModels
 {
-    public class PerformanceInfoDetailWindowViewModel : ViewModelBase
+    public class PerformanceInfoDetailWindowViewModel : ViewModelBase , IPerformanceInfoDetailWindow
     {
         private MethodPerformanceInfo _methodPerformanceInfo;
 
@@ -18,5 +18,15 @@ namespace VSIX_InSituVisualization.ViewModels
 
         public string MemberName => MethodPerformanceInfo?.MethodName;
 
+        public void ShowMethodPerformance(MethodPerformanceInfo methodPerformanceInfo)
+        {
+            MethodPerformanceInfo = methodPerformanceInfo;
+        }
+
+        public void ShowLoopPerformance(LoopPerformanceInfo loopPerformanceinfo)
+        {
+            // TODO RR:
+            throw new System.NotImplementedException();
+        }
     }
 }

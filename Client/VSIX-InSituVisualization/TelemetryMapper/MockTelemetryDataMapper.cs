@@ -17,10 +17,6 @@ namespace VSIX_InSituVisualization.TelemetryMapper
             public MockMethodPerformanceInfo(IMethodSymbol methodSymbol) : base(methodSymbol)
             {
                 NumberOfCalls = Random.Next();
-                MostFrequentCallerName = "Any";
-                RecursionDepth = Random.Next();
-                MemberTime = Random.NextDouble();
-                TotalExecutionTime = TimeSpan.FromMinutes(Random.Next(100));
                 MeanExecutionTime = TimeSpan.FromMilliseconds(Random.Next(100));
             }
         }

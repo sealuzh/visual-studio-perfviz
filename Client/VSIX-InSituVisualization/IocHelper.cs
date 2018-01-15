@@ -2,6 +2,7 @@
 using DryIoc;
 using VSIX_InSituVisualization.TelemetryCollector;
 using VSIX_InSituVisualization.TelemetryMapper;
+using VSIX_InSituVisualization.Utils;
 
 namespace VSIX_InSituVisualization
 {

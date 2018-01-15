@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using VSIX_InSituVisualization.Model;
+using VSIX_InSituVisualization.Utils;
 using VSIX_InSituVisualization.ViewModels;
 using VSIX_InSituVisualization.Views;
 
@@ -65,11 +66,11 @@ namespace VSIX_InSituVisualization
             DrawControl(node, control);
         }
 
-        public void DrawLoopPerformanceInfo(SyntaxNode node, MethodPerformanceInfo methodPerformanceInfo ,IList<MethodPerformanceInfo> methodInvocationsPerformanceInfos)
+        public void DrawLoopPerformanceInfo(SyntaxNode node, LoopPerformanceInfo loopPerformanceInfo)
         {
             var control = new LoopPerformanceInfoControl
             {
-                DataContext = new LoopPerformanceInfoControlViewModel(methodPerformanceInfo, methodInvocationsPerformanceInfos)
+                DataContext = new LoopPerformanceInfoControlViewModel(loopPerformanceInfo)
             };
             DrawControl(node, control);
         }

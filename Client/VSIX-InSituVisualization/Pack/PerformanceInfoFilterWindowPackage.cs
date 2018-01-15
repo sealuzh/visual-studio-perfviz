@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell;
+using VSIX_InSituVisualization.Commands;
 using VSIX_InSituVisualization.Views;
 
 namespace VSIX_InSituVisualization.Pack

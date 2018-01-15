@@ -2,13 +2,14 @@
 using System.ComponentModel.Design;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using VSIX_InSituVisualization.Views;
 
-namespace VSIX_InSituVisualization.Views
+namespace VSIX_InSituVisualization.Commands
 {
     /// <summary>
     /// Command handler
     /// </summary>
-    internal sealed class PerformanceInfoDetailWindowCommand
+    internal sealed class PerformanceInfoFilterWindowCommand
     {
         /// <summary>
         /// Command ID.
@@ -18,7 +19,7 @@ namespace VSIX_InSituVisualization.Views
         /// <summary>
         /// Command menu group (command set GUID).
         /// </summary>
-        public static readonly Guid CommandSet = new Guid("c8435881-01bc-478d-92e7-2fb0f5dcc92c");
+        public static readonly Guid CommandSet = new Guid("0465af41-f723-47ce-97b4-9dd43141ee75");
 
         /// <summary>
         /// VS Package that provides this command, not null.
@@ -26,27 +27,28 @@ namespace VSIX_InSituVisualization.Views
         private readonly Package _package;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PerformanceInfoDetailWindowCommand"/> class.
+        /// Initializes a new instance of the <see cref="PerformanceInfoFilterWindowCommand"/> class.
         /// Adds our command handlers for menu (commands must exist in the command table file)
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
-        private PerformanceInfoDetailWindowCommand(Package package)
+        private PerformanceInfoFilterWindowCommand(Package package)
         {
             _package = package ?? throw new ArgumentNullException(nameof(package));
 
             var commandService = ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            if (commandService != null)
+            if (commandService == null)
             {
-                var menuCommandId = new CommandID(CommandSet, CommandId);
-                var menuItem = new MenuCommand(ShowToolWindow, menuCommandId);
-                commandService.AddCommand(menuItem);
+                return;
             }
+            var menuCommandId = new CommandID(CommandSet, CommandId);
+            var menuItem = new MenuCommand(ShowToolWindow, menuCommandId);
+            commandService.AddCommand(menuItem);
         }
 
         /// <summary>
         /// Gets the instance of the command.
         /// </summary>
-        public static PerformanceInfoDetailWindowCommand Instance
+        public static PerformanceInfoFilterWindowCommand Instance
         {
             get;
             private set;
@@ -63,7 +65,7 @@ namespace VSIX_InSituVisualization.Views
         /// <param name="package">Owner package, not null.</param>
         public static void Initialize(Package package)
         {
-            Instance = new PerformanceInfoDetailWindowCommand(package);
+            Instance = new PerformanceInfoFilterWindowCommand(package);
         }
 
         /// <summary>
@@ -76,7 +78,7 @@ namespace VSIX_InSituVisualization.Views
             // Get the instance number 0 of this tool window. This window is single instance so this instance
             // is actually the only one.
             // The last flag is set to true so that if the tool window does not exists it will be created.
-            var window = _package.FindToolWindow(typeof(PerformanceInfoDetailWindow), 0, true);
+            var window = _package.FindToolWindow(typeof(PerformanceInfoFilterWindow), 0, true);
             if (window?.Frame == null)
             {
                 throw new NotSupportedException("Cannot create tool window");

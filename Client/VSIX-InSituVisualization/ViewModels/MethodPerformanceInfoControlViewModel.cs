@@ -59,7 +59,7 @@ namespace VSIX_InSituVisualization.ViewModels
 
         public void OnOpenDetailViewCommand()
         {
-            Settings.PerformanceInfoDetailWindowViewModel.MethodPerformanceInfo = MethodPerformanceInfo;
+            Settings.PerformanceInfoDetailWindow.ShowMethodPerformance(MethodPerformanceInfo);
         }
 
     }

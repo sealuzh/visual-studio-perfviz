@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis.Text;
 using VSIX_InSituVisualization.TelemetryMapper;
+using VSIX_InSituVisualization.Utils;
 
 namespace VSIX_InSituVisualization
 {

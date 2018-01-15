@@ -6,7 +6,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using VSIX_InSituVisualization.Model;
 using VSIX_InSituVisualization.TelemetryMapper;
-using VSIX_InSituVisualization.Utils;
 
 namespace VSIX_InSituVisualization
 {
@@ -77,7 +76,7 @@ namespace VSIX_InSituVisualization
                     var invocationPerformanceInfo = _telemetryDataMapper.GetMethodPerformanceInfo(invokedMethodSymbol);
                     loopInvocationsList.Add(invocationPerformanceInfo);
                 }
-                _methodAdornmentLayer.DrawLoopPerformanceInfo(loopSyntax, methodPerformanceInfo, loopInvocationsList);
+                _methodAdornmentLayer.DrawLoopPerformanceInfo(loopSyntax, new LoopPerformanceInfo(methodPerformanceInfo, loopInvocationsList));
             }
         }
     }

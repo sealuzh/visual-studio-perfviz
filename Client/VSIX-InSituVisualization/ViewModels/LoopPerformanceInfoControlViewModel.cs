@@ -1,29 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Windows.Input;
 using System.Windows.Media;
 using VSIX_InSituVisualization.Model;
-using VSIX_InSituVisualization.Utils;
 
 namespace VSIX_InSituVisualization.ViewModels
 {
     internal class LoopPerformanceInfoControlViewModel: ViewModelBase
     {
-        private readonly MethodPerformanceInfo _methodPerformanceInfo;
 
-        public LoopPerformanceInfoControlViewModel(MethodPerformanceInfo methodPerformanceInfo, IList<MethodPerformanceInfo> methodInvocationsPerformanceInfos)
+        public LoopPerformanceInfoControlViewModel(LoopPerformanceInfo loopPerformanceInfo)
         {
-            _methodPerformanceInfo = methodPerformanceInfo ?? throw new ArgumentNullException(nameof(methodPerformanceInfo));
-            MethodInvocationsPerformanceInfos = methodInvocationsPerformanceInfos ?? throw new ArgumentNullException(nameof(methodInvocationsPerformanceInfos));
+            LoopPerformanceInfo = loopPerformanceInfo;
+            OpenDetailViewCommand = new RelayCommand<object>(obj => OnOpenDetailViewCommand());
         }
 
-        public IList<MethodPerformanceInfo> MethodInvocationsPerformanceInfos { get; }
+        public LoopPerformanceInfo LoopPerformanceInfo { get; }
 
-        public TimeSpan SumOfMethodInvocations
+        public ICommand OpenDetailViewCommand { get; }
+
+
+
+        public void OnOpenDetailViewCommand()
         {
-            get { return MethodInvocationsPerformanceInfos.Sum(p => p.MeanExecutionTime); }
+            Settings.PerformanceInfoDetailWindow.ShowLoopPerformance(LoopPerformanceInfo);
         }
-
-        public int AverageLoopIterations => SumOfMethodInvocations.Milliseconds == 0 ? 0 : _methodPerformanceInfo.MeanExecutionTime.Milliseconds / SumOfMethodInvocations.Milliseconds;
 
         /// <summary>
         /// Using HSV Values to get a nice transition:
@@ -34,7 +34,7 @@ namespace VSIX_InSituVisualization.ViewModels
         {
             get
             {
-                var sum = SumOfMethodInvocations;
+                var sum = LoopPerformanceInfo.SumOfMethodInvocations;
                 // TODO RR:
                 if (sum < TimeSpan.FromMilliseconds(20))
                 {

@@ -4,6 +4,6 @@ namespace VSIX_InSituVisualization
 {
     internal static class Settings
     {
-        public static PerformanceInfoDetailWindowViewModel PerformanceInfoDetailWindowViewModel { get; set; }
+        public static IPerformanceInfoDetailWindow PerformanceInfoDetailWindow { get; set; }
     }
 }

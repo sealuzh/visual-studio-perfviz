@@ -55,14 +55,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Model\LoopPerformanceInfo.cs" />
+    <Compile Include="Model\PerformanceInfo.cs" />
     <Compile Include="PerformanceSyntaxWalker.cs" />
     <Compile Include="Utils\StatisticExtenxions.cs" />
+    <Compile Include="ViewModels\IPerformanceInfoDetailWindow.cs" />
     <Compile Include="ViewModels\LoopPerformanceInfoControlViewModel.cs" />
     <Compile Include="Views\LoopPerformanceInfoControl.xaml.cs">
       <DependentUpon>LoopPerformanceInfoControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PerformanceInfoFilterWindow.cs" />
-    <Compile Include="Views\PerformanceInfoFilterWindowCommand.cs" />
+    <Compile Include="Commands\PerformanceInfoFilterWindowCommand.cs" />
     <Compile Include="Views\PerformanceInfoFilterWindowControl.xaml.cs">
       <DependentUpon>PerformanceInfoFilterWindowControl.xaml</DependentUpon>
     </Compile>
@@ -87,7 +90,7 @@
     </Compile>
     <Compile Include="Model\MethodPerformanceInfo.cs" />
     <Compile Include="Views\PerformanceInfoDetailWindow.cs" />
-    <Compile Include="Views\PerformanceInfoDetailWindowCommand.cs" />
+    <Compile Include="Commands\PerformanceInfoDetailWindowCommand.cs" />
     <Compile Include="TelemetryMapper\MockTelemetryDataMapper.cs" />
     <Compile Include="TelemetryCollector\AveragedTelemety.cs" />
     <Compile Include="TelemetryCollector\AzureTelemetryStore.cs" />
@@ -125,7 +128,7 @@
     </Compile>
     <Compile Include="ViewModels\MethodPerformanceInfoControlViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CustomSpanProvider.cs" />
+    <Compile Include="Utils\CustomSpanProvider.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
   </ItemGroup>
