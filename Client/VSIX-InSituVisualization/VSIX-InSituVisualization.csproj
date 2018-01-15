@@ -55,6 +55,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <Compile Include="Packages\PerformanceInfoFilterWindow.cs" />
     <Compile Include="Packages\PerformanceInfoFilterWindowCommand.cs" />
     <Compile Include="PerformanceSyntaxWalker.cs" />
@@ -63,10 +64,14 @@
     <Compile Include="Views\LoopPerformanceInfoControl.xaml.cs">
       <DependentUpon>LoopPerformanceInfoControl.xaml</DependentUpon>
     </Compile>
+=======
+    <Compile Include="Views\PerformanceInfoFilterWindow.cs" />
+    <Compile Include="Views\PerformanceInfoFilterWindowCommand.cs" />
+>>>>>>> f1423434b1746790c8b59c0f74b1d1f4909faa0f
     <Compile Include="Views\PerformanceInfoFilterWindowControl.xaml.cs">
       <DependentUpon>PerformanceInfoFilterWindowControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Packages\PerformanceInfoFilterWindowPackage.cs" />
+    <Compile Include="Pack\PerformanceInfoFilterWindowPackage.cs" />
     <Compile Include="Utils\SetCollection.cs" />
     <Compile Include="DryIoc\AsyncExecutionFlowScopeContext.cs" />
     <Compile Include="DryIoc\Container.cs" />
@@ -81,13 +86,13 @@
     <Compile Include="MemberPerformanceAdorner.cs" />
     <Compile Include="MethodAdornerTextViewCreationListener.cs" />
     <Compile Include="Model\ModelBase.cs" />
-    <Compile Include="Packages\OptionsPagePackage.cs" />
+    <Compile Include="Pack\OptionsPagePackage.cs" />
     <Compile Include="Views\OptionsPageGrid.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Model\MethodPerformanceInfo.cs" />
-    <Compile Include="Packages\PerformanceInfoDetailWindow.cs" />
-    <Compile Include="Packages\PerformanceInfoDetailWindowCommand.cs" />
+    <Compile Include="Views\PerformanceInfoDetailWindow.cs" />
+    <Compile Include="Views\PerformanceInfoDetailWindowCommand.cs" />
     <Compile Include="TelemetryMapper\MockTelemetryDataMapper.cs" />
     <Compile Include="TelemetryCollector\AveragedTelemety.cs" />
     <Compile Include="TelemetryCollector\AzureTelemetryStore.cs" />
@@ -116,7 +121,7 @@
     <Compile Include="Views\PerformanceInfoDetailWindowControl.xaml.cs">
       <DependentUpon>PerformanceInfoDetailWindowControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Packages\PerformanceInfoDetailWindowPackage.cs" />
+    <Compile Include="Pack\PerformanceInfoDetailWindowPackage.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\PerformanceInfoDetailWindowViewModel.cs" />
@@ -141,10 +146,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="index.html" />
-    <VSCTCompile Include="Packages\PerformanceInfoDetailWindowPackage.vsct">
+    <VSCTCompile Include="Pack\PerformanceInfoDetailWindowPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
-    <VSCTCompile Include="Packages\PerformanceInfoFilterWindowPackage.vsct">
+    <VSCTCompile Include="Pack\PerformanceInfoFilterWindowPackage.vsct">
       <ResourceName>Menus1.ctmenu</ResourceName>
     </VSCTCompile>
     <Content Include="Resources\OptionsPackage.ico" />
