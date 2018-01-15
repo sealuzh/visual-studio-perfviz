@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using VSIX_InSituVisualization.Model;
 using VSIX_InSituVisualization.TelemetryMapper;
+using VSIX_InSituVisualization.Utils;
 
 namespace VSIX_InSituVisualization
 {
@@ -22,7 +25,6 @@ namespace VSIX_InSituVisualization
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax memberDeclarationSyntax)
         {
-            // Method
             var methodSymbol = _semanticModel.GetDeclaredSymbol(memberDeclarationSyntax);
             if (methodSymbol == null)
             {
@@ -31,6 +33,9 @@ namespace VSIX_InSituVisualization
 
             var methodPerformanceInfo = _telemetryDataMapper.GetMethodPerformanceInfo(methodSymbol);
             _methodAdornmentLayer.DrawMethodPerformanceInfo(memberDeclarationSyntax, methodPerformanceInfo);
+
+            // TODO RR: var syntaxReference = methodSymbol.DeclaringSyntaxReferences
+            // syntaxReference.GetSyntax(context.CancellationToken);
 
             // Invocations in Method
             var invocationExpressionSyntaxs = memberDeclarationSyntax.DescendantNodes(node => true).OfType<InvocationExpressionSyntax>();
@@ -50,7 +55,30 @@ namespace VSIX_InSituVisualization
             }
 
             // Loops
-            // TODO RR:
+            // TODO RR: Clean and only Iterate once...
+            var loopSyntaxs = memberDeclarationSyntax.DescendantNodes(node => true).Where(node =>
+                 node is ForStatementSyntax ||
+                 node is WhileStatementSyntax ||
+                 node is DoStatementSyntax ||
+                 node is ForEachStatementSyntax);
+
+            foreach (var loopSyntax in loopSyntaxs)
+            {
+                var invocationExpressionSyntaxsInLoop = loopSyntax.DescendantNodes(node => true).OfType<InvocationExpressionSyntax>();
+                var loopInvocationsList = new List<MethodPerformanceInfo>();
+                foreach (var invocationExpressionSyntax in invocationExpressionSyntaxsInLoop)
+                {
+                    var invokedMethodSymbol = _semanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol as IMethodSymbol;
+                    // Only Drawing invocationSymbols that refer to the current assembly. Not drawing Information about other assemblies...
+                    if (invokedMethodSymbol == null || !Equals(_semanticModel.Compilation.Assembly, invokedMethodSymbol.ContainingAssembly))
+                    {
+                        continue;
+                    }
+                    var invocationPerformanceInfo = _telemetryDataMapper.GetMethodPerformanceInfo(invokedMethodSymbol);
+                    loopInvocationsList.Add(invocationPerformanceInfo);
+                }
+                _methodAdornmentLayer.DrawLoopPerformanceInfo(loopSyntax, methodPerformanceInfo, loopInvocationsList);
+            }
         }
     }
 }

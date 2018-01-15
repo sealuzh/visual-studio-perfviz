@@ -8,17 +8,22 @@ namespace VSIX_InSituVisualization.ViewModels
 {
     internal class LoopPerformanceInfoControlViewModel: ViewModelBase
     {
-        public LoopPerformanceInfoControlViewModel(IList<MethodPerformanceInfo> methodPerformanceInfos)
+        private readonly MethodPerformanceInfo _methodPerformanceInfo;
+
+        public LoopPerformanceInfoControlViewModel(MethodPerformanceInfo methodPerformanceInfo, IList<MethodPerformanceInfo> methodInvocationsPerformanceInfos)
         {
-            MethodPerformanceInfos = MethodPerformanceInfos ?? throw new ArgumentNullException(nameof(methodPerformanceInfos));
+            _methodPerformanceInfo = methodPerformanceInfo ?? throw new ArgumentNullException(nameof(methodPerformanceInfo));
+            MethodInvocationsPerformanceInfos = methodInvocationsPerformanceInfos ?? throw new ArgumentNullException(nameof(methodInvocationsPerformanceInfos));
         }
 
-        public IList<MethodPerformanceInfo> MethodPerformanceInfos { get; }
+        public IList<MethodPerformanceInfo> MethodInvocationsPerformanceInfos { get; }
 
         public TimeSpan SumOfMethodInvocations
         {
-            get { return MethodPerformanceInfos.Sum(p => p.MeanExecutionTime); }
+            get { return MethodInvocationsPerformanceInfos.Sum(p => p.MeanExecutionTime); }
         }
+
+        public int AverageLoopIterations => SumOfMethodInvocations.Milliseconds == 0 ? 0 : _methodPerformanceInfo.MeanExecutionTime.Milliseconds / SumOfMethodInvocations.Milliseconds;
 
         /// <summary>
         /// Using HSV Values to get a nice transition:

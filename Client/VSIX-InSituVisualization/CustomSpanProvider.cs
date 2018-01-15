@@ -10,22 +10,21 @@ namespace VSIX_InSituVisualization
     internal sealed class CustomSpanProvider
     {
 
-        public Span GetSpan(CSharpSyntaxNode memberDeclarationSyntax)
+        public Span GetSpan(SyntaxNode memberDeclarationSyntax)
         {
             switch (memberDeclarationSyntax)
             {
-                case InvocationExpressionSyntax invocationExpressionSyntax:
-                    var lineSyntax = GetLineSyntaxNode(invocationExpressionSyntax);
-                    return Span.FromBounds(lineSyntax.SpanStart, lineSyntax.FullSpan.End);
                 case MethodDeclarationSyntax methodDeclarationSyntax:
                     return GetMethodSpan(methodDeclarationSyntax);
                 case ConstructorDeclarationSyntax constructorDeclarationSyntax:
                     return GetConstructorSpan(constructorDeclarationSyntax);
                 case PropertyDeclarationSyntax propertyDeclarationSyntax:
                     return GetPropertyGetterSpan(propertyDeclarationSyntax);
+                // ReSharper disable once RedundantCaseLabel
+                case InvocationExpressionSyntax invocationExpressionSyntax:
                 default:
-                    Debug.WriteLine($"MemberDeclarationSyntax not implemented: {memberDeclarationSyntax.GetType().Name}");
-                    return default(Span);
+                    var lineSyntax = GetLineSyntaxNode(memberDeclarationSyntax);
+                    return Span.FromBounds(lineSyntax.SpanStart, lineSyntax.FullSpan.End);
             }
         }
 

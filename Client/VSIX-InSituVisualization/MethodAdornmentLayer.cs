@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using VSIX_InSituVisualization.Model;
@@ -33,7 +35,7 @@ namespace VSIX_InSituVisualization
             _spanProvider = spanProvider ?? throw new ArgumentNullException(nameof(spanProvider));
         }
 
-        public void DrawMethodPerformanceInfo(CSharpSyntaxNode node, MethodPerformanceInfo methodPerformanceInfo)
+        public void DrawMethodPerformanceInfo(MethodDeclarationSyntax node, MethodPerformanceInfo methodPerformanceInfo)
         {
             if (methodPerformanceInfo == null)
             {
@@ -48,7 +50,7 @@ namespace VSIX_InSituVisualization
             DrawControl(node, control);
         }
 
-        public void DrawMethodInvocationPerformanceInfo(CSharpSyntaxNode node, MethodPerformanceInfo methodPerformanceInfo)
+        public void DrawMethodInvocationPerformanceInfo(InvocationExpressionSyntax node, MethodPerformanceInfo methodPerformanceInfo)
         {
             if (methodPerformanceInfo == null)
             {
@@ -63,23 +65,22 @@ namespace VSIX_InSituVisualization
             DrawControl(node, control);
         }
 
-        public void DrawLoopPerformanceInfo(CSharpSyntaxNode node, IList<MethodPerformanceInfo> methodPerformanceInfos)
+        public void DrawLoopPerformanceInfo(SyntaxNode node, MethodPerformanceInfo methodPerformanceInfo ,IList<MethodPerformanceInfo> methodInvocationsPerformanceInfos)
         {
             var control = new LoopPerformanceInfoControl
             {
-                DataContext = new LoopPerformanceInfoControlViewModel(methodPerformanceInfos)
+                DataContext = new LoopPerformanceInfoControlViewModel(methodPerformanceInfo, methodInvocationsPerformanceInfos)
             };
-
             DrawControl(node, control);
         }
 
-        private SnapshotSpan GetSnapshotSpan(CSharpSyntaxNode syntax)
+        private SnapshotSpan GetSnapshotSpan(SyntaxNode syntax)
         {
             var methodSyntaxSpan = _spanProvider.GetSpan(syntax);
             return new SnapshotSpan(_textView.TextSnapshot, methodSyntaxSpan);
         }
 
-        private void DrawControl(CSharpSyntaxNode node, UIElement control)
+        private void DrawControl(SyntaxNode node, UIElement control)
         {
             var span = GetSnapshotSpan(node);
             if (span == default(SnapshotSpan))
