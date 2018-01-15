@@ -62,8 +62,7 @@ namespace VSIX_InSituVisualization
 
                 var performanceSyntaxWalker = new PerformanceSyntaxWalker(
                     semanticModel, 
-                    _methodAdornerLayer, 
-                    telemetryDataMapper);
+                    telemetryDataMapper, _methodAdornerLayer);
 
                 var root = await Document.GetSyntaxRootAsync();
                 performanceSyntaxWalker.Visit(root);
