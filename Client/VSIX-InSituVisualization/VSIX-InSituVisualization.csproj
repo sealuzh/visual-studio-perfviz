@@ -55,19 +55,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-<<<<<<< HEAD
-    <Compile Include="Packages\PerformanceInfoFilterWindow.cs" />
-    <Compile Include="Packages\PerformanceInfoFilterWindowCommand.cs" />
     <Compile Include="PerformanceSyntaxWalker.cs" />
     <Compile Include="Utils\StatisticExtenxions.cs" />
     <Compile Include="ViewModels\LoopPerformanceInfoControlViewModel.cs" />
     <Compile Include="Views\LoopPerformanceInfoControl.xaml.cs">
       <DependentUpon>LoopPerformanceInfoControl.xaml</DependentUpon>
     </Compile>
-=======
     <Compile Include="Views\PerformanceInfoFilterWindow.cs" />
     <Compile Include="Views\PerformanceInfoFilterWindowCommand.cs" />
->>>>>>> f1423434b1746790c8b59c0f74b1d1f4909faa0f
     <Compile Include="Views\PerformanceInfoFilterWindowControl.xaml.cs">
       <DependentUpon>PerformanceInfoFilterWindowControl.xaml</DependentUpon>
     </Compile>
