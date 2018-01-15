@@ -62,11 +62,5 @@ namespace VSIX_InSituVisualization.ViewModels
             Settings.PerformanceInfoDetailWindowViewModel.MethodPerformanceInfo = MethodPerformanceInfo;
         }
 
-        public bool ShowFirstCallerArrow => MethodPerformanceInfo?.CallerPerformanceInfo.Count >= 1;
-        public bool ShowSecondCallerArrow => MethodPerformanceInfo?.CallerPerformanceInfo.Count >= 2;
-
-        public bool ShowFirstCalleeArrow => MethodPerformanceInfo?.CalleePerformanceInfo.Count >= 1;
-        public bool ShowSecondCalleeArrow => MethodPerformanceInfo?.CalleePerformanceInfo.Count >= 2;
-
     }
 }

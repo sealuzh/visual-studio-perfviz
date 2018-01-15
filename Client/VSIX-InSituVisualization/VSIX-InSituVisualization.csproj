@@ -57,6 +57,12 @@
   <ItemGroup>
     <Compile Include="Packages\PerformanceInfoFilterWindow.cs" />
     <Compile Include="Packages\PerformanceInfoFilterWindowCommand.cs" />
+    <Compile Include="PerformanceSyntaxWalker.cs" />
+    <Compile Include="Utils\StatisticExtenxions.cs" />
+    <Compile Include="ViewModels\LoopPerformanceInfoControlViewModel.cs" />
+    <Compile Include="Views\LoopPerformanceInfoControl.xaml.cs">
+      <DependentUpon>LoopPerformanceInfoControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PerformanceInfoFilterWindowControl.xaml.cs">
       <DependentUpon>PerformanceInfoFilterWindowControl.xaml</DependentUpon>
     </Compile>
@@ -347,6 +353,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\LoopPerformanceInfoControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\PerformanceInfoFilterWindowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

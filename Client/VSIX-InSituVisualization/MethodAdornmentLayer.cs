@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using VSIX_InSituVisualization.Model;
@@ -30,42 +30,57 @@ namespace VSIX_InSituVisualization
             _layer = textView.GetAdornmentLayer("MemberPerformanceAdorner");
         }
 
-        public void DrawPerformanceInfo(CSharpSyntaxNode syntaxNode, SnapshotSpan span, MethodPerformanceInfo methodPerformanceInfo)
+        public void DrawMethodPerformanceInfo(SnapshotSpan span, MethodPerformanceInfo methodPerformanceInfo)
         {
-            if (syntaxNode == null)
-            {
-                return;
-            }
             if (methodPerformanceInfo == null)
-            {
-                return;
-            }
-            if (span == default(SnapshotSpan))
-            {
-                return;
-            }
-            var geometry = _textView.TextViewLines.GetMarkerGeometry(span);
-            if (geometry == null)
             {
                 return;
             }
 
             // TODO RR: Take care of the old PerfViz Control? dispose?
-            UserControl control;
-            switch (syntaxNode)
+            var control = new MethodPerformanceInfoControl
             {
-                case MethodDeclarationSyntax _:
-                    control = new MethodPerformanceInfoControl
-                    {
-                        DataContext = new MethodPerformanceInfoControlViewModel(methodPerformanceInfo)
-                    };
-                    break;
-                default:
-                    control = new MethodInvocationPerformanceInfoControl
-                    {
-                        DataContext = new MethodInvocationPerformanceInfoControlViewModel(methodPerformanceInfo)
-                    };
-                    break;
+                DataContext = new MethodPerformanceInfoControlViewModel(methodPerformanceInfo)
+            };
+            DrawControl(span, control);
+        }
+
+        public void DrawMethodInvocationPerformanceInfo(SnapshotSpan span, MethodPerformanceInfo methodPerformanceInfo)
+        {
+            if (methodPerformanceInfo == null)
+            {
+                return;
+            }
+
+            // TODO RR: Take care of the old PerfViz Control? dispose?
+            var control = new MethodInvocationPerformanceInfoControl
+            {
+                DataContext = new MethodInvocationPerformanceInfoControlViewModel(methodPerformanceInfo)
+            };
+            DrawControl(span, control);
+        }
+
+        public void DrawLoopPerformanceInfo(SnapshotSpan span, IList<MethodPerformanceInfo> methodPerformanceInfos)
+        {
+            var control = new LoopPerformanceInfoControl
+            {
+                DataContext = new LoopPerformanceInfoControlViewModel(methodPerformanceInfos)
+            };
+
+            DrawControl(span, control);
+        }
+
+        private void DrawControl(SnapshotSpan span, UIElement control)
+        {
+            if (span == default(SnapshotSpan))
+            {
+                return;
+            }
+
+            var geometry = _textView.TextViewLines.GetMarkerGeometry(span);
+            if (geometry == null)
+            {
+                return;
             }
 
             // Align the bounds of the text geometry

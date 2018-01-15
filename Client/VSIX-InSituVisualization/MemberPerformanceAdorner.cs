@@ -65,13 +65,20 @@ namespace VSIX_InSituVisualization
             var semanticModel = await Document.GetSemanticModelAsync();
             try
             {
-                DrawTelemetryData(root, semanticModel);
+                var performanceSyntaxWalker = new PerformanceSyntaxWalker(
+                    _textView, 
+                    semanticModel,
+                    _telemetryDataMapper, 
+                    _methodAdornerLayer, 
+                    _spanProvider);
+
+                performanceSyntaxWalker.Visit(root);
+                //DrawTelemetryData(root, semanticModel);
             }
             catch (Exception exception)
             {
                 Debug.WriteLine(exception);
             }
-
         }
 
         private void DrawTelemetryData(SyntaxNode root, SemanticModel semanticModel)
@@ -87,7 +94,7 @@ namespace VSIX_InSituVisualization
                 }
                 //TODO RR: Hier muss zuerst auf neue Inhalte geprüft werden - ansonsten wenn einmal null --> immer null.
                 var methodPerformanceInfo = _telemetryDataMapper.GetMethodPerformanceInfo(methodSymbol);
-                _methodAdornerLayer.DrawPerformanceInfo(memberDeclarationSyntax, GetSnapshotSpan(memberDeclarationSyntax), methodPerformanceInfo);
+                _methodAdornerLayer.DrawMethodPerformanceInfo(GetSnapshotSpan(memberDeclarationSyntax), methodPerformanceInfo);
 #if DEBUG_SPANS
                 _methodAdornerLayer.DrawRedSpan(snapshotSpan);
 #endif
@@ -106,8 +113,11 @@ namespace VSIX_InSituVisualization
                     // Setting Caller and CalleeInformation
                     invocationPerformanceInfo.CallerPerformanceInfo.Add(methodPerformanceInfo);
                     methodPerformanceInfo.CalleePerformanceInfo.Add(invocationPerformanceInfo);
-                    _methodAdornerLayer.DrawPerformanceInfo(invocationExpressionSyntax, GetSnapshotSpan(invocationExpressionSyntax), invocationPerformanceInfo);
+                    _methodAdornerLayer.DrawMethodInvocationPerformanceInfo(GetSnapshotSpan(invocationExpressionSyntax), invocationPerformanceInfo);
                 }
+
+                // Loops
+                // TODO RR:
             }
         }
 

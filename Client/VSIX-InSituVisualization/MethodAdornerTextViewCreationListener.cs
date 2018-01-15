@@ -39,7 +39,6 @@ namespace VSIX_InSituVisualization
         /// <param name="textView">The <see cref="T:Microsoft.VisualStudio.Text.Editor.IWpfTextView" /> upon which the adornment should be placed</param>
         public void TextViewCreated(IWpfTextView textView)
         {
-            ;
             // The adornment will listen to any event that changes the layout (text changes, scrolling, etc)
             var adornerResolveFunc = IocHelper.Container.Resolve<Func<IWpfTextView, MemberPerformanceAdorner>>();
             var adorner = adornerResolveFunc(textView);
