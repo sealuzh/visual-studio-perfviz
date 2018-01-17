@@ -10,6 +10,6 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter.Property
     interface IFilterProperty
     {
         PropertyInfo GetPropertyInfo();
-        List<string> GetFilterParameterList();
+        FilterKind GetFilterKinds();
     }
 }

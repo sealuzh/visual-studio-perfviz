@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -18,7 +19,8 @@ namespace VSIX_InSituVisualization.TelemetryCollector
         private static IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> _allMemberTelemetries;
         private static IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> _currentMemberTelemetries;
 
-        private Dictionary<string, AveragedMethodTelemetry> _currentAveragedMemberTelemetry;
+        private ConcurrentDictionary<string, AveragedMethodTelemetry> _currentAveragedMemberTelemetry;
+        private Timer timer;
         private const int Timerinterval = 5000;
 
         private readonly FilterController _filterController;
@@ -28,20 +30,26 @@ namespace VSIX_InSituVisualization.TelemetryCollector
         {
             _filterController = new FilterController();
 
-            //As second attribute return the position inside the _filterController.GetFilterProperties()[0].GetFilterParameterList() list, which is used for displaying possible filterparameters.
-            _filterController.AddFilterGlobal(_filterController.GetFilterProperties()[1], DateTimeFilterProperty.IsGreaterEqualThen, new DateTime(2017, 11, 21));
-            _filterController.AddFilterGlobal(_filterController.GetFilterProperties()[6], IntFilterProperty.IsGreaterEqualThen, 100);
-            _filterController.AddFilterLocal(_filterController.GetFilterProperties()[6], IntFilterProperty.IsGreaterEqualThen, 1000, "Counter2");
+            //As second attribute return the position inside the _filterController.GetFilterProperties()[0].GetFilterKinds() list, which is used for displaying possible filterparameters.
+            _filterController.AddFilterGlobal(_filterController.GetFilterProperties()[1], FilterKind.IsGreaterEqualThen, new DateTime(2017, 11, 21));
+            //_filterController.AddFilterGlobal(_filterController.GetFilterProperties()[2], IntFilterProperty.IsGreaterEqualThen, 1000);
+            //_filterController.AddFilterLocal(_filterController.GetFilterProperties()[2], IntFilterProperty.IsGreaterEqualThen, 100, "ASP.testbuttonpage_aspx.Counter2");
 
             _dataPullingServices = new List<IDataPullingService> { new InsightsExternalReferencesRestApiDataPullingService() };
             //TODO JO: After FetchingSystemCacheData is called, the store is not updated.
             _allMemberTelemetries = new Dictionary<string, IDictionary<string, ConcreteMethodTelemetry>>();
-            //_allMemberTelemetries = PersistanceService.FetchSystemCacheData();
-            
-            //Setup Timer Task that automatically updates the store via REST
-            var timer = new Timer
+            _allMemberTelemetries = PersistanceService.FetchSystemCacheData();
+
+            if (_allMemberTelemetries.Any())
             {
-                Interval = Timerinterval
+                UpdateStore(false);
+            }
+
+            //Setup Timer Task that automatically updates the store via REST
+            timer = new Timer
+            {
+                Interval = Timerinterval,
+                AutoReset = false   
             };
             timer.Elapsed += RunPipeline;
             timer.Enabled = true;
@@ -56,7 +64,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                 {
                     var newRestData = service.GetNewTelemetriesTaskAsync();
                     await newRestData;
-                    await PersistanceService.AwaitConcreteMemberTelemetriesLock();
+                    //await PersistanceService.AwaitConcreteMemberTelemetriesLock();
                     PersistanceService.IsConcreteMemberTelemetriesLock = true;
                     foreach (ConcreteMethodTelemetry restReturnMember in newRestData.Result)
                     {
@@ -88,8 +96,9 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                 }
                 if (updateOccured)
                 {
-                    await UpdateStore(true);
+                    UpdateStore(true);
                 }
+                timer.Start();
             }
             catch (Exception e)
             {
@@ -97,18 +106,18 @@ namespace VSIX_InSituVisualization.TelemetryCollector
             }
         }
 
-        private async Task UpdateStore(bool persist)
+        private void UpdateStore(bool persist)
         {
             if (persist) PersistanceService.WriteSystemCacheData(_allMemberTelemetries);
             _currentMemberTelemetries = _filterController.ApplyFilters(_allMemberTelemetries);
-            _currentAveragedMemberTelemetry = await TakeAverageOfDict(_currentMemberTelemetries);
+            _currentAveragedMemberTelemetry = TakeAverageOfDict(_currentMemberTelemetries);
         }
 
-        private static async Task<Dictionary<string, AveragedMethodTelemetry>> TakeAverageOfDict(IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> inputDict)
+        private static ConcurrentDictionary<string, AveragedMethodTelemetry> TakeAverageOfDict(IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> inputDict)
         {
-            await PersistanceService.AwaitAverageMemberTelemetryLock();
-            PersistanceService.IsAverageTelemetryLock = true;
-            var averagedDictionary = new Dictionary<string, AveragedMethodTelemetry>();
+            //await PersistanceService.AwaitAverageMemberTelemetryLock();
+            //PersistanceService.IsAverageTelemetryLock = true;
+            var averagedDictionary = new ConcurrentDictionary<string, AveragedMethodTelemetry>();
             foreach (var method in inputDict.Values)
             {
                 var timeList = new List<double>();
@@ -117,9 +126,17 @@ namespace VSIX_InSituVisualization.TelemetryCollector
                 {
                     timeList.Add(telemetry.Duration);
                 }
-                averagedDictionary.Add(method.Values.ElementAt(0).DocumentationCommentId, new AveragedMethodTelemetry(method.Values.ElementAt(0).DocumentationCommentId, TimeSpan.FromMilliseconds(timeList.Average()), timeList.Count));
+                if (method.Values.Count > 0)
+                {
+                    if (!averagedDictionary.TryAdd(method.Values.ElementAt(0).DocumentationCommentId,
+                        new AveragedMethodTelemetry(method.Values.ElementAt(0).DocumentationCommentId,
+                            TimeSpan.FromMilliseconds(timeList.Average()), timeList.Count, method)))
+                    {
+                        Console.WriteLine("Could not add element to dictionary with key " + method.Values.ElementAt(0).DocumentationCommentId);
+                    }
+                }
             }
-            PersistanceService.IsAverageTelemetryLock = false;
+            //PersistanceService.IsAverageTelemetryLock = false;
             return averagedDictionary;
         }
 

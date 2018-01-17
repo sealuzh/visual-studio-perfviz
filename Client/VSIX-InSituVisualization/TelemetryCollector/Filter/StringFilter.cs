@@ -12,21 +12,21 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
         private readonly StringFilterProperty _filterProperty;
         private readonly bool _isGlobalFilter;
         private readonly string _toFilterMethodFullName;
-        private readonly int _toFilterType;
+        private readonly FilterKind _filterKind;
 
-        public StringFilter(IFilterProperty filterProperty, string filterString, int toFilterType)
+        public StringFilter(IFilterProperty filterProperty, string filterString, FilterKind filterKind)
         {
             _filterString = filterString;
             _filterProperty = (StringFilterProperty)filterProperty;
-            _toFilterType = toFilterType;
+            _filterKind = filterKind;
             _isGlobalFilter = true;
         }
 
-        public StringFilter(IFilterProperty filterProperty, string filterString, int toFilterType, string toFilterMethodFullName)
+        public StringFilter(IFilterProperty filterProperty, string filterString, FilterKind filterKind, string toFilterMethodFullName)
         {
             _filterString = filterString;
             _filterProperty = (StringFilterProperty)filterProperty;
-            _toFilterType = toFilterType;
+            _filterKind = filterKind;
             _isGlobalFilter = false;
             _toFilterMethodFullName = toFilterMethodFullName;
         }
@@ -61,15 +61,15 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
             foreach(var kvpMember in inDictionary)
                 {
                 var memberPropertyValue = (string)_filterProperty.GetPropertyInfo().GetValue(kvpMember.Value);
-                    switch (_toFilterType)
+                    switch (_filterKind)
                     {
-                        case StringFilterProperty.IsEqual:
+                        case FilterKind.IsEqual:
                             if (memberPropertyValue.Equals(_filterString))
                             {
                                 outDictionary.Add(kvpMember.Key, kvpMember.Value);
                             }
                             break;
-                        case StringFilterProperty.Contains:
+                        case FilterKind.Contains:
                             if (!memberPropertyValue.Contains(_filterString))
                             {
                                 outDictionary.Add(kvpMember.Key, kvpMember.Value);

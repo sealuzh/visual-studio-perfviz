@@ -4,10 +4,13 @@ using System.Reflection;
 
 namespace VSIX_InSituVisualization.TelemetryCollector.Filter.Property
 {
+    [Flags]
+    public enum FilterKind { None = 0, IsEqual = 1, IsGreaterEqualThen = 2, IsSmallerEqualThen = 4, Contains = 8}
+
     //Contains all info concerning one variable in ConcreteMethodTelemetry. Intended to be used statically.
     abstract class FilterProperty : IFilterProperty
     {
-        public abstract List<string> GetFilterParameterList();
+        public abstract FilterKind GetFilterKinds();
 
         public Type FilterType;
         private readonly PropertyInfo _propertyInfo;
@@ -27,4 +30,6 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter.Property
 
         
     }
+
+    
 }

@@ -14,7 +14,7 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Persistance
 
         public static bool IsAverageTelemetryLock = false;
         public static bool IsConcreteMemberTelemetriesLock = false;
-        
+
         public static IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> FetchSystemCacheData()
         {
             //TODO: Filename has to match the project
@@ -35,13 +35,13 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Persistance
             File.WriteAllText(BasePath + "\\VSIXStore.json", json);
         }
 
-        public static async Task AwaitConcreteMemberTelemetriesLock()
-        {
-            while (IsConcreteMemberTelemetriesLock)
-            {
-                await Task.Delay(50);
-            }
-        }
+        //public static async Task AwaitConcreteMemberTelemetriesLock()
+        //{
+        //    while (IsConcreteMemberTelemetriesLock)
+        //    {
+        //        await Task.Delay(50);
+        //    }
+        //}
 
         public static async Task AwaitAverageMemberTelemetryLock()
         {

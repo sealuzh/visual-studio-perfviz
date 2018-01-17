@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace VSIX_InSituVisualization.TelemetryCollector
 {
@@ -9,12 +10,14 @@ namespace VSIX_InSituVisualization.TelemetryCollector
     {
         public TimeSpan Duration { get; }
         public int MemberCount { get; }
+        public IDictionary<String, ConcreteMethodTelemetry> Members { get; }
 
-        public AveragedMethodTelemetry(string documentationCommentId, TimeSpan duration, int memberCount)
+        public AveragedMethodTelemetry(string documentationCommentId, TimeSpan duration, int memberCount, IDictionary<string, ConcreteMethodTelemetry> members)
             : base(documentationCommentId)
         {
             Duration = duration;
             MemberCount = memberCount;
+            Members = members;
         }
     }
 }

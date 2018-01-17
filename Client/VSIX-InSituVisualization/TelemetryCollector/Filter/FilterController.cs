@@ -45,48 +45,56 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter
         }
 
         //Adds a Filter that is used over all different methods available in the syntax
-        public void AddFilterGlobal(IFilterProperty filterProperty, int filterType, object parameter)
+        public bool AddFilterGlobal(IFilterProperty filterProperty, FilterKind filterKind, object parameter)
         {
             IFilter newFilter;
             switch (filterProperty.GetPropertyInfo().PropertyType.ToString())
             {
                 case "System.String":
-                    newFilter = new StringFilter(filterProperty, (string)parameter, filterType);
+                    if (!filterProperty.GetFilterKinds().HasFlag(filterKind)) return false;
+                    newFilter = new StringFilter(filterProperty, (string)parameter, filterKind);
                     _activeFilters.Add(newFilter);
-                    break;
+                    return true;
                 case "System.DateTime":
-                    newFilter = new DateTimeFilter(filterProperty, (DateTime)parameter, filterType);
+                    if (!filterProperty.GetFilterKinds().HasFlag(filterKind)) return false;
+                    newFilter = new DateTimeFilter(filterProperty, (DateTime)parameter, filterKind);
                     _activeFilters.Add(newFilter);
-                    break;
+                    return true;
                 case "System.Int32":
-                    newFilter = new IntFilter(filterProperty, (int)parameter, filterType);
+                    if (!filterProperty.GetFilterKinds().HasFlag(filterKind)) return false;
+                    newFilter = new IntFilter(filterProperty, (int)parameter, filterKind);
                     _activeFilters.Add(newFilter);
-                    break;
+                    return true;
                 default:
-                    break;
+                    return false;
             }
         }
 
         //Adds a Filter that only applies to a single method in the syntax.
-        public void AddFilterLocal(IFilterProperty filterProperty, int filterType, object parameter, string filterMethodFullName)
+        public bool AddFilterLocal(IFilterProperty filterProperty, FilterKind filterKind, object parameter, string filterMethodFullName)
         {
             IFilter newFilter;
             switch (filterProperty.GetPropertyInfo().PropertyType.ToString())
             {
                 case "System.String":
-                    newFilter = new StringFilter(filterProperty, (string)parameter, filterType, filterMethodFullName);
+                    if (!filterProperty.GetFilterKinds().HasFlag(filterKind)) return false;
+                    newFilter = new StringFilter(filterProperty, (string)parameter, filterKind, filterMethodFullName);
                     _activeFilters.Add(newFilter);
-                    break;
-                case "System.DateTime":
-                    newFilter = new DateTimeFilter(filterProperty, (DateTime)parameter, filterType, filterMethodFullName);
+                    return true;
+                    case "System.DateTime":
+                        if (!filterProperty.GetFilterKinds().HasFlag(filterKind)) return false;
+                    newFilter = new DateTimeFilter(filterProperty, (DateTime)parameter, filterKind, filterMethodFullName);
                     _activeFilters.Add(newFilter);
-                    break;
+                        return true;
+                  
                 case "System.Int32":
-                    newFilter = new IntFilter(filterProperty, (int)parameter, filterType, filterMethodFullName);
+                    if (!filterProperty.GetFilterKinds().HasFlag(filterKind)) return false;
+                    newFilter = new IntFilter(filterProperty, (int)parameter, filterKind, filterMethodFullName);
                     _activeFilters.Add(newFilter);
-                    break;
+                    return true;
+                   
                 default:
-                    break;
+                    return false;
             }
         }
 

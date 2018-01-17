@@ -5,20 +5,17 @@ namespace VSIX_InSituVisualization.TelemetryCollector.Filter.Property
 {
     class IntFilterProperty : FilterProperty
     {
-        public const int IsEqual = 0;
-        public const int IsGreaterEqualThen = 1;
-        public const int IsSmallerEqualThen = 2;
-
-        private readonly List<string> _filterParameterList;
+        
+        private readonly FilterKind _filterKinds;
 
         public IntFilterProperty(PropertyInfo propertyInfo) : base(propertyInfo)
         {
-            _filterParameterList = new List<string> { "IsEqual", "IsGreaterEqualThen", "IsSmallerEqualThen" };
+            _filterKinds = FilterKind.IsEqual | FilterKind.IsGreaterEqualThen | FilterKind.IsSmallerEqualThen;
         }
 
-        public override List<string> GetFilterParameterList()
+        public override FilterKind GetFilterKinds()
         {
-            return _filterParameterList;
+            return _filterKinds;
         }
     }
 }
