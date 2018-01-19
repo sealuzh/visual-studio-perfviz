@@ -24,15 +24,17 @@ namespace InSituCodeInject
         /// Only works if the current class is loaded .... since PreMethodBodyHook etc need to be loaded...
         /// </summary>
         /// <param name="methodDefinition"></param>
-        public void HookMethod(MethodDefinition methodDefinition)
+        public MethodDefinition HookMethod(MethodDefinition methodDefinition)
         {
             if (methodDefinition.IsConstructor || methodDefinition.IsAbstract || !methodDefinition.IsManaged)
             {
-                return;
+                return null;
             }
 
+            
+
             var ilProcessor = methodDefinition.Body.GetILProcessor();
-            var preInitializeMethodReference = MainModule.ImportReference(GetType().GetMethod(nameof(PreMethodBodyHook), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+            var preInitializeMethodReference = MainModule.ImportReference(typeof(InSituInjectionDonor.InSituInjectionDonor).GetMethod(nameof(InSituInjectionDonor.InSituInjectionDonor.PreMethodBodyHook), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
             var callPreInitializeInstruction = ilProcessor.Create(OpCodes.Call, preInitializeMethodReference);
 
             // Pushing the name of the method onto the stack?
@@ -46,17 +48,19 @@ namespace InSituCodeInject
             // case 3: What if it has exceptions?
 
 
-            var postMethodBodyHookReference = MainModule.ImportReference(GetType().GetMethod(nameof(PostMethodBodyHook), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+            var postMethodBodyHookReference = MainModule.ImportReference(typeof(InSituInjectionDonor.InSituInjectionDonor).GetMethod(nameof(InSituInjectionDonor.InSituInjectionDonor.PostMethodBodyHook), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
             var callPostMethodHookInstruction = ilProcessor.Create(OpCodes.Call, postMethodBodyHookReference);
             ilProcessor.InsertBefore(methodDefinition.Body.Instructions.Last(), callPostMethodHookInstruction);
+
+            return methodDefinition;
         }
 
-        /// <summary>
-        /// Waving returns to leaves for try finally...
-        /// https://stackoverflow.com/questions/12769699/mono-cecil-injecting-try-finally
-        /// </summary>
-        /// <param name="methodDefinition"></param>
-        /// <returns></returns>
+        ///// <summary>
+        ///// Waving returns to leaves for try finally...
+        ///// https://stackoverflow.com/questions/12769699/mono-cecil-injecting-try-finally
+        ///// </summary>
+        ///// <param name="methodDefinition"></param>
+        ///// <returns></returns>
         //private Instruction FixReturnsToLeave(MethodDefinition methodDefinition)
         //{
         //    if (methodDefinition.ReturnType == TypeSystem.Void)
@@ -99,13 +103,13 @@ namespace InSituCodeInject
         //}
 
 
-        public static void PreMethodBodyHook()
-        {
-            System.Diagnostics.Debug.WriteLine("Before Method Body");
-        }
-        public static void PostMethodBodyHook()
-        {
-            System.Diagnostics.Debug.WriteLine("After Method Body");
-        }
+        //public static void PreMethodBodyHook()
+        //{
+        //    System.Diagnostics.Debug.WriteLine("Before Method Body");
+        //}
+        //public static void PostMethodBodyHook()
+        //{
+        //    System.Diagnostics.Debug.WriteLine("After Method Body");
+        //}
     }
 }

@@ -1,30 +1,102 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading;
+﻿#define jeromedebug
+
+using System;
 using Mono.Cecil;
-using Mono.Cecil.Cil;
-using Mono.Collections.Generic;
 
 
 namespace InSituCodeInject
 {
     class Program
     {
-        private static string _dllFilePath;
+        private static string _dllFilePathVictimIn;
+        private static string _dllFilePathVictimOut;
         private static AssemblyDefinition _assembly;
 
         static void Main(string[] args)
         {
-            _dllFilePath = "C:\\Users\\jerom\\VisualStudioWorkspace\\visual-studio-perfviz\\Client\\InSituCodeInject\\resources\\VSIX-InSituVisualization.dll";
-            _dllFilePath = "C:\\Users\\jerom\\VisualStudioWorkspace\\visual-studio-perfviz\\Client\\InSituCodeInject\\resources\\visual-studio-aspnet-test.dll";
-            PrintTypes(_dllFilePath);
+
+#if jeromedebug
+            _dllFilePathVictimIn = "C:\\Users\\jerom\\VisualStudioWorkspace\\visual-studio-perfviz\\Client\\InSituInjectionVictim\\bin\\Debug\\InSituInjectionVictim.exe";
+            _dllFilePathVictimOut = "C:\\Users\\jerom\\VisualStudioWorkspace\\visual-studio-perfviz\\Client\\InSituInjectionVictim\\bin\\Debug\\InSituInjectionVictim2.exe";
+#else
+            _dllFilePathVictimIn = "C:\\Users\\jerom\\VisualStudioWorkspace\\MonoCecilTest\\MonoCecilTest\\bin\\Debug\\MonoCecilTest.exe";
+            _dllFilePathVictimOut = "C:\\Users\\jerom\\VisualStudioWorkspace\\MonoCecilTest\\MonoCecilTest\\bin\\Debug\\MonoCecilTest2.exe";
+#endif
+
+            _assembly = AssemblyDefinition.ReadAssembly(_dllFilePathVictimIn);
+
+            IlRewriter rewriter = new IlRewriter(_assembly);
+
+            for (int i = 0; i < _assembly.MainModule.Types.Count; i++)
+            {
+                for (int j = 0; j < _assembly.MainModule.Types[i].Methods.Count; j++) 
+                {
+                    //IsSpecialName not optimal.
+                    if (!_assembly.MainModule.Types[i].Methods[j].IsSpecialName)
+                    {
+                        _assembly.MainModule.Types[i].Methods[j] = rewriter.HookMethod(_assembly.MainModule.Types[i].Methods[j]);
+                    }
+                }
+            }
+            
+
+            //TypeDefinition typeDefinition = new TypeDefinition("InSituCodeInject", "IlRewriter", TypeAttributes.Class | TypeAttributes.Public, _assembly.MainModule.ImportReference(typeof(InSituCodeInject.IlRewriter)));
+            //MethodDefinition methodDefinition = new MethodDefinition("EmbraceCode", MethodAttributes.Public | MethodAttributes.Static, _assembly.MainModule.TypeSystem.Void);
+
+            //var writeLineMethod = typeof(Console).GetMethod("WriteLine", new Type[] { typeof(string) });
+            //var writeLineRef = _assembly.MainModule.ImportReference(writeLineMethod);
+
+            //Collection<Instruction> methodInstructions = new Collection<Instruction>
+            //{
+            //    Instruction.Create(OpCodes.Ldstr, "INJECTED!"),
+            //    Instruction.Create(OpCodes.Call, writeLineRef),
+            //    //Instruction.Create(OpCodes.Pop)
+            //};
+
+            //methodDefinition.Body.Instructions.Add(methodInstructions[0]);
+            //methodDefinition.Body.Instructions.Add(methodInstructions[1]);
+            ////methodDefinition.Body.Instructions.Add(methodInstructions[2]);
+
+            //typeDefinition.Methods.Add(methodDefinition);
+            //_assembly.MainModule.Types.Add(typeDefinition);
+
+
+            //var importedReference = _assembly.MainModule.ImportReference(typeof(IlRewriter));
+            //_assembly.MainModule.Types.Add(importedReference.Resolve());
+
+
+            //_assembly.MainModule.Types.Add(ilRewriterClass.Resolve());
+
+
+
+            //_dllFilePathVictimIn = "C:\\Users\\jerom\\VisualStudioWorkspace\\visual-studio-perfviz\\Client\\InSituCodeInject\\resources\\visual-studio-aspnet-test.dll";
+            //_dllFilePathVictimOut = "C:\\Users\\jerom\\VisualStudioWorkspace\\visual-studio-perfviz\\Client\\InSituCodeInject\\resources\\visual-studio-aspnet-test2.dll";
+
+            //_assembly = AssemblyDefinition.ReadAssembly(_dllFilePathVictimIn);
+            //IlRewriter rewriter = new IlRewriter(_assembly);
+            //_assembly.MainModule.Types[12].Methods[0] = rewriter.HookMethod(_assembly.MainModule.Types[12].Methods[0]);
+
+
+
+
+
+
+
+
+            //_assembly.Modules.Add();
+
+
+
+
+
+            _assembly.Write(_dllFilePathVictimOut);
         }
 
         public static void PrintTypes(string fileName)
         {
             _assembly = AssemblyDefinition.ReadAssembly(fileName);
             CreateClass(_assembly);
-            _assembly = AssemblyDefinition.ReadAssembly(fileName);
+            //_assembly = AssemblyDefinition.ReadAssembly(fileName);
             
             ModuleDefinition module = _assembly.MainModule;
 
@@ -49,7 +121,7 @@ namespace InSituCodeInject
             //create new class
             TypeDefinition Class = new TypeDefinition(_assembly.Name.Name, "InsightsHandler2", TypeAttributes.Class);
             _assembly.MainModule.Types.Add(Class);
-            _assembly.Write(_dllFilePath);
+            _assembly.Write(_dllFilePathVictimIn);
             //Class.Methods.Add(newMtd);
 
 

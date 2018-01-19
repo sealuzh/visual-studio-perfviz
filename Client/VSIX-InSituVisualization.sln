@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSIX-InSituVisualization", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InSituCodeInject", "InSituCodeInject\InSituCodeInject.csproj", "{2EC5E599-F430-4C61-A8C9-487AA5337DFD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InSituInjectionDonor", "InSituInjectionDonor\InSituInjectionDonor.csproj", "{0F840844-D7C3-4671-BE00-9DCDC517962A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InSituInjectionVictim", "InSituInjectionVictim\InSituInjectionVictim.csproj", "{DB649943-6DD3-4CA8-A455-BB9EF29A0068}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{2EC5E599-F430-4C61-A8C9-487AA5337DFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2EC5E599-F430-4C61-A8C9-487AA5337DFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2EC5E599-F430-4C61-A8C9-487AA5337DFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F840844-D7C3-4671-BE00-9DCDC517962A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F840844-D7C3-4671-BE00-9DCDC517962A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F840844-D7C3-4671-BE00-9DCDC517962A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F840844-D7C3-4671-BE00-9DCDC517962A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB649943-6DD3-4CA8-A455-BB9EF29A0068}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB649943-6DD3-4CA8-A455-BB9EF29A0068}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB649943-6DD3-4CA8-A455-BB9EF29A0068}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB649943-6DD3-4CA8-A455-BB9EF29A0068}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
