@@ -1,19 +1,27 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using Microsoft.ApplicationInsights;
 
 namespace Probe
 {
     public class AzureTelemetryProbe
     {
-        public static void PreMethodBodyHook()
+        private static readonly ConcurrentDictionary<string, DateTime> MethodStartDateTimes = new ConcurrentDictionary<string, DateTime>();
+
+        public static void PreMethodBodyHook(string documentationCommentId)
         {
-            System.Diagnostics.Debug.WriteLine("Before Method Body");
-            Console.WriteLine("Before Method Body Injection");
+            MethodStartDateTimes.TryAdd(documentationCommentId, DateTime.UtcNow);
+            Trace.WriteLine($"{documentationCommentId}. Start");
         }
-        public static void PostMethodBodyHook()
+        public static void PostMethodBodyHook(string documentationCommentId)
         {
-            System.Diagnostics.Debug.WriteLine("After Method Body");
-            Console.WriteLine("After Method Body Injection");
+            if (!MethodStartDateTimes.TryRemove(documentationCommentId, out var startDateTime))
+            {
+                return;
+            }
+            var duration = DateTime.UtcNow - startDateTime;
+            Trace.WriteLine($"{documentationCommentId}. Duration: {duration.Milliseconds} ms");
         }
 
         //tracepath, type not important and can be neglected.

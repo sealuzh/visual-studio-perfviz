@@ -68,6 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DocumentationCommentIdDeriver.cs" />
     <Compile Include="FileHelper.cs" />
     <Compile Include="IlRewriter.cs" />
     <Compile Include="Options.cs" />

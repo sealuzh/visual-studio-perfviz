@@ -35,7 +35,7 @@ namespace ProbeInjector
                 if (!string.IsNullOrWhiteSpace(directory))
                 {
                     var probeDestinationFilePath = Path.Combine(directory, ProbeAssemblyFilePath);
-                    File.Copy(ProbeAssemblyFilePath, probeDestinationFilePath);
+                    File.Copy(ProbeAssemblyFilePath, probeDestinationFilePath, true);
                 }
             }
         }

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Probe", "Probe\Probe.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InjectionVictim", "InjectionVictim\InjectionVictim.csproj", "{DB649943-6DD3-4CA8-A455-BB9EF29A0068}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{C2ACFAAA-68D1-4AEE-8E77-77DED9A7003A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{DB649943-6DD3-4CA8-A455-BB9EF29A0068}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB649943-6DD3-4CA8-A455-BB9EF29A0068}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB649943-6DD3-4CA8-A455-BB9EF29A0068}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2ACFAAA-68D1-4AEE-8E77-77DED9A7003A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2ACFAAA-68D1-4AEE-8E77-77DED9A7003A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2ACFAAA-68D1-4AEE-8E77-77DED9A7003A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2ACFAAA-68D1-4AEE-8E77-77DED9A7003A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
