@@ -29,11 +29,9 @@ namespace ProbeInjector
                 return null;
             }
 
-            
-
             var ilProcessor = methodDefinition.Body.GetILProcessor();
-            var preInitializeMethodReference = MainModule.ImportReference(typeof(AzureTelemetryProbe).GetMethod(nameof(AzureTelemetryProbe.PreMethodBodyHook), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
-            var callPreInitializeInstruction = ilProcessor.Create(OpCodes.Call, preInitializeMethodReference);
+            var preMethodBodyHookReference = MainModule.ImportReference(typeof(AzureTelemetryProbe).GetMethod(nameof(AzureTelemetryProbe.PreMethodBodyHook), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+            var callPreInitializeInstruction = ilProcessor.Create(OpCodes.Call, preMethodBodyHookReference);
 
             // Pushing the name of the method onto the stack?
 
@@ -52,62 +50,5 @@ namespace ProbeInjector
 
             return methodDefinition;
         }
-
-        ///// <summary>
-        ///// Waving returns to leaves for try finally...
-        ///// https://stackoverflow.com/questions/12769699/mono-cecil-injecting-try-finally
-        ///// </summary>
-        ///// <param name="methodDefinition"></param>
-        ///// <returns></returns>
-        //private Instruction FixReturnsToLeave(MethodDefinition methodDefinition)
-        //{
-        //    if (methodDefinition.ReturnType == TypeSystem.Void)
-        //    {
-        //        var instructions = methodDefinition.Body.Instructions;
-        //        var lastRet = Instruction.Create(OpCodes.Ret);
-        //        instructions.Add(lastRet);
-
-        //        for (var index = 0; index < instructions.Count - 1; index++)
-        //        {
-        //            var instruction = instructions[index];
-        //            if (instruction.OpCode == OpCodes.Ret)
-        //            {
-        //                instructions[index] = Instruction.Create(OpCodes.Leave, lastRet);
-        //            }
-        //        }
-        //        return lastRet;
-        //    }
-        //    else
-        //    {
-        //        var instructions = methodDefinition.Body.Instructions;
-        //        var returnVariable = new VariableDefinition("methodTimerReturn", methodDefinition.ReturnType);
-        //        methodDefinition.Body.Variables.Add(returnVariable);
-        //        var lastLd = Instruction.Create(OpCodes.Ldloc, returnVariable);
-        //        instructions.Add(lastLd);
-        //        instructions.Add(Instruction.Create(OpCodes.Ret));
-
-        //        for (var index = 0; index < instructions.Count - 2; index++)
-        //        {
-        //            var instruction = instructions[index];
-        //            if (instruction.OpCode == OpCodes.Ret)
-        //            {
-        //                instructions[index] = Instruction.Create(OpCodes.Leave, lastLd);
-        //                instructions.Insert(index, Instruction.Create(OpCodes.Stloc, returnVariable));
-        //                index++;
-        //            }
-        //        }
-        //        return lastLd;
-        //    }
-        //}
-
-
-        //public static void PreMethodBodyHook()
-        //{
-        //    System.Diagnostics.Debug.WriteLine("Before Method Body");
-        //}
-        //public static void PostMethodBodyHook()
-        //{
-        //    System.Diagnostics.Debug.WriteLine("After Method Body");
-        //}
     }
 }
