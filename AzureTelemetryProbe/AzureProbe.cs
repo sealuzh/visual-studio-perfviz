@@ -2,18 +2,31 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace AzureTelemetryProbe
 {
+    // ReSharper disable once UnusedMember.Global Justification: Reflection
     public class AzureProbe
     {
+
         private static readonly ConcurrentDictionary<string, DateTime> MethodStartDateTimes = new ConcurrentDictionary<string, DateTime>();
 
+        static AzureProbe()
+        {
+            TelemetryConfiguration.Active.InstrumentationKey = "09725176-e81e-436d-bf21-958cad8d3a5a";
+        }
+
+        private static TelemetryClient TelemetryClient { get; } = new TelemetryClient { InstrumentationKey = TelemetryConfiguration.Active.InstrumentationKey };
+
+        // ReSharper disable once UnusedMember.Global Justification: Reflection
         public static void PreMethodExecutionHook(string documentationCommentId)
         {
             MethodStartDateTimes.TryAdd(documentationCommentId, DateTime.UtcNow);
-            Trace.WriteLine($"{documentationCommentId}. Start");
+            Trace.WriteLine($"{DateTime.UtcNow} - {documentationCommentId}. Started");
         }
+
+        // ReSharper disable once UnusedMember.Global Justification: Reflection
         public static void PostMethodExecutionHook(string documentationCommentId)
         {
             if (!MethodStartDateTimes.TryRemove(documentationCommentId, out var startDateTime))
@@ -21,15 +34,8 @@ namespace AzureTelemetryProbe
                 return;
             }
             var duration = DateTime.UtcNow - startDateTime;
-            Trace.WriteLine($"{documentationCommentId}. Duration: {duration.Milliseconds} ms");
-        }
-
-        //tracepath, type not important and can be neglected.
-        public static void SendTelemetryToAzure(DateTime start, string type, string methodName, string tracePath)
-        {
-            TimeSpan duration = DateTime.UtcNow - start;
-            TelemetryClient telemetryClient = new TelemetryClient();
-            telemetryClient.TrackDependency(type, methodName, tracePath, "InsightsTest", start, duration, "0", true);
+            Trace.WriteLine($"{DateTime.UtcNow} - {documentationCommentId}. Duration: {duration.Milliseconds} ms");
+            TelemetryClient.TrackDependency(documentationCommentId, "", startDateTime, duration, true);
         }
 
     }
