@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using CommandLine;
 using Mono.Cecil;
 
 namespace ProbeInjector
 {
-    static class Program
+    internal static class Program
     {
-        /// <summary>
-        /// Probe is copied to the ProbeInjector folder
-        /// </summary>
-        private const string ProbeAssemblyFilePath = nameof(Probe) + ".dll";
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(Run)
@@ -22,38 +17,28 @@ namespace ProbeInjector
 
         private static void Run(Options options)
         {
-            foreach (var assemblyFilePath in options.AssemblyFilePaths)
-            {
-                // Injecting References
-                var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFilePath);
-                InjectProbe(assemblyDefinition);
-                var outputFilePath = FileHelper.GetAvailableFilePath(assemblyFilePath);
-                assemblyDefinition.Write(outputFilePath);
+            // Loading Assemblies
+            var probeAssembly = new ProbeAssembly(options.ProbeFilePath);
+            probeAssembly.Load();
+            var targetAssemblyDefinition = AssemblyDefinition.ReadAssembly(options.InputFilePath);
 
-                // Moving the Probe to the folder of the assembly
-                var directory = Path.GetDirectoryName(assemblyFilePath);
-                if (!string.IsNullOrWhiteSpace(directory))
-                {
-                    var probeDestinationFilePath = Path.Combine(directory, ProbeAssemblyFilePath);
-                    File.Copy(ProbeAssemblyFilePath, probeDestinationFilePath, true);
-                }
+            // Injecting References
+            var rewriter = new IlRewriter(targetAssemblyDefinition, probeAssembly);
+            rewriter.InjectProbe();
+
+            // Writing Output
+            var outputFilePath = options.OutputFilePath ?? FileHelper.GetAvailableFilePath(options.InputFilePath);
+            targetAssemblyDefinition.Write(outputFilePath);
+
+            // Moving the ProbeAssembly to the folder of the assembly
+            var directory = Path.GetDirectoryName(options.InputFilePath);
+            var probeFileName = Path.GetFileName(options.ProbeFilePath);
+            if (!string.IsNullOrWhiteSpace(directory) && !string.IsNullOrWhiteSpace(probeFileName))
+            {
+                var probeDestinationFilePath = Path.Combine(directory, probeFileName);
+                File.Copy(options.ProbeFilePath, probeDestinationFilePath, true);
             }
         }
 
-        private static void InjectProbe(AssemblyDefinition assemblyDefinition)
-        {
-            var rewriter = new IlRewriter(assemblyDefinition);
-            foreach (var typeDefinition in assemblyDefinition.MainModule.Types)
-            {
-                for (var j = 0; j < typeDefinition.Methods.Count; j++)
-                {
-                    //IsSpecialName not optimal.
-                    if (!typeDefinition.Methods[j].IsSpecialName)
-                    {
-                        typeDefinition.Methods[j] = rewriter.HookMethod(typeDefinition.Methods[j]);
-                    }
-                }
-            }
-        }
     }
 }

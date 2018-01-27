@@ -56,7 +56,7 @@ namespace InjectionVictim
             double x = 0;
             for (int i = 0; i < 1000000; i++)
             {
-                x = Math.Pow(121, 123);
+                x += Math.Pow(121, 123);
             }
             x = x + 1;
             x = x + 2;

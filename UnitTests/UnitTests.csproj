@@ -63,9 +63,9 @@
       <Project>{2ec5e599-f430-4c61-a8c9-487aa5337dfd}</Project>
       <Name>ProbeInjector</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Probe\Probe.csproj">
+    <ProjectReference Include="..\AzureTelemetryProbe\AzureTelemetryProbe.csproj">
       <Project>{0f840844-d7c3-4671-be00-9dcdc517962a}</Project>
-      <Name>Probe</Name>
+      <Name>AzureTelemetryProbe</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

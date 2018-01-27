@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InSituVisualization", "InSi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProbeInjector", "ProbeInjector\ProbeInjector.csproj", "{2EC5E599-F430-4C61-A8C9-487AA5337DFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Probe", "Probe\Probe.csproj", "{0F840844-D7C3-4671-BE00-9DCDC517962A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureTelemetryProbe", "AzureTelemetryProbe\AzureTelemetryProbe.csproj", "{0F840844-D7C3-4671-BE00-9DCDC517962A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InjectionVictim", "InjectionVictim\InjectionVictim.csproj", "{DB649943-6DD3-4CA8-A455-BB9EF29A0068}"
 EndProject

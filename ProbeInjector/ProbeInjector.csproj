@@ -72,6 +72,7 @@
     <Compile Include="FileHelper.cs" />
     <Compile Include="IlRewriter.cs" />
     <Compile Include="Options.cs" />
+    <Compile Include="ProbeAssembly.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="UnusedCode.cs" />
@@ -79,12 +80,6 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Probe\Probe.csproj">
-      <Project>{0f840844-d7c3-4671-be00-9dcdc517962a}</Project>
-      <Name>Probe</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

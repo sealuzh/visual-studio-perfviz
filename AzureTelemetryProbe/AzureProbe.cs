@@ -3,18 +3,18 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using Microsoft.ApplicationInsights;
 
-namespace Probe
+namespace AzureTelemetryProbe
 {
-    public class AzureTelemetryProbe
+    public class AzureProbe
     {
         private static readonly ConcurrentDictionary<string, DateTime> MethodStartDateTimes = new ConcurrentDictionary<string, DateTime>();
 
-        public static void PreMethodBodyHook(string documentationCommentId)
+        public static void PreMethodExecutionHook(string documentationCommentId)
         {
             MethodStartDateTimes.TryAdd(documentationCommentId, DateTime.UtcNow);
             Trace.WriteLine($"{documentationCommentId}. Start");
         }
-        public static void PostMethodBodyHook(string documentationCommentId)
+        public static void PostMethodExecutionHook(string documentationCommentId)
         {
             if (!MethodStartDateTimes.TryRemove(documentationCommentId, out var startDateTime))
             {
