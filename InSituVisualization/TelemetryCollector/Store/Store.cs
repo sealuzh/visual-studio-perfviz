@@ -12,12 +12,12 @@ using InSituVisualization.TelemetryCollector.Persistance;
 
 namespace InSituVisualization.TelemetryCollector.Store
 {
-    public abstract class Store : IStore
+    public abstract class Store
     {
         public abstract void Update(bool persist);
     }
 
-    public class Store<T>: Store, IStoreT<T>
+    public class Store<T> : Store
     {
         protected ConcurrentDictionary<string, ConcurrentDictionary<string, T>> AllMemberTelemetries;
         protected ConcurrentDictionary<string, ConcurrentDictionary<string, T>> CurrentMemberTelemetries;
@@ -28,16 +28,18 @@ namespace InSituVisualization.TelemetryCollector.Store
         public Store(string fileName)
         {
             PersistanceService = new PersistanceService<T>(fileName);
-            
+
             FilterController = new FilterController<T>();
             AllMemberTelemetries = new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>();
             AllMemberTelemetries = PersistanceService.FetchSystemCacheData();
             CurrentMemberTelemetries = new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>();
         }
 
-        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> GetAllMethodTelemetries() => AllMemberTelemetries;
+        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> GetAllMethodTelemetries() =>
+            AllMemberTelemetries;
 
-        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> GetCurrentMethodTelemetries() => CurrentMemberTelemetries;
+        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> GetCurrentMethodTelemetries() =>
+            CurrentMemberTelemetries;
 
         public PersistanceService<T> GetPersistanceService() => PersistanceService;
 
@@ -48,7 +50,5 @@ namespace InSituVisualization.TelemetryCollector.Store
             if (persist) PersistanceService.WriteSystemCacheData(AllMemberTelemetries);
             CurrentMemberTelemetries = FilterController.ApplyFilters(AllMemberTelemetries);
         }
-        
     }
-
 }

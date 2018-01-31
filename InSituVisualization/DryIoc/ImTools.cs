@@ -459,7 +459,7 @@ namespace ImTools
         }
     }
 
-    /// <summary>Wrapper that provides optimistic-concurrency Swap operation implemented using <see cref="Ref.Swap{ConcreteMethodTelemetry}"/>.</summary>
+    /// <summary>Wrapper that provides optimistic-concurrency Swap operation implemented using <see cref="Ref.Swap{T}"/>.</summary>
     /// <typeparam name="T">Type of object to wrap.</typeparam>
     public sealed class Ref<T> where T : class
     {
@@ -473,7 +473,7 @@ namespace ImTools
             _value = initialValue;
         }
 
-        /// <summary>Exchanges currently hold object with <paramref name="getNewValue"/> - see <see cref="Ref.Swap{ConcreteMethodTelemetry}"/> for details.</summary>
+        /// <summary>Exchanges currently hold object with <paramref name="getNewValue"/> - see <see cref="Ref.Swap{T}"/> for details.</summary>
         /// <param name="getNewValue">Delegate to produce new object value from current one passed as parameter.</param>
         /// <returns>Returns old object value the same way as <see cref="Interlocked.Exchange(ref int,int)"/></returns>
         /// <remarks>Important: <paramref name="getNewValue"/> May be called multiple times to retry update with value concurrently changed by other code.</remarks>
@@ -505,10 +505,10 @@ namespace ImTools
         private T _value;
     }
 
-    /// <summary>Provides optimistic-concurrency consistent <see cref="Swap{ConcreteMethodTelemetry}"/> operation.</summary>
+    /// <summary>Provides optimistic-concurrency consistent <see cref="Swap{T}"/> operation.</summary>
     public static class Ref
     {
-        /// <summary>Factory for <see cref="Ref{ConcreteMethodTelemetry}"/> with type of value inference.</summary>
+        /// <summary>Factory for <see cref="Ref{T}"/> with type of value inference.</summary>
         /// <typeparam name="T">Type of value to wrap.</typeparam>
         /// <param name="value">Initial value to wrap.</param>
         /// <returns>New ref.</returns>

@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using InSituVisualization.TelemetryCollector.DataPulling;
-using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
-using InSituVisualization.TelemetryCollector.Store;
+﻿using System.Collections.Generic;
 
-namespace InSituVisualization.TelemetryCollector
+namespace InSituVisualization.TelemetryCollector.DataPulling
 {
-    public static class StoreHandlerSettingsProvider
+    public static class DataPullingServiceProdvider
     {
         private static List<IDataPullingService> _dataPullingServices;
 

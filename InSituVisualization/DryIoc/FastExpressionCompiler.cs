@@ -1740,7 +1740,7 @@ namespace FastExpressionCompiler
                     return true;
                 }
 
-                // Conversion to nullable: new Nullable<ConcreteMethodTelemetry>(ConcreteMethodTelemetry val);
+                // Conversion to nullable: new Nullable<T>(T val);
                 if (targetType.IsNullable())
                 {
                     var wrappedType = targetType.GetWrappedTypeFromNullable();

@@ -13,7 +13,7 @@ using InSituVisualization.TelemetryCollector.Store;
 
 namespace InSituVisualization.TelemetryCollector
 {
-    class StoreHandler : ITelemetryDataProvider
+    class StoreHandler : IStoreHandler
     {
         //private ConcurrentDictionary<string, AveragedMethod> _currentAveragedMemberTelemetry;
         //private List<Timer> timers;
@@ -29,7 +29,7 @@ namespace InSituVisualization.TelemetryCollector
         {
             //FilterController.AddFilterGlobal(FilterController.GetFilterProperties()[1], FilterKind.IsGreaterEqualThen, new DateTime(2017, 11, 21));
 
-            //_dataPullingServices = StoreHandlerSettingsProvider.GetDataPullingServices();
+            //_dataPullingServices = DataPullingServiceProdvider.GetDataPullingServices();
 
             _timer = new Timer
             {
@@ -51,7 +51,7 @@ namespace InSituVisualization.TelemetryCollector
             try
             {
                 var updateOccured = false;
-                foreach (IDataPullingService service in StoreHandlerSettingsProvider.GetDataPullingServices())
+                foreach (IDataPullingService service in DataPullingServiceProdvider.GetDataPullingServices())
                 {
                     var newRestData = service.GetNewTelemetriesTaskAsync();
                     await newRestData;

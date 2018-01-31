@@ -24,7 +24,7 @@ namespace InSituVisualization
 #if TestMapping
             Container.Register<ITelemetryDataMapper, MockTelemetryDataMapper>(Reuse.Singleton);
 #else
-            Container.Register<ITelemetryDataProvider, StoreHandler>(Reuse.Singleton);
+            Container.Register<IStoreHandler, StoreHandler>(Reuse.Singleton);
             Container.Register<ITelemetryDataMapper, TelemetryDataMapper>(Reuse.Singleton);
 #endif
         }

@@ -47,7 +47,7 @@ namespace InSituVisualization.Utils
         private Color ToColor()
         {
             // ######################################################################
-            // ConcreteMethodTelemetry. Nathan Mundhenk
+            // T. Nathan Mundhenk
             // mundhenk@usc.edu
             // C/C++ Macro HSV to RGB
 

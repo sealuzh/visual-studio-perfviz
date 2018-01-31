@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
+using InSituVisualization.TelemetryCollector.Persistance;
 using Newtonsoft.Json;
 
 namespace InSituVisualization.TelemetryCollector.DataPulling

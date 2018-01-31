@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using InSituVisualization.TelemetryCollector;
+using InSituVisualization.TelemetryCollector.Persistance;
 using Microsoft.VisualStudio.Shell;
 
 namespace InSituVisualization.Views

@@ -59,10 +59,7 @@
     <Compile Include="Model\PerformanceInfo.cs" />
     <Compile Include="PerformanceSyntaxWalker.cs" />
     <Compile Include="TelemetryCollector\Filter\Filter.cs" />
-    <Compile Include="TelemetryCollector\StoreHandlerProvider.cs" />
-    <Compile Include="TelemetryCollector\Store\ExceptionStore.cs" />
-    <Compile Include="TelemetryCollector\Store\IStore.cs" />
-    <Compile Include="TelemetryCollector\Store\IStoreT.cs" />
+    <Compile Include="TelemetryCollector\DataPulling\DataPullingServiceProvider.cs" />
     <Compile Include="TelemetryCollector\Model\ConcreteMember\ConcreteMethod.cs" />
     <Compile Include="TelemetryCollector\Model\ConcreteMember\ConcreteMethodException.cs" />
     <Compile Include="TelemetryCollector\Store\Store.cs" />
@@ -88,7 +85,7 @@
     <Compile Include="Utils\HsvColor.cs" />
     <Compile Include="IocHelper.cs" />
     <Compile Include="TelemetryMapper\ITelemetryDataMapper.cs" />
-    <Compile Include="TelemetryCollector\ITelemetryDataProvider.cs" />
+    <Compile Include="TelemetryCollector\IStoreHandler.cs" />
     <Compile Include="MethodAdornmentLayer.cs" />
     <Compile Include="Converters\ColorToSolidColorBrushValueConverter.cs" />
     <Compile Include="MemberPerformanceAdorner.cs" />
@@ -119,7 +116,7 @@
     <Compile Include="TelemetryCollector\Model\Method.cs" />
     <Compile Include="TelemetryCollector\Filter\FilterController.cs" />
     <Compile Include="TelemetryCollector\Persistance\PersistanceService.cs" />
-    <Compile Include="TelemetryCollector\WritableSettingsStoreController.cs" />
+    <Compile Include="TelemetryCollector\Persistance\WritableSettingsStoreController.cs" />
     <Compile Include="TelemetryMapper\TelemetryDataMapper.cs" />
     <Compile Include="ViewModels\MethodInvocationPerformanceInfoControlViewModel.cs" />
     <Compile Include="Views\MethodInvocationPerformanceInfoControl.xaml.cs">
@@ -393,6 +390,7 @@
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

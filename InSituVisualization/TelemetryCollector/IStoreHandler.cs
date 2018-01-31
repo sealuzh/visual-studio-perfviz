@@ -4,7 +4,7 @@ using InSituVisualization.TelemetryCollector.Model.AveragedMember;
 
 namespace InSituVisualization.TelemetryCollector
 {
-    internal interface ITelemetryDataProvider
+    internal interface IStoreHandler
     {
         ConcurrentDictionary<string, AveragedMethod> GetAveragedMemberTelemetry();
     }
