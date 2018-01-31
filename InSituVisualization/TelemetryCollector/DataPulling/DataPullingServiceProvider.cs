@@ -8,11 +8,8 @@ namespace InSituVisualization.TelemetryCollector.DataPulling
 
         public static List<IDataPullingService> GetDataPullingServices()
         {
-            if (_dataPullingServices == null)
-            {
-                _dataPullingServices = new List<IDataPullingService> {new InsightsExternalReferencesRestApiDataPullingService()};
-            }
-            return _dataPullingServices;
+            return _dataPullingServices ?? (_dataPullingServices =
+                       new List<IDataPullingService> {new InsightsExternalReferencesRestApiDataPullingService()});
         }        
     }
 }

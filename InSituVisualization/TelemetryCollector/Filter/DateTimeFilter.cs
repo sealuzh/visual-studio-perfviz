@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using InSituVisualization.TelemetryCollector.Filter.Property;
-using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
 
 namespace InSituVisualization.TelemetryCollector.Filter
 {

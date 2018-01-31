@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.IO;
-using System.Threading.Tasks;
-using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
 using Newtonsoft.Json;
 
 namespace InSituVisualization.TelemetryCollector.Persistance
