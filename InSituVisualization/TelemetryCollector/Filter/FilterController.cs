@@ -9,13 +9,13 @@ namespace InSituVisualization.TelemetryCollector.Filter
     public class FilterController<T>
     {
         //private readonly Dictionary<string, PropertyInfo> _propertyMap;
-        private readonly List<IFilter> _activeFilters;
+        private readonly List<Filter> _activeFilters;
         private readonly List<FilterProperty> _filterProperties;
 
         public FilterController()
         {
             //_propertyMap = new Dictionary<string, PropertyInfo>();
-            _activeFilters = new List<IFilter>();
+            _activeFilters = new List<Filter>();
             _filterProperties = new List<FilterProperty>();
 
             var propertyInfoArray = typeof(T).GetProperties();
@@ -48,7 +48,7 @@ namespace InSituVisualization.TelemetryCollector.Filter
         //Adds a Filter that is used over all different methods available in the syntax
         public bool AddFilterGlobal(IFilterProperty filterProperty, FilterKind filterKind, object parameter)
         {
-            IFilter newFilter;
+            Filter newFilter;
             switch (filterProperty.GetPropertyInfo().PropertyType.ToString())
             {
                 case "System.String":
@@ -74,7 +74,7 @@ namespace InSituVisualization.TelemetryCollector.Filter
         //Adds a Filter that only applies to a single method in the syntax.
         public bool AddFilterLocal(IFilterProperty filterProperty, FilterKind filterKind, object parameter, string filterMethodFullName)
         {
-            IFilter newFilter;
+            Filter newFilter;
             switch (filterProperty.GetPropertyInfo().PropertyType.ToString())
             {
                 case "System.String":

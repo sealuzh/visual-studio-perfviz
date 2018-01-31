@@ -8,7 +8,7 @@ using InSituVisualization.TelemetryCollector.Filter.Property;
 
 namespace InSituVisualization.TelemetryCollector.Filter
 {
-    public abstract class Filter : IFilter
+    public abstract class Filter// : IFilter
     {
         protected readonly FilterKind FilterKind;
         protected readonly bool IsGlobalFilter;
@@ -26,6 +26,8 @@ namespace InSituVisualization.TelemetryCollector.Filter
             IsGlobalFilter = isGlobalFilter;
             ToFilterMethodFullName = toFilterMethodFullName;
         }
+
+        protected abstract ConcurrentDictionary<string, T> ApplyFilterMethodLevel<T>(string kvpMethodKey, ConcurrentDictionary<string, T> inDictionary);
 
         public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> ApplyFilter<T>(ConcurrentDictionary<string, ConcurrentDictionary<string, T>> inDictionary)
         {
@@ -61,9 +63,5 @@ namespace InSituVisualization.TelemetryCollector.Filter
             }
             return outDictionary;
         }
-
-        protected abstract ConcurrentDictionary<string, T> ApplyFilterMethodLevel<T>(string kvpMethodKey,ConcurrentDictionary<string, T> inDictionary);
-
-
     }
 }

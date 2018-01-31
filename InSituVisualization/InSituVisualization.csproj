@@ -103,7 +103,6 @@
     <Compile Include="TelemetryCollector\Model\ConcreteMember\ConcreteMethodTelemetry.cs" />
     <Compile Include="TelemetryCollector\Filter\IntFilter.cs" />
     <Compile Include="TelemetryCollector\Filter\Property\FilterProperty.cs" />
-    <Compile Include="TelemetryCollector\Filter\IFilter.cs" />
     <Compile Include="TelemetryCollector\Filter\DateTimeFilter.cs" />
     <Compile Include="TelemetryCollector\Filter\Property\DateTimeFilterProperty.cs" />
     <Compile Include="TelemetryCollector\Filter\Property\IFilterProperty.cs" />
