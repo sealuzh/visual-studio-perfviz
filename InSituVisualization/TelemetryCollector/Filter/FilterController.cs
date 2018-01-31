@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using InSituVisualization.TelemetryCollector.Filter.Property;
+using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
 
 namespace InSituVisualization.TelemetryCollector.Filter
 {
-    internal class FilterController
+    public class FilterController<T>
     {
         //private readonly Dictionary<string, PropertyInfo> _propertyMap;
         private readonly List<IFilter> _activeFilters;
@@ -16,7 +18,7 @@ namespace InSituVisualization.TelemetryCollector.Filter
             _activeFilters = new List<IFilter>();
             _filterProperties = new List<FilterProperty>();
 
-            var propertyInfoArray = typeof(ConcreteMethodTelemetry).GetProperties();
+            var propertyInfoArray = typeof(T).GetProperties();
             foreach (var prop in propertyInfoArray)
             {
                 switch (prop.PropertyType.ToString())
@@ -36,7 +38,8 @@ namespace InSituVisualization.TelemetryCollector.Filter
             }
         }
 
-        //Returs a list of FilterPropertyObjects that describe all possible variables in ConcreteMethodTelemetry to filter on.
+
+        //Returs a list of FilterPropertyObjects that describe all possible variables in ConcreteMethod to filter on.
         public List<FilterProperty> GetFilterProperties()
         {
             return _filterProperties;
@@ -97,13 +100,13 @@ namespace InSituVisualization.TelemetryCollector.Filter
         }
 
         //Applies the filters currently stored in _activeFilters.
-        public IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> ApplyFilters(IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> inDictionary)
+        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> ApplyFilters(ConcurrentDictionary<string, ConcurrentDictionary<string, T>> inDictionary)
         {
             if (_activeFilters.Count <= 0)
             {
                 return inDictionary;
             }
-            IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> outDictionary = new Dictionary<string, IDictionary<string, ConcreteMethodTelemetry>>(inDictionary);
+            ConcurrentDictionary<string, ConcurrentDictionary<string, T>> outDictionary = new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>(inDictionary);
             foreach (var filter in _activeFilters)
             {
                 outDictionary = filter.ApplyFilter(outDictionary);

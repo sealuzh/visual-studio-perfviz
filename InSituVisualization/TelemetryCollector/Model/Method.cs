@@ -1,11 +1,11 @@
-﻿namespace InSituVisualization.TelemetryCollector
+﻿namespace InSituVisualization.TelemetryCollector.Model
 {
     /// <summary>
     /// The abstract telemetry collected on a specific method
     /// </summary>
-    internal abstract class MethodTelemetry
+    public abstract class Method
     {
-        protected MethodTelemetry(string documentationCommentId)
+        protected Method(string documentationCommentId)
         {
             DocumentationCommentId = documentationCommentId;
         }

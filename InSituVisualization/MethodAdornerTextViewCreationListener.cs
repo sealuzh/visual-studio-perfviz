@@ -36,7 +36,7 @@ namespace InSituVisualization
         /// Called when a text view having matching roles is created over a text data model having a matching content type.
         /// Instantiates a MemberPerformanceAdorner manager when the textView is created.
         /// </summary>
-        /// <param name="textView">The <see cref="T:Microsoft.VisualStudio.Text.Editor.IWpfTextView" /> upon which the adornment should be placed</param>
+        /// <param name="textView">The <see cref="ConcreteMethodTelemetry:Microsoft.VisualStudio.Text.Editor.IWpfTextView" /> upon which the adornment should be placed</param>
         public void TextViewCreated(IWpfTextView textView)
         {
             // The adornment will listen to any event that changes the layout (text changes, scrolling, etc)

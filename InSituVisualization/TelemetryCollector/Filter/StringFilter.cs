@@ -1,77 +1,53 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using InSituVisualization.TelemetryCollector.Filter.Property;
 
 namespace InSituVisualization.TelemetryCollector.Filter
 {
-    class StringFilter : IFilter
+    public class StringFilter : Filter
     {
+        protected readonly string FilterString;
+        protected readonly StringFilterProperty FilterProperty;
 
-        private readonly string _filterString;
-        private readonly StringFilterProperty _filterProperty;
-        private readonly bool _isGlobalFilter;
-        private readonly string _toFilterMethodFullName;
-        private readonly FilterKind _filterKind;
-
-        public StringFilter(IFilterProperty filterProperty, string filterString, FilterKind filterKind)
+        public StringFilter(IFilterProperty filterProperty, string filterString, FilterKind filterKind) : base(filterKind, true)
         {
-            _filterString = filterString;
-            _filterProperty = (StringFilterProperty)filterProperty;
-            _filterKind = filterKind;
-            _isGlobalFilter = true;
+            FilterString = filterString;
+            FilterProperty = (StringFilterProperty)filterProperty;
         }
 
-        public StringFilter(IFilterProperty filterProperty, string filterString, FilterKind filterKind, string toFilterMethodFullName)
+        public StringFilter(IFilterProperty filterProperty, string filterString, FilterKind filterKind, string toFilterMethodFullName) : base(filterKind, false, toFilterMethodFullName)
         {
-            _filterString = filterString;
-            _filterProperty = (StringFilterProperty)filterProperty;
-            _filterKind = filterKind;
-            _isGlobalFilter = false;
-            _toFilterMethodFullName = toFilterMethodFullName;
+            FilterString = filterString;
+            FilterProperty = (StringFilterProperty)filterProperty;
         }
 
-        public IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> ApplyFilter(IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> inDictionary)
+        
+        protected override ConcurrentDictionary<string, T> ApplyFilterMethodLevel<T>(string kvpMethodKey, ConcurrentDictionary<string, T> inDictionary)
         {
-            var outDictionary = new Dictionary<string, IDictionary<string, ConcreteMethodTelemetry>>();
-            foreach (var kvpMethod in inDictionary)
-            {
-                if (_isGlobalFilter)
-                {
-                    outDictionary.Add(kvpMethod.Key, ApplyFilterMethodLevel(kvpMethod.Key, inDictionary[kvpMethod.Key]));
-                }
-                else
-                {
-                    if (kvpMethod.Key != _toFilterMethodFullName)
-                    {
-                        outDictionary.Add(kvpMethod.Key, new Dictionary<string, ConcreteMethodTelemetry>(kvpMethod.Value));
-                    }
-                    else
-                    {
-                        outDictionary.Add(kvpMethod.Key, ApplyFilterMethodLevel(kvpMethod.Key, inDictionary[kvpMethod.Key]));
-                    }
-                }
-            }
-            return outDictionary;
-        }
-
-        private IDictionary<string, ConcreteMethodTelemetry> ApplyFilterMethodLevel(string kvpMethodKey, IDictionary<string, ConcreteMethodTelemetry> inDictionary)
-        {
-            var outDictionary = new Dictionary<string, ConcreteMethodTelemetry>();
+            var outDictionary = new ConcurrentDictionary<string, T>();
             foreach(var kvpMember in inDictionary)
                 {
-                var memberPropertyValue = (string)_filterProperty.GetPropertyInfo().GetValue(kvpMember.Value);
-                    switch (_filterKind)
+                var memberPropertyValue = (string)FilterProperty.GetPropertyInfo().GetValue(kvpMember.Value);
+                    switch (FilterKind)
                     {
                         case FilterKind.IsEqual:
-                            if (memberPropertyValue.Equals(_filterString))
+                            if (memberPropertyValue.Equals(FilterString))
                             {
-                                outDictionary.Add(kvpMember.Key, kvpMember.Value);
+                            if (!outDictionary.TryAdd(kvpMember.Key, kvpMember.Value))
+                            {
+                                Console.WriteLine("Could not add element " + kvpMember.Key);
                             }
+                        }
                             break;
                         case FilterKind.Contains:
-                            if (!memberPropertyValue.Contains(_filterString))
+                            if (!memberPropertyValue.Contains(FilterString))
                             {
-                                outDictionary.Add(kvpMember.Key, kvpMember.Value);
+                            if (!outDictionary.TryAdd(kvpMember.Key, kvpMember.Value))
+                            {
+                                Console.WriteLine("Could not add element " + kvpMember.Key);
                             }
+                        }
                             break;
                         default:
                             break;
@@ -79,5 +55,6 @@ namespace InSituVisualization.TelemetryCollector.Filter
             }
             return outDictionary;
         }
+
     }
 }

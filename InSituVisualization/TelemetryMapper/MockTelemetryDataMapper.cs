@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 namespace InSituVisualization.TelemetryMapper
 {
     /// <summary>
-    /// Returns Mock MethodTelemetry Data
+    /// Returns Mock Method Data
     /// </summary>
     internal class MockTelemetryDataMapper : ITelemetryDataMapper
     {

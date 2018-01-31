@@ -154,9 +154,9 @@ namespace InSituVisualization.Properties
   /// <list>
   /// <item><c>NotifyChanged(string)</c></item>
   /// <item><c>NotifyChanged(params string[])</c></item>
-  /// <item><c>NotifyChanged{T}(Expression{Func{T}})</c></item>
-  /// <item><c>NotifyChanged{T,U}(Expression{Func{T,U}})</c></item>
-  /// <item><c>SetProperty{T}(ref T, T, string)</c></item>
+  /// <item><c>NotifyChanged{ConcreteMethodTelemetry}(Expression{Func{ConcreteMethodTelemetry}})</c></item>
+  /// <item><c>NotifyChanged{ConcreteMethodTelemetry,U}(Expression{Func{ConcreteMethodTelemetry,U}})</c></item>
+  /// <item><c>SetProperty{ConcreteMethodTelemetry}(ref ConcreteMethodTelemetry, ConcreteMethodTelemetry, string)</c></item>
   /// </list>
   /// </remarks>
   /// <example><code>
@@ -517,7 +517,7 @@ namespace InSituVisualization.Properties
   /// of enumerable types, producing ordinary C# 'foreach' statement and placing caret inside block:
   /// <code>
   /// [SourceTemplate]
-  /// public static void forEach&lt;T&gt;(this IEnumerable&lt;T&gt; xs) {
+  /// public static void forEach&lt;ConcreteMethodTelemetry&gt;(this IEnumerable&lt;ConcreteMethodTelemetry&gt; xs) {
   ///   foreach (var x in xs) {
   ///      //$ $END$
   ///   }
@@ -540,7 +540,7 @@ namespace InSituVisualization.Properties
   /// Applying the attribute on a source template method:
   /// <code>
   /// [SourceTemplate, Macro(Target = "item", Expression = "suggestVariableName()")]
-  /// public static void forEach&lt;T&gt;(this IEnumerable&lt;T&gt; collection) {
+  /// public static void forEach&lt;ConcreteMethodTelemetry&gt;(this IEnumerable&lt;ConcreteMethodTelemetry&gt; collection) {
   ///   foreach (var item in collection) {
   ///     //$ $END$
   ///   }

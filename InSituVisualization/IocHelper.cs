@@ -1,5 +1,6 @@
-﻿#define TestMapping
+﻿//#define TestMapping
 using DryIoc;
+using InSituVisualization.TelemetryCollector;
 using InSituVisualization.TelemetryMapper;
 using InSituVisualization.Utils;
 
@@ -23,7 +24,7 @@ namespace InSituVisualization
 #if TestMapping
             Container.Register<ITelemetryDataMapper, MockTelemetryDataMapper>(Reuse.Singleton);
 #else
-            Container.Register<ITelemetryDataProvider, AzureTelemetryStore>(Reuse.Singleton);
+            Container.Register<ITelemetryDataProvider, StoreHandler>(Reuse.Singleton);
             Container.Register<ITelemetryDataMapper, TelemetryDataMapper>(Reuse.Singleton);
 #endif
         }

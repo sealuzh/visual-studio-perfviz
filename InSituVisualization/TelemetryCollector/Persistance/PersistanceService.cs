@@ -1,35 +1,45 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
 using Newtonsoft.Json;
 
 namespace InSituVisualization.TelemetryCollector.Persistance
 {
-    static class PersistanceService
+    public class PersistanceService<T> 
     {
         private static readonly string BasePath = Path.GetDirectoryName(Path.GetTempPath()) + "\\InSitu";
+        private static string _fileName; //e.g. VSIXStore.json
+        //private static ConcreteMethodTelemetry _instanceType = ConcreteMethodTelemetry;
+       // public bool IsAverageTelemetryLock = false;
+        //public static bool IsConcreteMemberTelemetriesLock = false;
 
-        public static bool IsAverageTelemetryLock = false;
-        public static bool IsConcreteMemberTelemetriesLock = false;
-
-        public static IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> FetchSystemCacheData()
+        public PersistanceService(string fileName)
         {
-            //TODO: Filename has to match the project
-            if (File.Exists(BasePath + "\\VSIXStore.json"))
-            {
-                var input = File.ReadAllText(BasePath + "\\VSIXStore.json");
-                var importedConcreteMemberTelemetires = JsonConvert.DeserializeObject<Dictionary<string, IDictionary<string, ConcreteMethodTelemetry>>>(input);
-                return importedConcreteMemberTelemetires;
-            }
-            return new Dictionary<string, IDictionary<string, ConcreteMethodTelemetry>>(); //first dict: Key Membername, second dict: Key RestSendID
+            //_instanceType = instanceType;
+            _fileName = fileName;
         }
 
-        public static void WriteSystemCacheData(IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> toStoreTelemetryData)
+        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> FetchSystemCacheData()
+        {
+            //TODO: Filename has to match the project
+            if (File.Exists(BasePath + "\\" + _fileName))
+            {
+                var input = File.ReadAllText(BasePath + "\\" + _fileName);
+                var importedConcreteMemberTelemetries = JsonConvert.DeserializeObject<ConcurrentDictionary<string, ConcurrentDictionary<string, T>>>(input);
+                return importedConcreteMemberTelemetries;
+            }
+            return new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>(); //first dict: Key Membername, second dict: Key RestSendID
+        }
+
+        public void WriteSystemCacheData(object toStoreTelemetryData)
         {
             //TODO: Find better path because this one is deleted upon startup.
             var json = JsonConvert.SerializeObject(toStoreTelemetryData);
             Directory.CreateDirectory(BasePath);
-            File.WriteAllText(BasePath + "\\VSIXStore.json", json);
+            File.WriteAllText(BasePath + "\\" + _fileName, json);
         }
 
         //public static async Task AwaitConcreteMemberTelemetriesLock()
@@ -40,12 +50,12 @@ namespace InSituVisualization.TelemetryCollector.Persistance
         //    }
         //}
 
-        public static async Task AwaitAverageMemberTelemetryLock()
-        {
-            while (IsAverageTelemetryLock)
-            {
-                await Task.Delay(50);
-            }
-        }
+        //public static async Task AwaitAverageMemberTelemetryLock()
+        //{
+        //    while (IsAverageTelemetryLock)
+        //    {
+        //        await Task.Delay(50);
+        //    }
+        //}
     }
 }

@@ -2,85 +2,60 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using InSituVisualization.TelemetryCollector.Filter.Property;
+using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
 
 namespace InSituVisualization.TelemetryCollector.Filter
 {
-    class DateTimeFilter : IFilter
+    public class DateTimeFilter : Filter
     {
-
-        private readonly DateTime _filterString;
-        private readonly DateTimeFilterProperty _filterProperty;
-        private readonly bool _isGlobalFilter;
-        private readonly string _toFilterMethodFullName;
-        private readonly FilterKind _filterKind;
-
-        public DateTimeFilter(IFilterProperty filterProperty, DateTime filterString, FilterKind filterKind)
+        protected readonly DateTime FilterString;
+        protected readonly DateTimeFilterProperty FilterProperty;
+        
+        public DateTimeFilter(IFilterProperty filterProperty, DateTime filterString, FilterKind filterKind) : base(filterKind, true)
         {
-            _filterString = filterString;
-            _filterProperty = (DateTimeFilterProperty)filterProperty;
-            _filterKind = filterKind;
-            _isGlobalFilter = true;
+            FilterString = filterString;
+            FilterProperty = (DateTimeFilterProperty)filterProperty;
         }
 
-        public DateTimeFilter(IFilterProperty filterProperty, DateTime filterString, FilterKind filterKind, string toFilterMethodFullName)
+        public DateTimeFilter(IFilterProperty filterProperty, DateTime filterString, FilterKind filterKind, string toFilterMethodFullName) : base(filterKind, false, toFilterMethodFullName)
         {
-            _filterString = filterString;
-            _filterProperty = (DateTimeFilterProperty) filterProperty;
-            _filterKind = filterKind;
-            _isGlobalFilter = false;
-            _toFilterMethodFullName = toFilterMethodFullName;
+            FilterString = filterString;
+            FilterProperty = (DateTimeFilterProperty)filterProperty;
         }
 
-
-
-        public IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> ApplyFilter(IDictionary<string, IDictionary<string, ConcreteMethodTelemetry>> inDictionary)
+        protected override ConcurrentDictionary<string, T> ApplyFilterMethodLevel<T>(string kvpMethodKey, ConcurrentDictionary<string, T> inDictionary)
         {
-            var outDictionary = new Dictionary<string, IDictionary<string, ConcreteMethodTelemetry>>();
-            foreach (var kvpMethod in inDictionary)
-            {
-                if (_isGlobalFilter)
-                {
-                    outDictionary.Add(kvpMethod.Key, ApplyFilterMethodLevel(kvpMethod.Key, inDictionary[kvpMethod.Key]));
-                }
-                else
-                {
-                    if (kvpMethod.Key != _toFilterMethodFullName)
-                    {
-                        outDictionary.Add(kvpMethod.Key, new ConcurrentDictionary<string, ConcreteMethodTelemetry>(kvpMethod.Value));
-                    }
-                    else
-                    {
-                        outDictionary.Add(kvpMethod.Key, ApplyFilterMethodLevel(kvpMethod.Key, inDictionary[kvpMethod.Key]));
-                    }
-                }
-            }
-            return outDictionary;
-        }
-
-        private IDictionary<string, ConcreteMethodTelemetry> ApplyFilterMethodLevel(string kvpMethodKey, IDictionary<string, ConcreteMethodTelemetry> inDictionary)
-        {
-            var outDictionary = new Dictionary<string, ConcreteMethodTelemetry>();
+            var outDictionary = new ConcurrentDictionary<string, T>();
             foreach (var kvpMember in inDictionary)
             {
-                var memberPropertyValue = (DateTime)_filterProperty.GetPropertyInfo().GetValue(kvpMember.Value);
-                switch (_filterKind)
+                var memberPropertyValue = (DateTime)FilterProperty.GetPropertyInfo().GetValue(kvpMember.Value);
+                switch (FilterKind)
                 {
                     case FilterKind.IsEqual:
-                        if (!memberPropertyValue.Equals(_filterString))
+                        if (!memberPropertyValue.Equals(FilterString))
                         {
-                            outDictionary.Add(kvpMember.Key, kvpMember.Value);
+                            if (!outDictionary.TryAdd(kvpMember.Key, kvpMember.Value))
+                            {
+                                Console.WriteLine("Could not add element " + kvpMember.Key);
+                            }
                         }
                         break;
                     case FilterKind.IsGreaterEqualThen:
-                        if (!(memberPropertyValue <= _filterString))
+                        if (!(memberPropertyValue <= FilterString))
                         {
-                            outDictionary.Add(kvpMember.Key, kvpMember.Value);
+                            if (!outDictionary.TryAdd(kvpMember.Key, kvpMember.Value))
+                            {
+                                Console.WriteLine("Could not add element " + kvpMember.Key);
+                            }
                         }
                         break;
                     case FilterKind.IsSmallerEqualThen:
-                        if (!(memberPropertyValue >= _filterString))
+                        if (!(memberPropertyValue >= FilterString))
                         {
-                            outDictionary.Add(kvpMember.Key, kvpMember.Value);
+                            if (!outDictionary.TryAdd(kvpMember.Key, kvpMember.Value))
+                            {
+                                Console.WriteLine("Could not add element " + kvpMember.Key);
+                            }
                         }
                         break;
                     default:

@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using InSituVisualization.TelemetryCollector.Model.AveragedMember;
 
 namespace InSituVisualization.TelemetryCollector
 {
     internal interface ITelemetryDataProvider
     {
-        Dictionary<string, AveragedMethodTelemetry> GetAveragedMemberTelemetry();
+        ConcurrentDictionary<string, AveragedMethod> GetAveragedMemberTelemetry();
     }
 }

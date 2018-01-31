@@ -66,7 +66,7 @@ namespace InSituVisualization.Utils
             var spanEnd = methodDeclarationSyntax.ParameterList.FullSpan.End;
             if (methodDeclarationSyntax.ConstraintClauses.Any())
             {
-                // finding the end of where T : Clause (TypeParameterConstraintClause)
+                // finding the end of where ConcreteMethodTelemetry : Clause (TypeParameterConstraintClause)
                 spanEnd = methodDeclarationSyntax.ConstraintClauses.FullSpan.End;
             }
             return Span.FromBounds(spanStart, spanEnd);

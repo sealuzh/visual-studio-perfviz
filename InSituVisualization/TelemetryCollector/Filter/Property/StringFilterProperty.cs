@@ -2,7 +2,7 @@
 
 namespace InSituVisualization.TelemetryCollector.Filter.Property
 {
-    class StringFilterProperty : FilterProperty
+    public class StringFilterProperty : FilterProperty
     {
         
         private readonly FilterKind _filterKinds;

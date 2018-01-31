@@ -386,7 +386,7 @@ namespace DryIoc
             var requiredItemType = requiredServiceType ?? serviceType;
 
             // Emulating the collection parent so that collection related rules and conditions were applied
-            // the same way as if resolving IEnumerable<T>
+            // the same way as if resolving IEnumerable<ConcreteMethodTelemetry>
             if (preResolveParent == null || preResolveParent.IsEmpty)
                 preResolveParent = RequestInfo.Empty.Push(
                     typeof(IEnumerable<object>), requiredItemType, serviceKey, IfUnresolved.Throw,
@@ -2466,7 +2466,7 @@ namespace DryIoc
         /// <summary>Generates all resolution root and calls expressions.</summary>
         /// <param name="container">For container</param>
         /// <param name="resolutions">Result resolution factory expressions. They could be compiled and used for actual service resolution.</param>
-        /// <param name="resolutionCalls">Resolution call dependencies (implemented via Resolve call): e.g. dependencies wrapped in Lazy{T}.</param>
+        /// <param name="resolutionCalls">Resolution call dependencies (implemented via Resolve call): e.g. dependencies wrapped in Lazy{ConcreteMethodTelemetry}.</param>
         /// <param name="whatRegistrations">(optional) Allow to filter what registration to resolve. By default applies to all registrations.
         /// You may use <see cref="SetupAsResolutionRoots"/> to generate only for registrations with <see cref="Setup.AsResolutionRoot"/>.</param>
         /// <returns>Errors happened when resolving corresponding registrations.</returns>
@@ -3086,7 +3086,7 @@ namespace DryIoc
             return New(typeof(LazyEnumerable<>).MakeGenericType(itemType).Constructor(), callResolveManyExpr);
         }
 
-        /// <summary>Gets the expression for <see cref="Lazy{T}"/> wrapper.</summary>
+        /// <summary>Gets the expression for <see cref="Lazy{ConcreteMethodTelemetry}"/> wrapper.</summary>
         /// <param name="request">The resolution request.</param>
         /// <param name="nullWrapperForUnresolvedService">if set to <c>true</c> then check for service registration before creating resolution expression.</param>
         /// <returns>Expression: r => new Lazy{TService}(() => r.Resolve{TService}(key, ifUnresolved, requiredType));</returns>
@@ -3109,7 +3109,7 @@ namespace DryIoc
             // or for singleton : r => new Lazy(() => r.Root.Resolve<X>(key))
             var serviceExpr = Resolver.CreateResolutionExpression(serviceRequest);
 
-            // The conversion is required in .NET 3.5 to handle lack of covariance for Func<out T>
+            // The conversion is required in .NET 3.5 to handle lack of covariance for Func<out ConcreteMethodTelemetry>
             // So that Func<Derived> may be used for Func<Base>
             if (serviceExpr.Type != serviceType)
                 serviceExpr = Convert(serviceExpr, serviceType);
@@ -3163,7 +3163,7 @@ namespace DryIoc
             if (serviceExpr == null)
                 return null;
 
-            // The conversion is required in .NET 3.5 to handle lack of covariance for Func<out T>
+            // The conversion is required in .NET 3.5 to handle lack of covariance for Func<out ConcreteMethodTelemetry>
             // So that Func<Derived> may be used for Func<Base>
             if (!isAction && serviceExpr.Type != serviceType)
                 serviceExpr = Convert(serviceExpr, serviceType);
@@ -6398,7 +6398,7 @@ namespace DryIoc
             return default(TResult);
         }
 
-        /// <summary>Obsolete: now request is directly implements the <see cref="IEnumerable{T}"/>.</summary>
+        /// <summary>Obsolete: now request is directly implements the <see cref="IEnumerable{ConcreteMethodTelemetry}"/>.</summary>
         public IEnumerable<Request> Enumerate() => this;
 
         /// <summary>Enumerates all runtime request stack parents, BUT does not got further to pre-resolve <see cref="RequestInfo"/>.</summary>
@@ -7826,7 +7826,7 @@ namespace DryIoc
 
             var factoryMethodResultType = Made.FactoryMethodKnownResultType;
             if (implType == null ||
-                implType == typeof(object) || // required as currently object represents the open-generic type argument T registrations
+                implType == typeof(object) || // required as currently object represents the open-generic type argument ConcreteMethodTelemetry registrations
                 implType.IsAbstract())
             {
                 if (made.FactoryMethod == null)
@@ -7853,8 +7853,8 @@ namespace DryIoc
             }
 
             var openGenericImplType = knownImplType ?? implType;
-            if (openGenericImplType == typeof(object) || // for open-generic T implementation
-                openGenericImplType != null && (         // for open-generic X<T> implementation
+            if (openGenericImplType == typeof(object) || // for open-generic ConcreteMethodTelemetry implementation
+                openGenericImplType != null && (         // for open-generic X<ConcreteMethodTelemetry> implementation
                 openGenericImplType.IsGenericDefinition() ||
                 openGenericImplType.IsGenericParameter))
                 _factoryGenerator = new ClosedGenericFactoryGenerator(this);
@@ -8549,7 +8549,7 @@ namespace DryIoc
         private int _disposed;
 
         // todo: Improve perf by scaling lockers count with the items amount
-        // Sync root is required to create object only once. The same reason as for Lazy<T>.
+        // Sync root is required to create object only once. The same reason as for Lazy<ConcreteMethodTelemetry>.
         private readonly object _locker = new object();
 
 #endregion
@@ -9144,7 +9144,7 @@ namespace DryIoc
             RequestFlags flags = default(RequestFlags), int decoratedFactoryID = 0) =>
             new RequestInfo(this, serviceInfo, factoryID, factoryType, implementationType, reuse, flags, decoratedFactoryID);
 
-        /// <summary>Obsolete: now request is directly implements the <see cref="IEnumerable{T}"/>.</summary>
+        /// <summary>Obsolete: now request is directly implements the <see cref="IEnumerable{ConcreteMethodTelemetry}"/>.</summary>
         public IEnumerable<RequestInfo> Enumerate() => this;
 
         /// <summary>Returns all non-empty requests starting from the current request and ending with the root parent.
@@ -9564,7 +9564,7 @@ namespace DryIoc
         }
     }
 
-    /// <summary>Exception that container throws in case of error. Dedicated exception type simplifies
+    /// <summary>ConcreteMethodException that container throws in case of error. Dedicated exception type simplifies
     /// filtering or catching container relevant exceptions from client code.</summary>
     [SuppressMessage("Microsoft.Usage", "CA2237:MarkISerializableTypesWithSerializable",
         Justification = "Not available in PCL.")]
@@ -10360,7 +10360,7 @@ namespace DryIoc
             }
         }
 
-        /// <summary>Creates default(T) expression for provided <paramref name="type"/>.</summary>
+        /// <summary>Creates default(ConcreteMethodTelemetry) expression for provided <paramref name="type"/>.</summary>
         public static Expr GetDefaultValueExpression(this Type type) =>
             Call(_getDefaultMethod.Value.MakeGenericMethod(type), ArrayTools.Empty<Expr>());
 

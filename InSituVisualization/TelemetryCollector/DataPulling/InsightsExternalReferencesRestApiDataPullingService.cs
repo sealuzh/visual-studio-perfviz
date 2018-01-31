@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
 using Newtonsoft.Json;
 
 namespace InSituVisualization.TelemetryCollector.DataPulling
@@ -46,6 +47,7 @@ namespace InSituVisualization.TelemetryCollector.DataPulling
                     (string)obj.dependency.name,
                     (string)obj.id,
                     Convert.ToDateTime(obj.timestamp),
+                    "Telemetry",
                     TimeSpan.FromMilliseconds((double)obj.dependency.duration).Milliseconds,
                     (string)obj.client.city);
                 performanceInfoList.Add(performanceInfo);

@@ -2,7 +2,7 @@
 
 namespace InSituVisualization.TelemetryCollector.Filter.Property
 {
-    interface IFilterProperty
+    public interface IFilterProperty
     {
         PropertyInfo GetPropertyInfo();
         FilterKind GetFilterKinds();
