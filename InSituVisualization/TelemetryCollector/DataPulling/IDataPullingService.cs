@@ -6,6 +6,6 @@ namespace InSituVisualization.TelemetryCollector.DataPulling
 {
     public interface IDataPullingService
     {
-        Task<IList<ConcreteMethodTelemetry>> GetNewTelemetriesTaskAsync();
+        Task<IList<PulledDataEntity>> GetNewTelemetriesTaskAsync();
     }
 }

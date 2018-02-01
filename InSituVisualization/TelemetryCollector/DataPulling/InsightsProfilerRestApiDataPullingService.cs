@@ -7,12 +7,11 @@ namespace InSituVisualization.TelemetryCollector.DataPulling
 {
     class InsightsProfilerRestApiDataPullingService : IDataPullingService
     {
-
-        Task<IList<ConcreteMethodTelemetry>> IDataPullingService.GetNewTelemetriesTaskAsync()
+        public Task<IList<PulledDataEntity>> GetNewTelemetriesTaskAsync()
         {
             throw new NotImplementedException();
-            
-            
         }
+
+       
     }
 }

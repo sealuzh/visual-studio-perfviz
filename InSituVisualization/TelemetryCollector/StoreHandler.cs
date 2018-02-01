@@ -1,8 +1,11 @@
-﻿using System;
+﻿#define DEBUG
+
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Timers;
 using InSituVisualization.TelemetryCollector.DataPulling;
+using InSituVisualization.TelemetryCollector.Filter.Property;
 using InSituVisualization.TelemetryCollector.Model.AveragedMember;
 using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
 using InSituVisualization.TelemetryCollector.Store;
@@ -17,6 +20,20 @@ namespace InSituVisualization.TelemetryCollector
 
         public StoreHandler()
         {
+
+#if DEBUG
+            StoreProvider.GetTelemetryStore().GetFilterController().AddFilterGlobal(
+                StoreProvider.GetTelemetryStore().GetFilterController().GetFilterProperties()[3],
+                FilterKind.IsGreaterEqualThen, new DateTime(2018, 1, 15, 12, 45, 00));
+#endif
+
+            //first time build of averagedDictionary
+            foreach (var store in StoreProvider.GetStores())
+            {
+                store.Update(false);
+            }
+            CurrentAveragedMemberTelemetry = GenerateAveragedMethodDictionary(StoreProvider.GetTelemetryStore().GetCurrentMethodTelemetries(), StoreProvider.GetExceptionStore().GetCurrentMethodTelemetries());
+
             _timer = new Timer
             {
                 Interval = Timerinterval,
@@ -24,6 +41,7 @@ namespace InSituVisualization.TelemetryCollector
             };
             _timer.Elapsed += RunPipeline;
             _timer.Enabled = true;
+            
         }
 
         private async void RunPipeline(object sender, ElapsedEventArgs elapsedEventArgs)
@@ -36,22 +54,23 @@ namespace InSituVisualization.TelemetryCollector
                     var newRestData = service.GetNewTelemetriesTaskAsync();
                     await newRestData;
                     
-                    foreach (ConcreteMethodTelemetry restReturnMember in newRestData.Result)
+                    foreach (PulledDataEntity restReturnMember in newRestData.Result)
                     {
-                        switch (restReturnMember.Type)
+                        switch (restReturnMember.Dependency.Type)
                         {
                             case "Telemetry":
+                                var telemetry = restReturnMember.GetConcreteMethodTelemetry();
                                 if (StoreProvider.GetTelemetryStore().GetAllMethodTelemetries()
-                                    .ContainsKey(restReturnMember.DocumentationCommentId))
+                                    .ContainsKey(telemetry.DocumentationCommentId))
                                 {
                                     {
-                                        if (!StoreProvider.GetTelemetryStore().GetAllMethodTelemetries()[restReturnMember.DocumentationCommentId].ContainsKey(restReturnMember.Id))
+                                        if (!StoreProvider.GetTelemetryStore().GetAllMethodTelemetries()[telemetry.DocumentationCommentId].ContainsKey(telemetry.Id))
                                         {
                                             //element is missing --> new element. Add it to the dict
-                                            if (!StoreProvider.GetTelemetryStore().GetAllMethodTelemetries()[restReturnMember.DocumentationCommentId]
-                                                .TryAdd(restReturnMember.Id, restReturnMember))
+                                            if (!StoreProvider.GetTelemetryStore().GetAllMethodTelemetries()[telemetry.DocumentationCommentId]
+                                                .TryAdd(telemetry.Id, telemetry))
                                             {
-                                                Console.WriteLine("Could not add element " + restReturnMember.DocumentationCommentId);
+                                                Console.WriteLine("Could not add element " + telemetry.DocumentationCommentId);
                                             }
                                             updateOccured = true;
                                         } //else: already exists, no need to add it
@@ -61,20 +80,51 @@ namespace InSituVisualization.TelemetryCollector
                                 {
                                     //case methodname does not exist: add a new dict for the new method, put the element inside.
                                     var newDict = new ConcurrentDictionary<string, ConcreteMethodTelemetry>();
-                                    if (!newDict.TryAdd(restReturnMember.Id, restReturnMember))
+                                    if (!newDict.TryAdd(telemetry.Id, telemetry))
                                     {
-                                        Console.WriteLine("Could not add dict " + restReturnMember.Id);
+                                        Console.WriteLine("Could not add dict " + telemetry.Id);
                                     };
                                     if (!StoreProvider.GetTelemetryStore().GetAllMethodTelemetries()
-                                        .TryAdd(restReturnMember.DocumentationCommentId, newDict))
+                                        .TryAdd(telemetry.DocumentationCommentId, newDict))
                                     {
-                                        Console.WriteLine("Could not add dict " + restReturnMember.DocumentationCommentId);  
+                                        Console.WriteLine("Could not add dict " + telemetry.DocumentationCommentId);  
                                     }
                                     updateOccured = true;
                                 }
                                 break;
                             case "Exception":
-                                //TODO: Implement Exception Store
+                                var exception = restReturnMember.GetConcreteMethodException();
+                                if (StoreProvider.GetExceptionStore().GetAllMethodTelemetries()
+                                    .ContainsKey(exception.DocumentationCommentId))
+                                {
+                                    {
+                                        if (!StoreProvider.GetExceptionStore().GetAllMethodTelemetries()[exception.DocumentationCommentId].ContainsKey(exception.Id))
+                                        {
+                                            //element is missing --> new element. Add it to the dict
+                                            if (!StoreProvider.GetExceptionStore().GetAllMethodTelemetries()[exception.DocumentationCommentId]
+                                                .TryAdd(exception.Id, exception))
+                                            {
+                                                Console.WriteLine("Could not add element " + exception.DocumentationCommentId);
+                                            }
+                                            updateOccured = true;
+                                        } //else: already exists, no need to add it
+                                    }
+                                }
+                                else
+                                {
+                                    //case methodname does not exist: add a new dict for the new method, put the element inside.
+                                    var newDict = new ConcurrentDictionary<string, ConcreteMethodException>();
+                                    if (!newDict.TryAdd(exception.Id, exception))
+                                    {
+                                        Console.WriteLine("Could not add dict " + exception.Id);
+                                    };
+                                    if (!StoreProvider.GetExceptionStore().GetAllMethodTelemetries()
+                                        .TryAdd(exception.DocumentationCommentId, newDict))
+                                    {
+                                        Console.WriteLine("Could not add dict " + exception.DocumentationCommentId);
+                                    }
+                                    updateOccured = true;
+                                }
                                 break;
                         }
                     }
@@ -104,29 +154,22 @@ namespace InSituVisualization.TelemetryCollector
             {
                 if (exceptionData.ContainsKey(key))
                 {
-                    if (!averagedDictionary.TryAdd(telemetryData[key].Values.ElementAt(0).DocumentationCommentId,
-                        new AveragedMethod(telemetryData[key].Values.ElementAt(0).DocumentationCommentId, telemetryData[key], exceptionData[key])))
+                    if (!averagedDictionary.TryAdd(key, new AveragedMethod(key, telemetryData[key], exceptionData[key])))
                     {
-                        Console.WriteLine("Could not add element to dictionary with key " +
-                                          telemetryData[key].Values.ElementAt(0).DocumentationCommentId);
+                        Console.WriteLine("Could not add element to dictionary with key " + key);
                     }
                 }
                 else
                 {
-                    if (!averagedDictionary.TryAdd(telemetryData[key].Values.ElementAt(0).DocumentationCommentId,
-                        new AveragedMethod(telemetryData[key].Values.ElementAt(0).DocumentationCommentId, telemetryData[key])))
+                    if (!averagedDictionary.TryAdd(key, new AveragedMethod(key, telemetryData[key])))
                     {
-                        Console.WriteLine("Could not add element to dictionary with key " +
-                                          telemetryData[key].Values.ElementAt(0).DocumentationCommentId);
+                        Console.WriteLine("Could not add element to dictionary with key " + key);
                     }
                 }
-                
-
             }
             return averagedDictionary;
         }
 
         public ConcurrentDictionary<string, AveragedMethod> GetAveragedMemberTelemetry() => CurrentAveragedMemberTelemetry;
-
     }
 }

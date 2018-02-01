@@ -58,6 +58,7 @@
     <Compile Include="Model\LoopPerformanceInfo.cs" />
     <Compile Include="Model\PerformanceInfo.cs" />
     <Compile Include="PerformanceSyntaxWalker.cs" />
+    <Compile Include="TelemetryCollector\DataPulling\PulledDataEntity.cs" />
     <Compile Include="TelemetryCollector\Filter\Filter.cs" />
     <Compile Include="TelemetryCollector\DataPulling\DataPullingServiceProvider.cs" />
     <Compile Include="TelemetryCollector\Model\ConcreteMember\ConcreteMethod.cs" />

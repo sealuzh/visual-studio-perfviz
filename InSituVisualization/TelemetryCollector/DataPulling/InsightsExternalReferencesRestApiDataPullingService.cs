@@ -30,7 +30,7 @@ namespace InSituVisualization.TelemetryCollector.DataPulling
             _parameterString = _parameterString + "&$top=" + maxPullingAmount;
         }
 
-        public async Task<IList<ConcreteMethodTelemetry>> GetNewTelemetriesTaskAsync()
+        public async Task<IList<PulledDataEntity>> GetNewTelemetriesTaskAsync()
         {
             //check whether necessary variables are given - if not abort
             if (string.IsNullOrWhiteSpace(_apiKey) || string.IsNullOrWhiteSpace(_appId))
@@ -41,17 +41,13 @@ namespace InSituVisualization.TelemetryCollector.DataPulling
             var telemetryJson = await GetTelemetryAsync(_appId, _apiKey, QueryType, QueryPath, _parameterString);
             dynamic telemetryData = JsonConvert.DeserializeObject(telemetryJson);
 
-            var performanceInfoList = new List<ConcreteMethodTelemetry>();
+            var performanceInfoList = new List<PulledDataEntity>();
             foreach (var obj in telemetryData.value.Children())
             {
-                var performanceInfo = new ConcreteMethodTelemetry(
-                    (string)obj.dependency.name,
-                    (string)obj.id,
-                    Convert.ToDateTime(obj.timestamp),
-                    "Telemetry",
-                    TimeSpan.FromMilliseconds((double)obj.dependency.duration).Milliseconds,
-                    (string)obj.client.city);
+
+                var performanceInfo = new PulledDataEntity(obj);
                 performanceInfoList.Add(performanceInfo);
+                
             }
             return performanceInfoList;
         }
