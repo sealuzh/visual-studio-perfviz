@@ -17,6 +17,8 @@ namespace InjectionVictim
 
             RunTests();
 
+            CallingConventionTest("string1", "string2", 3);
+
             Console.ReadLine();
         }
 
@@ -41,6 +43,12 @@ namespace InjectionVictim
             }
 
             LongRunningMethodTest1();
+        }
+
+        private static void CallingConventionTest(string a, string b, int c)
+        {
+            a = b + c + a;
+            b = a;
         }
 
         private static void LongRunningMethods()

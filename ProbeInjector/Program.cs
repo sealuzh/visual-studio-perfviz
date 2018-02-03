@@ -8,7 +8,17 @@ namespace ProbeInjector
 {
     internal static class Program
     {
-
+        /// <summary>
+        /// Entry of the <see cref="ProbeInjector"/>
+        /// </summary>
+        /// <param name="args">
+        /// The Arguments
+        /// 
+        /// Example arguments:
+        /// -r "..\..\..\..\visual-studio-aspnet-test\visual-studio-aspnet-test\bin\visual-studio-aspnet-test.dll" -w"..\..\..\..\visual-studio-aspnet-test\visual-studio-aspnet-test\bin\visual-studio-aspnet-test2.dll" -p "..\..\..\AzureTelemetryProbe\bin\Debug\AzureTelemetryProbe.dll"
+        /// -r "..\..\..\InjectionVictim\bin\Debug\InjectionVictim.exe" -w "..\..\..\InjectionVictim\bin\Debug\InjectionVictimNew.exe" -p "..\..\..\AzureTelemetryProbe\bin\Debug\AzureTelemetryProbe.dll"
+        /// -r "..\..\..\InjectionVictim\bin\Debug\InjectionVictim.exe" -w "..\..\..\InjectionVictim\bin\Debug\InjectionVictimNew.exe" -p "..\..\..\DiagnosticsTraceProbe\bin\Debug\netstandard2.0\DiagnosticsTraceProbe.dll"
+        /// </param>
         public static void Main(string[] args)
         {
             Parser.Default.ParseArguments<Options>(args)
@@ -26,18 +36,19 @@ namespace ProbeInjector
                 var targetAssemblyDefinition = AssemblyDefinition.ReadAssembly(options.InputFilePath);
 
                 // Injecting References
-                var rewriter = new IlRewriter(targetAssemblyDefinition, probeAssembly);
-                rewriter.InjectProbe();
+                var rewriter = new IlRewriter(targetAssemblyDefinition);
+                rewriter.Inject(probeAssembly);
 
                 // Writing Output
                 var outputFilePath = options.OutputFilePath ?? FileHelper.GetAvailableFilePath(options.InputFilePath);
                 targetAssemblyDefinition.Write(outputFilePath);
 
+                // Copy Dlls to Output Folder
                 var sourceDirectory = Path.GetDirectoryName(options.ProbeFilePath) ?? throw new InvalidOperationException("probe has no directory");
                 var destinationDirectory = Path.GetDirectoryName(options.InputFilePath) ?? throw new InvalidOperationException("target has no directory");
                 FileHelper.CopyDllsInDirectory(sourceDirectory, destinationDirectory);
             }
-            catch (FileNotFoundException)
+            catch (FileNotFoundException e)
             {
                 Console.WriteLine("The file cannot be found.");
                 Console.Read();
