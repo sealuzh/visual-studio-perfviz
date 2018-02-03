@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -27,7 +26,6 @@ namespace AzureTelemetryProbe
         // ReSharper disable once UnusedMember.Global Justification: Reflection
         public static void OnBeforeMethod(string documentationCommentId)
         {
-            Trace.WriteLine($"{DateTime.UtcNow} - {documentationCommentId}. Started");
             MethodStartDateTimes.TryAdd(documentationCommentId, DateTime.UtcNow);
         }
 
@@ -42,10 +40,7 @@ namespace AzureTelemetryProbe
             {
                 return;
             }
-            var duration = DateTime.UtcNow - startDateTime;
-            Trace.WriteLine($"{DateTime.UtcNow} - {documentationCommentId}. Duration: {duration.Milliseconds} ms");
-
-            TelemetryClient.TrackDependency(documentationCommentId, "", startDateTime, duration, true);
+            TelemetryClient.TrackDependency(documentationCommentId, "", startDateTime, DateTime.UtcNow - startDateTime, true);
         }
 
         /// <summary>
@@ -55,7 +50,6 @@ namespace AzureTelemetryProbe
         // ReSharper disable once UnusedMember.Global Justification: Reflection
         public static void OnException(string documentationCommentId)
         {
-            Trace.WriteLine($"{DateTime.UtcNow} - {documentationCommentId}. Exception Occurred");
             var telemetry = new EventTelemetry("Exception")
             {
                 Properties =
