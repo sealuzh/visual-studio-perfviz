@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace ProbeInjector
 {
@@ -10,18 +11,41 @@ namespace ProbeInjector
         /// </summary>
         public static string GetAvailableFilePath(string filePath)
         {
-            var fileDirectory = Path.GetDirectoryName(filePath);
-            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
-            var fileExtension = Path.GetExtension(filePath);
-            var index = 2;
-            while (File.Exists(filePath))
+            if (string.IsNullOrWhiteSpace(filePath))
             {
-                // Getting a new FileName (that doesn't exist already)
-                var newFileName = $"{fileNameWithoutExtension} ({index}){fileExtension}";
-                filePath = fileDirectory != null ? Path.Combine(fileDirectory, newFileName) : newFileName;
-                index++;
+                throw new ArgumentNullException(nameof(filePath));
+            }
+
+            for (var i = 2; File.Exists(filePath); i++)
+            {
+                var newFileName = $"{Path.GetFileNameWithoutExtension(filePath)} ({i}){Path.GetExtension(filePath)}";
+                var directory = Path.GetDirectoryName(filePath);
+                filePath = directory != null ? Path.Combine(directory, newFileName) : newFileName;
             }
             return filePath;
+        }
+
+
+        /// <summary>
+        /// Copy the Dlls from <see cref="sourceDirectory"/> to <see cref="destinationDirectory"/>
+        /// </summary>
+        public static void CopyDllsInDirectory(string sourceDirectory, string destinationDirectory)
+        {
+            if (string.IsNullOrWhiteSpace(sourceDirectory))
+            {
+                throw new ArgumentNullException(nameof(sourceDirectory));
+            }
+            if (string.IsNullOrWhiteSpace(destinationDirectory))
+            {
+                throw new ArgumentNullException(nameof(destinationDirectory));
+            }
+
+            var sourceDllFilePaths = Directory.GetFiles(sourceDirectory, "*.dll");
+            foreach (var sourceFilePath in sourceDllFilePaths)
+            {
+                var destinationFilePath = Path.Combine(destinationDirectory, Path.GetFileName(sourceFilePath));
+                File.Copy(sourceFilePath, destinationFilePath, true);
+            }
         }
     }
 }

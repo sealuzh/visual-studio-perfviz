@@ -11,7 +11,9 @@ namespace ProbeInjector
 {
     class UnusedCode
     {
-
+        // Parameters: -r "..\\..\\..\\..\\visual-studio-aspnet-test\\\visual-studio-aspnet-test\\\bin\\visual-studio-aspnet-test.dll" -w"..\\..\\..\\..\\visual-studio-aspnet-test\\\visual-studio-aspnet-test\\\bin\\visual-studio-aspnet-test2.dll" -p "..\\..\\..\\AzureTelemetryProbe\\bin\\Debug\\AzureTelemetryProbe.dll"
+        // -r "..\\..\\..\\InjectionVictim\\bin\\Debug\\InjectionVictim.exe" -w "..\\..\\..\\InjectionVictim\\bin\\Debug\\InjectionVictimNew.exe" -p "..\\..\\..\\AzureTelemetryProbe\\bin\\Debug\\AzureTelemetryProbe.dll"
+        // -r "..\..\..\InjectionVictim\bin\Debug\InjectionVictim.exe" -w "..\..\..\InjectionVictim\bin\Debug\InjectionVictimNew.exe" -p "..\..\..\DiagnosticsTraceProbe\bin\Debug\netstandard2.0\DiagnosticsTraceProbe.dll"
         ///// <summary>
         ///// Waving returns to leaves for try finally...
         ///// https://stackoverflow.com/questions/12769699/mono-cecil-injecting-try-finally

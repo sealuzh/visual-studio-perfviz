@@ -36,8 +36,11 @@ namespace InjectionVictim
             }
             catch (Exception e)
             {
-                // Catchall
+                Console.Write("Exception Catched:");
+                Console.WriteLine(e);
             }
+
+            LongRunningMethodTest1();
         }
 
         private static void LongRunningMethods()

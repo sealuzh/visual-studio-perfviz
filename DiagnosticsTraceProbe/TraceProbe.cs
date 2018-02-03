@@ -1,24 +1,14 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Extensibility;
 
-namespace AzureTelemetryProbe
+namespace DiagnosticsTraceProbe
 {
     // ReSharper disable once UnusedMember.Global Justification: Reflection
-    public class AzureProbe
+    public class TraceProbe
     {
 
         private static readonly ConcurrentDictionary<string, DateTime> MethodStartDateTimes = new ConcurrentDictionary<string, DateTime>();
-
-        static AzureProbe()
-        {
-            TelemetryConfiguration.Active.InstrumentationKey = "09725176-e81e-436d-bf21-958cad8d3a5a";
-        }
-
-        private static TelemetryClient TelemetryClient { get; } = new TelemetryClient { InstrumentationKey = TelemetryConfiguration.Active.InstrumentationKey };
 
         /// <summary>
         /// This is the Method executed before the Method Body
@@ -44,8 +34,6 @@ namespace AzureTelemetryProbe
             }
             var duration = DateTime.UtcNow - startDateTime;
             Trace.WriteLine($"{DateTime.UtcNow} - {documentationCommentId}. Duration: {duration.Milliseconds} ms");
-
-            TelemetryClient.TrackDependency(documentationCommentId, "", startDateTime, duration, true);
         }
 
         /// <summary>
@@ -56,17 +44,6 @@ namespace AzureTelemetryProbe
         public static void OnException(string documentationCommentId)
         {
             Trace.WriteLine($"{DateTime.UtcNow} - {documentationCommentId}. Exception Occurred");
-            var telemetry = new EventTelemetry("Exception")
-            {
-                Properties =
-                {
-                    {"Method", documentationCommentId}
-                },
-                Timestamp = DateTime.UtcNow
-            };
-
-            TelemetryClient.TrackEvent(telemetry);
         }
-
     }
 }

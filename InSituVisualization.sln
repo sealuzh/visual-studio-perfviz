@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InjectionVictim", "Injectio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{C2ACFAAA-68D1-4AEE-8E77-77DED9A7003A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Probes", "Probes", "{F12BAF43-F0D1-484F-87BC-6D3655E98268}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiagnosticsTraceProbe", "DiagnosticsTraceProbe\DiagnosticsTraceProbe.csproj", "{4A4B0054-D6C5-43FB-945D-A4050004C6B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,9 +43,17 @@ Global
 		{C2ACFAAA-68D1-4AEE-8E77-77DED9A7003A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2ACFAAA-68D1-4AEE-8E77-77DED9A7003A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2ACFAAA-68D1-4AEE-8E77-77DED9A7003A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A4B0054-D6C5-43FB-945D-A4050004C6B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A4B0054-D6C5-43FB-945D-A4050004C6B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A4B0054-D6C5-43FB-945D-A4050004C6B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A4B0054-D6C5-43FB-945D-A4050004C6B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0F840844-D7C3-4671-BE00-9DCDC517962A} = {F12BAF43-F0D1-484F-87BC-6D3655E98268}
+		{4A4B0054-D6C5-43FB-945D-A4050004C6B8} = {F12BAF43-F0D1-484F-87BC-6D3655E98268}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {03F182BD-3959-4F7D-927F-EE36A6BCE8B9}
