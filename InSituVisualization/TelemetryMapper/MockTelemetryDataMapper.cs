@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using InSituVisualization.Model;
 using Microsoft.CodeAnalysis;
 

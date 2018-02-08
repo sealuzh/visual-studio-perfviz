@@ -7,7 +7,7 @@ namespace InSituVisualization.Model
 {
     public class MethodPerformanceInfo : PerformanceInfo
     {
-        private readonly IMethodSymbol _methodSymbol;
+
         private int _numberOfCalls;
         private TimeSpan _meanExecutionTime;
         private int _memberCount;
@@ -16,12 +16,14 @@ namespace InSituVisualization.Model
 
         public MethodPerformanceInfo(IMethodSymbol methodSymbol)
         {
-            _methodSymbol = methodSymbol ?? throw new ArgumentNullException(nameof(methodSymbol));
+            MethodSymbol = methodSymbol ?? throw new ArgumentNullException(nameof(methodSymbol));
         }
 
-        public string MethodName => _methodSymbol.MetadataName;
+        public IMethodSymbol MethodSymbol { get; }
 
-        public string ContainingType => _methodSymbol.ContainingType?.Name;
+        public string MethodName => MethodSymbol.MetadataName;
+
+        public string ContainingType => MethodSymbol.ContainingType?.Name;
 
         public int NumberOfCalls
         {

@@ -15,8 +15,6 @@ namespace InSituVisualization
 {
     internal class MethodAdornmentLayer
     {
-        private readonly CustomSpanProvider _spanProvider;
-
         /// <summary>
         /// Text textView where the adornment is created.
         /// </summary>
@@ -27,11 +25,10 @@ namespace InSituVisualization
         /// </summary>
         private readonly IAdornmentLayer _layer;
 
-        public MethodAdornmentLayer(IWpfTextView textView, CustomSpanProvider spanProvider)
+        public MethodAdornmentLayer(IWpfTextView textView)
         {
             _textView = textView ?? throw new ArgumentNullException(nameof(textView));
             _layer = textView.GetAdornmentLayer("MemberPerformanceAdorner");
-            _spanProvider = spanProvider ?? throw new ArgumentNullException(nameof(spanProvider));
         }
 
         public void DrawMethodPerformanceInfo(MethodDeclarationSyntax node, MethodPerformanceInfo methodPerformanceInfo)
@@ -73,15 +70,9 @@ namespace InSituVisualization
             DrawControl(node, control);
         }
 
-        private SnapshotSpan GetSnapshotSpan(SyntaxNode syntax)
-        {
-            var methodSyntaxSpan = _spanProvider.GetSpan(syntax);
-            return new SnapshotSpan(_textView.TextSnapshot, methodSyntaxSpan);
-        }
-
         private void DrawControl(SyntaxNode node, UIElement control)
         {
-            var span = GetSnapshotSpan(node);
+            var span = node.GetIdentifierSnapshotSpan(_textView);
             if (span == default(SnapshotSpan))
             {
                 return;
@@ -102,7 +93,12 @@ namespace InSituVisualization
             _layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, control, null);
         }
 
-        public void DrawRedSpan(SnapshotSpan span)
+        public void DrawSpan(SyntaxNode syntaxNode, Color color)
+        {
+            DrawSpan(syntaxNode.GetSnapshotSpan(_textView), color);
+        }
+
+        public void DrawSpan(SnapshotSpan span, Color color)
         {
             var geometry = _textView.TextViewLines.GetMarkerGeometry(span);
             if (geometry == null)
@@ -114,7 +110,7 @@ namespace InSituVisualization
             var brush = new SolidColorBrush(Color.FromArgb(0x20, 0x00, 0x00, 0xff));
             brush.Freeze();
 
-            var penBrush = new SolidColorBrush(Colors.Red);
+            var penBrush = new SolidColorBrush(color);
             penBrush.Freeze();
             var pen = new Pen(penBrush, 0.5);
             pen.Freeze();

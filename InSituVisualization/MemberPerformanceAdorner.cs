@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using DryIoc;
 using InSituVisualization.TelemetryMapper;
-using InSituVisualization.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
@@ -21,6 +22,7 @@ namespace InSituVisualization
         /// </summary>
         private readonly IWpfTextView _textView;
         private readonly MethodAdornmentLayer _methodAdornerLayer;
+        private SyntaxTree _originalTree;
 
         private SnapshotPoint CaretPosition => _textView.Caret.Position.BufferPosition;
 
@@ -34,8 +36,7 @@ namespace InSituVisualization
         {
             _textView = textView ?? throw new ArgumentNullException(nameof(textView));
             _textView.LayoutChanged += OnLayoutChanged;
-            var spanProvider = IocHelper.Container.Resolve<CustomSpanProvider>();
-            _methodAdornerLayer = new MethodAdornmentLayer(textView, spanProvider);
+            _methodAdornerLayer = new MethodAdornmentLayer(textView);
         }
 
 
@@ -55,14 +56,31 @@ namespace InSituVisualization
                 return;
             }
 
+            var syntaxTree = await Document.GetSyntaxTreeAsync().ConfigureAwait(false);
+            if (_originalTree == null)
+            {
+                _originalTree = syntaxTree;
+            }
+            var diagnostics = syntaxTree.GetDiagnostics();
+            if (diagnostics.Any())
+            {
+                // there are errors in the code -> do not perform operations
+                return;
+            }
+
             try
             {
+                // getting Changes
+                // https://github.com/dotnet/roslyn/issues/17498
+                // https://stackoverflow.com/questions/34243031/reliably-compare-type-symbols-itypesymbol-with-roslyn
+                var treeChanges = syntaxTree.GetChanges(_originalTree).Where(treeChange => !string.IsNullOrWhiteSpace(treeChange.NewText)).ToList();
+
                 var semanticModel = await Document.GetSemanticModelAsync();
 
                 var telemetryDataMapper = IocHelper.Container.Resolve<ITelemetryDataMapper>();
 
                 var performanceSyntaxWalker = new PerformanceSyntaxWalker(
-                    semanticModel, 
+                    semanticModel, treeChanges,
                     telemetryDataMapper, _methodAdornerLayer);
 
                 var root = await Document.GetSyntaxRootAsync();
