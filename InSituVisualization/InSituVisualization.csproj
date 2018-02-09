@@ -66,7 +66,7 @@
     <Compile Include="TelemetryCollector\Store\Store.cs" />
     <Compile Include="TelemetryCollector\StoreHandler.cs" />
     <Compile Include="TelemetryCollector\Store\StoreProvider.cs" />
-    <Compile Include="Utils\StatisticExtenxions.cs" />
+    <Compile Include="Utils\StatisticExtensions.cs" />
     <Compile Include="Utils\SyntaxNodeExtensions.cs" />
     <Compile Include="ViewModels\IPerformanceInfoDetailWindow.cs" />
     <Compile Include="ViewModels\LoopPerformanceInfoControlViewModel.cs" />

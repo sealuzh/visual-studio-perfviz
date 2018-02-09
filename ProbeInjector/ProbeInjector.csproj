@@ -73,8 +73,10 @@
     <Compile Include="IlProcessorExtensions.cs" />
     <Compile Include="IlRewriter.cs" />
     <Compile Include="IlInstructionBuilder.cs" />
+    <Compile Include="Probe\IProbeAssembly.cs" />
     <Compile Include="Options.cs" />
-    <Compile Include="ProbeAssembly.cs" />
+    <Compile Include="Probe\ProbeAssembly.cs" />
+    <Compile Include="Probe\ProbeAssemblyFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

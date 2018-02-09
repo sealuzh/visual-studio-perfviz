@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using CommandLine;
 using Mono.Cecil;
+using ProbeInjector.Probe;
 
 namespace ProbeInjector
 {
@@ -28,42 +29,74 @@ namespace ProbeInjector
 
         private static void Run(Options options)
         {
+            HandleIoExceptions(() =>
+            {
+                Console.WriteLine("Checking Probe...");
+                var assemblyName = AssemblyName.GetAssemblyName(options.ProbeFilePath);
+
+                Console.WriteLine($"Loading Probe {assemblyName.Name}...");
+                var probeAssembly = ProbeAssemblyFactory.LoadAssembly(options.ProbeFilePath);
+
+                Console.WriteLine($"Loading Target {assemblyName.Name}...");
+                using (var targetAssemblyDefinition = AssemblyDefinition.ReadAssembly(options.TargetFilePath))
+                {
+                    Console.WriteLine("Injecting References...");
+                    var rewriter = new IlRewriter(targetAssemblyDefinition);
+                    rewriter.Inject(probeAssembly);
+
+                    Console.WriteLine("Writing Output...");
+                    var outputFilePath =
+                        options.OutputFilePath ?? FileHelper.GetAvailableFilePath(options.TargetFilePath);
+                    targetAssemblyDefinition.Write(outputFilePath);
+                }
+
+                Console.WriteLine("Copying Dlls to Output-Directory...");
+                var sourceDirectory = Path.GetDirectoryName(options.ProbeFilePath) ?? throw new InvalidOperationException("probe has no directory");
+                var destinationDirectory = Path.GetDirectoryName(options.TargetFilePath) ?? throw new InvalidOperationException("target has no directory");
+                FileHelper.CopyDllsInDirectory(sourceDirectory, destinationDirectory);
+            }, options.Verbose);
+        }
+
+        #region ErrorHandling
+
+        private static void HandleIoExceptions(Action action, bool verbose)
+        {
             try
             {
-                // Checking and loading Assemblies
-                AssemblyName.GetAssemblyName(options.ProbeFilePath);
-                var probeAssembly = new ProbeAssembly(options.ProbeFilePath);
-                var targetAssemblyDefinition = AssemblyDefinition.ReadAssembly(options.InputFilePath);
-
-                // Injecting References
-                var rewriter = new IlRewriter(targetAssemblyDefinition);
-                rewriter.Inject(probeAssembly);
-
-                // Writing Output
-                var outputFilePath = options.OutputFilePath ?? FileHelper.GetAvailableFilePath(options.InputFilePath);
-                targetAssemblyDefinition.Write(outputFilePath);
-
-                // Copy Dlls to Output Folder
-                var sourceDirectory = Path.GetDirectoryName(options.ProbeFilePath) ?? throw new InvalidOperationException("probe has no directory");
-                var destinationDirectory = Path.GetDirectoryName(options.InputFilePath) ?? throw new InvalidOperationException("target has no directory");
-                FileHelper.CopyDllsInDirectory(sourceDirectory, destinationDirectory);
+                action();
+                return;
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException exception)
             {
                 Console.WriteLine("The file cannot be found.");
-                Console.Read();
+                ConsoleWriteExceptionIfVerbose(exception, verbose);
             }
-            catch (BadImageFormatException)
+            catch (BadImageFormatException exception)
             {
                 Console.WriteLine("The file is not an assembly.");
-                Console.Read();
+                ConsoleWriteExceptionIfVerbose(exception, verbose);
             }
-            catch (FileLoadException)
+            catch (FileLoadException exception)
             {
                 Console.WriteLine("The assembly has already been loaded.");
-                Console.Read();
+                ConsoleWriteExceptionIfVerbose(exception, verbose);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("An unknown error occurred.");
+                ConsoleWriteExceptionIfVerbose(exception, verbose);
+            }
+            Console.Read();
+        }
+
+        private static void ConsoleWriteExceptionIfVerbose(Exception exception, bool verbose)
+        {
+            if (verbose)
+            {
+                Console.WriteLine(exception);
             }
         }
 
+        #endregion
     }
 }

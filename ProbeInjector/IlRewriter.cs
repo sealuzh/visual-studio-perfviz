@@ -2,6 +2,7 @@
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using ProbeInjector.Probe;
 
 namespace ProbeInjector
 {
@@ -20,7 +21,7 @@ namespace ProbeInjector
         /// <summary>
         /// Injecting the Probe into all methods of the Assembly
         /// </summary>
-        public void Inject(ProbeAssembly probeAssembly)
+        public void Inject(IProbeAssembly probeAssembly)
         {
             if (probeAssembly == null)
             {
@@ -39,7 +40,7 @@ namespace ProbeInjector
         /// <summary>
         /// Injecting the Probe into a single method
         /// </summary>
-        private void Inject(MethodDefinition methodDefinition, ProbeAssembly probeAssembly)
+        private void Inject(MethodDefinition methodDefinition, IProbeAssembly probeAssembly)
         {
             if (!IsEligableForInjection(methodDefinition))
             {
