@@ -56,9 +56,9 @@ namespace InSituVisualization.TelemetryCollector
                     
                     foreach (PulledDataEntity restReturnMember in newRestData.Result)
                     {
-                        switch (restReturnMember.Dependency.Type)
+                        switch (restReturnMember.Dependency.Name)
                         {
-                            case "Telemetry":
+                            case "telemetry":
                                 var telemetry = restReturnMember.GetConcreteMethodTelemetry();
                                 if (StoreProvider.GetTelemetryStore().GetAllMethodTelemetries()
                                     .ContainsKey(telemetry.DocumentationCommentId))
@@ -92,7 +92,7 @@ namespace InSituVisualization.TelemetryCollector
                                     updateOccured = true;
                                 }
                                 break;
-                            case "Exception":
+                            case "exception":
                                 var exception = restReturnMember.GetConcreteMethodException();
                                 if (StoreProvider.GetExceptionStore().GetAllMethodTelemetries()
                                     .ContainsKey(exception.DocumentationCommentId))
@@ -149,6 +149,7 @@ namespace InSituVisualization.TelemetryCollector
 
         private ConcurrentDictionary<string, AveragedMethod> GenerateAveragedMethodDictionary(ConcurrentDictionary<string, ConcurrentDictionary<string, ConcreteMethodTelemetry>> telemetryData, ConcurrentDictionary<string, ConcurrentDictionary<string, ConcreteMethodException>> exceptionData)
         {
+            //TODO JO: change this, not nice (should not use if)
             var averagedDictionary = new ConcurrentDictionary<string, AveragedMethod>();
             foreach (var key in telemetryData.Keys)
             {

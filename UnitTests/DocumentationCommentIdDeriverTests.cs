@@ -35,5 +35,11 @@ namespace UnitTests
             Assert.AreEqual("M:InjectionVictim.Program.ExceptionsTest(System.Boolean)", documentationCommentId);
         }
 
+        [TestMethod]
+        public void InjectionVictimNoArgumentsTest()
+        {
+            var documentationCommentId = DocumentationCommentIdDeriver.GetDocumentationCommentId("System.Void InjectionVictim.Program::RunTests()");
+            Assert.AreEqual("M:InjectionVictim.Program.RunTests", documentationCommentId);
+        }
     }
 }

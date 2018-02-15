@@ -6,13 +6,13 @@ namespace InSituVisualization.TelemetryCollector.Model.ConcreteMember
     {
         public string Id { get; }
         public DateTime Timestamp { get; }
-        public string Type { get;  } 
+        public string Name { get;  } 
 
-        public ConcreteMethod(string documentationCommentId, string id, DateTime timestamp, string type) : base(documentationCommentId)
+        public ConcreteMethod(string documentationCommentId, string id, DateTime timestamp, string name) : base(documentationCommentId)
         {
             Id = id;
             Timestamp = timestamp;
-            Type = type;
+            Name = name;
         }
 
     }

@@ -1,4 +1,4 @@
-﻿#define TestMapping
+﻿//#define TestMapping
 using DryIoc;
 using InSituVisualization.TelemetryCollector;
 using InSituVisualization.TelemetryMapper;

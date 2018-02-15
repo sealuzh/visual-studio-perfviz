@@ -26,13 +26,13 @@ namespace InSituVisualization.TelemetryCollector.DataPulling
             Dependency.Duration = TimeSpan.FromMilliseconds((double)inputTelemetryData.dependency.duration).Milliseconds;
             Dependency.PerformanceBucket = (string)inputTelemetryData.dependency.performanceBucket;
             Dependency.ResultCode = (int)inputTelemetryData.dependency.resultCode;
-            Dependency.Name = (string)inputTelemetryData.dependency.name;
-#if DEBUG
-            Dependency.Type = "Telemetry";
-#else
             Dependency.Type = (string)inputTelemetryData.dependency.type;
+#if DEBUG
+            Dependency.Name = "telemetry";
+#else
+            Dependency.Name = (string)inputTelemetryData.dependency.name;
 #endif
-            
+
             Client.Model = (string) inputTelemetryData.client.model;
             Client.Os = (string)inputTelemetryData.client.os;
             Client.Type = (string)inputTelemetryData.client.type;

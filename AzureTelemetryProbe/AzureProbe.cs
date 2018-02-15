@@ -10,14 +10,19 @@ namespace AzureTelemetryProbe
     public class AzureProbe
     {
 
-        private static readonly ConcurrentDictionary<string, DateTime> MethodStartDateTimes = new ConcurrentDictionary<string, DateTime>();
+        private static ConcurrentDictionary<string, DateTime> _methodStartDateTimes;
+        private const string InstrumentationKey = "2f2bd3a7-8234-4722-ad09-6add2f1aeaaf";
+        private static TelemetryClient _telemetryClient;
 
-        static AzureProbe()
+        private static void Init()
         {
-            TelemetryConfiguration.Active.InstrumentationKey = "09725176-e81e-436d-bf21-958cad8d3a5a";
+           _methodStartDateTimes = new ConcurrentDictionary<string, DateTime>();
+            TelemetryConfiguration.Active.InstrumentationKey = InstrumentationKey;
+            _telemetryClient = new TelemetryClient
+            {
+                InstrumentationKey = InstrumentationKey
+            };
         }
-
-        private static TelemetryClient TelemetryClient { get; } = new TelemetryClient { InstrumentationKey = TelemetryConfiguration.Active.InstrumentationKey };
 
         /// <summary>
         /// This is the Method executed before the Method Body
@@ -26,7 +31,11 @@ namespace AzureTelemetryProbe
         // ReSharper disable once UnusedMember.Global Justification: Reflection
         public static void OnBeforeMethod(string documentationCommentId)
         {
-            MethodStartDateTimes.TryAdd(documentationCommentId, DateTime.UtcNow);
+            if (_telemetryClient == null)
+            {
+                Init();
+            }
+            _methodStartDateTimes?.TryAdd(documentationCommentId, DateTime.UtcNow);
         }
 
         /// <summary>
@@ -36,11 +45,13 @@ namespace AzureTelemetryProbe
         // ReSharper disable once UnusedMember.Global Justification: Reflection
         public static void OnAfterMethod(string documentationCommentId)
         {
-            if (!MethodStartDateTimes.TryRemove(documentationCommentId, out var startDateTime))
+            if (!_methodStartDateTimes.TryRemove(documentationCommentId, out var startDateTime))
             {
                 return;
             }
-            TelemetryClient.TrackDependency(documentationCommentId, "", startDateTime, DateTime.UtcNow - startDateTime, true);
+            _telemetryClient.TrackDependency("telemetry", "-target-", documentationCommentId, "-data-", startDateTime, DateTime.UtcNow - startDateTime, "0", true);
+            _telemetryClient.Flush();
+            Console.WriteLine("Just sent data.");
         }
 
         /// <summary>
@@ -50,6 +61,10 @@ namespace AzureTelemetryProbe
         // ReSharper disable once UnusedMember.Global Justification: Reflection
         public static void OnException(string documentationCommentId)
         {
+            if (_telemetryClient == null)
+            {
+                Init();
+            }
             var telemetry = new EventTelemetry("Exception")
             {
                 Properties =
@@ -59,7 +74,7 @@ namespace AzureTelemetryProbe
                 Timestamp = DateTime.UtcNow
             };
 
-            TelemetryClient.TrackEvent(telemetry);
+            _telemetryClient?.TrackEvent(telemetry);
         }
 
     }

@@ -6,7 +6,7 @@ namespace InSituVisualization.TelemetryCollector.Model.ConcreteMember
     {
         public string ErrorText;
 
-        public ConcreteMethodException(string documentationCommentId, string id, DateTime timestamp, string type, string errorText) : base(documentationCommentId, id, timestamp, type)
+        public ConcreteMethodException(string documentationCommentId, string id, DateTime timestamp, string name, string errorText) : base(documentationCommentId, id, timestamp, name)
         {
             ErrorText = errorText;
         }

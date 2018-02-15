@@ -10,7 +10,7 @@ namespace InSituVisualization.TelemetryCollector.Model.ConcreteMember
         public int Duration { get; }
         public string City { get; }
 
-        public ConcreteMethodTelemetry(string documentationCommentId, string id, DateTime timestamp, string type, int duration, string city) : base(documentationCommentId, id, timestamp, type)
+        public ConcreteMethodTelemetry(string documentationCommentId, string id, DateTime timestamp, string name, int duration, string city) : base(documentationCommentId, id, timestamp, name)
         {
             Duration = duration;
             City = city;

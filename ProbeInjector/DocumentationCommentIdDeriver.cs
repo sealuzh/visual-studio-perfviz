@@ -12,6 +12,11 @@ namespace ProbeInjector
             }
             var indexOfSeparator = methodFullName.IndexOf(" ", StringComparison.Ordinal);
             var methodFullNameWithoutReturnValue = methodFullName.Substring(indexOfSeparator + 1);
+            if (methodFullNameWithoutReturnValue.EndsWith("()"))
+            {
+                methodFullNameWithoutReturnValue =
+                    methodFullNameWithoutReturnValue.Substring(0, methodFullNameWithoutReturnValue.Length - 2);
+            }
             return $"M:{methodFullNameWithoutReturnValue.Replace("::", ".")}";
         }
     }
