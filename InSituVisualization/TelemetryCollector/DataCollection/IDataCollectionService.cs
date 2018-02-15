@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
 
-namespace InSituVisualization.TelemetryCollector.DataPulling
+namespace InSituVisualization.TelemetryCollector.DataCollection
 {
     public interface IDataPullingService
     {

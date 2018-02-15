@@ -7,7 +7,7 @@ using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
 using InSituVisualization.TelemetryCollector.Persistance;
 using Newtonsoft.Json;
 
-namespace InSituVisualization.TelemetryCollector.DataPulling
+namespace InSituVisualization.TelemetryCollector.DataCollection
 {
     class InsightsExternalReferencesRestApiDataPullingService : IDataPullingService
     {

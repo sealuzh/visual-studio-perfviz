@@ -3,7 +3,7 @@
 using System;
 using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
 
-namespace InSituVisualization.TelemetryCollector.DataPulling
+namespace InSituVisualization.TelemetryCollector.DataCollection
 {
     public class PulledDataEntity
     {

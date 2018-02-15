@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace InSituVisualization.TelemetryCollector.DataPulling
+namespace InSituVisualization.TelemetryCollector.DataCollection
 {
     public static class DataPullingServiceProdvider
     {
