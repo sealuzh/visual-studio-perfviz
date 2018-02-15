@@ -8,3 +8,5 @@ Visual Studio Perfviz (Perfviz) is a set of programs that allows visualization i
 * Some provided assembly of the user 
 
 Perfviz is programmed to work together with Microsoft Azure, but it contains interfaces to work with any kind of online database or REST interface to query data. Effort has been put into designing a very responsive data store that can be filtered.
+
+Learn more in the wiki here: https://github.com/sealuzh/visual-studio-perfviz/wiki/Summary
