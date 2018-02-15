@@ -2,14 +2,14 @@
 
 namespace InSituVisualization.TelemetryCollector.DataCollection
 {
-    public static class DataPullingServiceProdvider
+    public static class DataCollectionServiceProdvider
     {
-        private static List<IDataPullingService> _dataPullingServices;
+        private static List<IDataCollectionService> _dataPullingServices;
 
-        public static List<IDataPullingService> GetDataPullingServices()
+        public static List<IDataCollectionService> GetDataCollectionServices()
         {
             return _dataPullingServices ?? (_dataPullingServices =
-                       new List<IDataPullingService> {new InsightsExternalReferencesRestApiDataPullingService()});
+                       new List<IDataCollectionService> {new InsightsExternalReferencesRestApiDataCollectionService()});
         }        
     }
 }

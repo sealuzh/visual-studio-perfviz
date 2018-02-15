@@ -4,8 +4,8 @@ using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
 
 namespace InSituVisualization.TelemetryCollector.DataCollection
 {
-    public interface IDataPullingService
+    public interface IDataCollectionService
     {
-        Task<IList<PulledDataEntity>> GetNewTelemetriesTaskAsync();
+        Task<IList<CollectedDataEntity>> GetNewTelemetriesTaskAsync();
     }
 }

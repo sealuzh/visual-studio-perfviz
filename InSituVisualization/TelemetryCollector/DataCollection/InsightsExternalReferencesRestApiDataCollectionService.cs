@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace InSituVisualization.TelemetryCollector.DataCollection
 {
-    class InsightsExternalReferencesRestApiDataPullingService : IDataPullingService
+    class InsightsExternalReferencesRestApiDataCollectionService : IDataCollectionService
     {
         private const string Url = "https://api.applicationinsights.io/v1/apps/{0}/{1}/{2}?{3}";
 
@@ -21,7 +21,7 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
         private readonly string _apiKey;
         
 
-        public InsightsExternalReferencesRestApiDataPullingService()
+        public InsightsExternalReferencesRestApiDataCollectionService()
         {
             _appId = (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "AppId", typeof(string));
             _apiKey = (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "ApiKey", typeof(string));
@@ -30,7 +30,7 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
             _parameterString = _parameterString + "&$top=" + maxPullingAmount;
         }
 
-        public async Task<IList<PulledDataEntity>> GetNewTelemetriesTaskAsync()
+        public async Task<IList<CollectedDataEntity>> GetNewTelemetriesTaskAsync()
         {
             //check whether necessary variables are given - if not abort
             if (string.IsNullOrWhiteSpace(_apiKey) || string.IsNullOrWhiteSpace(_appId))
@@ -41,11 +41,11 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
             var telemetryJson = await GetTelemetryAsync(_appId, _apiKey, QueryType, QueryPath, _parameterString);
             dynamic telemetryData = JsonConvert.DeserializeObject(telemetryJson);
 
-            var performanceInfoList = new List<PulledDataEntity>();
+            var performanceInfoList = new List<CollectedDataEntity>();
             foreach (var obj in telemetryData.value.Children())
             {
 
-                var performanceInfo = new PulledDataEntity(obj);
+                var performanceInfo = new CollectedDataEntity(obj);
                 performanceInfoList.Add(performanceInfo);
                 
             }

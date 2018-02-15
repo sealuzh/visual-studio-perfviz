@@ -58,9 +58,9 @@
     <Compile Include="Model\LoopPerformanceInfo.cs" />
     <Compile Include="Model\PerformanceInfo.cs" />
     <Compile Include="PerformanceSyntaxWalker.cs" />
-    <Compile Include="TelemetryCollector\DataPulling\PulledDataEntity.cs" />
+    <Compile Include="TelemetryCollector\DataCollection\CollectedDataEntity.cs" />
     <Compile Include="TelemetryCollector\Filter\Filter.cs" />
-    <Compile Include="TelemetryCollector\DataPulling\DataPullingServiceProvider.cs" />
+    <Compile Include="TelemetryCollector\DataCollection\DataCollectionServiceProvider.cs" />
     <Compile Include="TelemetryCollector\Model\ConcreteMember\ConcreteMethod.cs" />
     <Compile Include="TelemetryCollector\Model\ConcreteMember\ConcreteMethodException.cs" />
     <Compile Include="TelemetryCollector\Store\Store.cs" />
@@ -110,9 +110,8 @@
     <Compile Include="TelemetryCollector\Filter\Property\IFilterProperty.cs" />
     <Compile Include="TelemetryCollector\Filter\Property\IntFilterProperty.cs" />
     <Compile Include="TelemetryCollector\Filter\StringFilter.cs" />
-    <Compile Include="TelemetryCollector\DataPulling\IDataPullingService.cs" />
-    <Compile Include="TelemetryCollector\DataPulling\InsightsExternalReferencesRestApiDataPullingService.cs" />
-    <Compile Include="TelemetryCollector\DataPulling\InsightsProfilerRestApiDataPullingService.cs" />
+    <Compile Include="TelemetryCollector\DataCollection\IDataCollectionService.cs" />
+    <Compile Include="TelemetryCollector\DataCollection\InsightsExternalReferencesRestApiDataCollectionService.cs" />
     <Compile Include="TelemetryCollector\Filter\Property\StringFilterProperty.cs" />
     <Compile Include="TelemetryCollector\Model\Method.cs" />
     <Compile Include="TelemetryCollector\Filter\FilterController.cs" />

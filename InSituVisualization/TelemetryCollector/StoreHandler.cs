@@ -4,7 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Timers;
-using InSituVisualization.TelemetryCollector.DataPulling;
+using InSituVisualization.TelemetryCollector.DataCollection;
 using InSituVisualization.TelemetryCollector.Filter.Property;
 using InSituVisualization.TelemetryCollector.Model.AveragedMember;
 using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
@@ -49,12 +49,12 @@ namespace InSituVisualization.TelemetryCollector
             try
             {
                 var updateOccured = false;
-                foreach (IDataPullingService service in DataPullingServiceProdvider.GetDataPullingServices())
+                foreach (IDataCollectionService service in DataCollectionServiceProdvider.GetDataCollectionServices())
                 {
                     var newRestData = service.GetNewTelemetriesTaskAsync();
                     await newRestData;
                     
-                    foreach (PulledDataEntity restReturnMember in newRestData.Result)
+                    foreach (CollectedDataEntity restReturnMember in newRestData.Result)
                     {
                         switch (restReturnMember.Dependency.Name)
                         {

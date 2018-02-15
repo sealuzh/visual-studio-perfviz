@@ -1,11 +1,12 @@
-﻿#define DEBUG
+﻿//#define DEBUG
 
 using System;
 using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
 
 namespace InSituVisualization.TelemetryCollector.DataCollection
 {
-    public class PulledDataEntity
+    //TODO JO: Replace concreteMethodTelemetry with this.
+    public class CollectedDataEntity
     {
         public Dependency Dependency;
         public Client Client;
@@ -15,7 +16,7 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
         private ConcreteMethodTelemetry _mappedConcreteMethodTelemetry;
         private ConcreteMethodException _mappedConcreteMethodException;
 
-        public PulledDataEntity(dynamic inputTelemetryData)
+        public CollectedDataEntity(dynamic inputTelemetryData)
         {
             Timestamp = Convert.ToDateTime(inputTelemetryData.timestamp);
             Id = (string) inputTelemetryData.id;
@@ -28,7 +29,7 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
             Dependency.ResultCode = (int)inputTelemetryData.dependency.resultCode;
             Dependency.Type = (string)inputTelemetryData.dependency.type;
 #if DEBUG
-            Dependency.Name = "telemetry";
+            //Dependency.Name = "telemetry";
 #else
             Dependency.Name = (string)inputTelemetryData.dependency.name;
 #endif
