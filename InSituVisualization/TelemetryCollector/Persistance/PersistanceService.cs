@@ -37,21 +37,5 @@ namespace InSituVisualization.TelemetryCollector.Persistance
             Directory.CreateDirectory(BasePath);
             File.WriteAllText(BasePath + "\\" + _fileName, json);
         }
-
-        //public static async Task AwaitConcreteMemberTelemetriesLock()
-        //{
-        //    while (IsConcreteMemberTelemetriesLock)
-        //    {
-        //        await Task.Delay(50);
-        //    }
-        //}
-
-        //public static async Task AwaitAverageMemberTelemetryLock()
-        //{
-        //    while (IsAverageTelemetryLock)
-        //    {
-        //        await Task.Delay(50);
-        //    }
-        //}
     }
 }

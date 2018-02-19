@@ -11,36 +11,39 @@ namespace InSituVisualization.TelemetryCollector.Store
 
     public class Store<T> : Store
     {
-        protected ConcurrentDictionary<string, ConcurrentDictionary<string, T>> AllMemberTelemetries;
-        protected ConcurrentDictionary<string, ConcurrentDictionary<string, T>> CurrentMemberTelemetries;
+        private ConcurrentDictionary<string, ConcurrentDictionary<string, T>> _allMemberTelemetries = new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>();
+        private ConcurrentDictionary<string, ConcurrentDictionary<string, T>> _currentMemberTelemetries = new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>();
 
-        protected FilterController<T> FilterController;
-        protected readonly PersistanceService<T> PersistanceService;
+        private readonly FilterController<T> _filterController = new FilterController<T>();
+
+        private readonly PersistanceService<T> _persistanceService;
 
         public Store(string fileName)
         {
-            PersistanceService = new PersistanceService<T>(fileName);
-
-            FilterController = new FilterController<T>();
-            AllMemberTelemetries = new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>();
-            AllMemberTelemetries = PersistanceService.FetchSystemCacheData();
-            CurrentMemberTelemetries = new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>();
+            _persistanceService = new PersistanceService<T>(fileName);
         }
 
-        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> GetAllMethodTelemetries() =>
-            AllMemberTelemetries;
+        public Store<T> Init()
+        {
+            _allMemberTelemetries = _persistanceService.FetchSystemCacheData();
+            return this;
+        }
 
-        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> GetCurrentMethodTelemetries() =>
-            CurrentMemberTelemetries;
+        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> GetAllMethodTelemetries() => _allMemberTelemetries;
 
-        public PersistanceService<T> GetPersistanceService() => PersistanceService;
+        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> GetCurrentMethodTelemetries() => _currentMemberTelemetries;
 
-        public FilterController<T> GetFilterController() => FilterController;
+        public PersistanceService<T> GetPersistanceService() => _persistanceService;
+
+        public FilterController<T> GetFilterController() => _filterController;
 
         public override void Update(bool persist)
         {
-            if (persist) PersistanceService.WriteSystemCacheData(AllMemberTelemetries);
-            CurrentMemberTelemetries = FilterController.ApplyFilters(AllMemberTelemetries);
+            if (persist)
+            {
+                _persistanceService.WriteSystemCacheData(_allMemberTelemetries);
+            }
+            _currentMemberTelemetries = _filterController.ApplyFilters(_allMemberTelemetries);
         }
     }
 }

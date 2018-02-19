@@ -28,12 +28,7 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
             Dependency.PerformanceBucket = (string)inputTelemetryData.dependency.performanceBucket;
             Dependency.ResultCode = (int)inputTelemetryData.dependency.resultCode;
             Dependency.Type = (string)inputTelemetryData.dependency.type;
-#if DEBUG
-            //Dependency.Name = "telemetry";
-#else
             Dependency.Name = (string)inputTelemetryData.dependency.name;
-#endif
-
             Client.Model = (string) inputTelemetryData.client.model;
             Client.Os = (string)inputTelemetryData.client.os;
             Client.Type = (string)inputTelemetryData.client.type;

@@ -8,11 +8,11 @@ namespace InSituVisualization.TelemetryMapper
     // ReSharper disable once ClassNeverInstantiated.Global Justification: IoC
     internal class TelemetryDataMapper : ITelemetryDataMapper
     {
-        private readonly IStoreHandler _storeHandler;
+        private readonly ITelemetryProvider _telemetryProvider;
 
-        public TelemetryDataMapper(IStoreHandler storeHandler)
+        public TelemetryDataMapper(ITelemetryProvider telemetryProvider)
         {
-            _storeHandler = storeHandler;
+            _telemetryProvider = telemetryProvider;
         }
 
         public MethodPerformanceInfo GetMethodPerformanceInfo(IMethodSymbol methodSymbol)
@@ -24,7 +24,7 @@ namespace InSituVisualization.TelemetryMapper
             try
             {
                 // TODO RR: Do Real Mapping
-                var averageMemberTelemetries = _storeHandler.GetAveragedMemberTelemetry();
+                var averageMemberTelemetries = _telemetryProvider.GetAveragedMemberTelemetry();
                 //var averageMemberTelemetries = dataStore.GetAveragedMemberTelemetry();
                 // is null when being written to at the same time
                 if (averageMemberTelemetries == null)
@@ -46,6 +46,7 @@ namespace InSituVisualization.TelemetryMapper
             }
             catch
             {
+                // TODO RR: Check CatchAll
                 return null;
             }
         }

@@ -1,37 +1,53 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using InSituVisualization.TelemetryCollector.Filter.Property;
 using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
 
 namespace InSituVisualization.TelemetryCollector.Store
 {
-    public static class StoreProvider
+    // ReSharper disable once ClassNeverInstantiated.Global Justification: IOC
+    internal class StoreProvider
     {
-        private static Store<ConcreteMethodException> _exceptionStore;
-        private static Store<ConcreteMethodTelemetry> _telemetryStore;
-        private static List<Store> _stores;
+        private Store<ConcreteMethodException> _exceptionStore;
+        private Store<ConcreteMethodTelemetry> _telemetryStore;
+        private List<Store> _stores;
 
-        public static Store<ConcreteMethodException> GetExceptionStore()
-        {
-            return _exceptionStore ?? (_exceptionStore = new Store<ConcreteMethodException>("VSIX_Exceptions.json"));
-        }
+        public Store<ConcreteMethodException> ExceptionStore =>
+            _exceptionStore ?? (_exceptionStore = new Store<ConcreteMethodException>("VSIX_Exceptions.json"));
 
-        public static Store<ConcreteMethodTelemetry> GetTelemetryStore()
-        {
-            return _telemetryStore ?? (_telemetryStore = new Store<ConcreteMethodTelemetry>("VSIX_Telemetries.json"));
-        }
+        public Store<ConcreteMethodTelemetry> TelemetryStore =>
+            _telemetryStore ?? (_telemetryStore = new Store<ConcreteMethodTelemetry>("VSIX_Telemetries.json"));
 
-        public static List<Store> GetStores()
+        public void Init()
         {
             if (_stores == null)
             {
                 _stores = new List<Store>
                 {
-                    GetTelemetryStore(),
-                    GetExceptionStore()
+                    TelemetryStore.Init(),
+                    ExceptionStore.Init()
                 };
             }
-            return _stores;
+            //first time build of averagedDictionary
+            UpdateStores(false);
         }
 
-        
+        [Conditional("DEBUG")]
+        public void AddDebugFilters()
+        {
+            TelemetryStore.GetFilterController().AddFilterGlobal(
+                TelemetryStore.GetFilterController().GetFilterProperties()[3],
+                FilterKind.IsGreaterEqualThen, new DateTime(2018, 1, 15, 12, 45, 00));
+        }
+
+        public void UpdateStores(bool persist)
+        {
+            foreach (var store in _stores)
+            {
+                store.Update(persist);
+            }
+        }
+
     }
 }
