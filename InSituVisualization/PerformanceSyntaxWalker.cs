@@ -65,9 +65,12 @@ namespace InSituVisualization
                 }
                 var invocationPerformanceInfo = _telemetryDataMapper.GetMethodPerformanceInfo(invokedMethodSymbol);
                 // Setting Caller and CalleeInformation
-                invocationPerformanceInfo.CallerPerformanceInfo.Add(methodPerformanceInfo);
-                methodPerformanceInfo.CalleePerformanceInfo.Add(invocationPerformanceInfo);
-                _methodAdornmentLayer.DrawMethodInvocationPerformanceInfo(invocationExpressionSyntax, invocationPerformanceInfo);
+                if (invocationPerformanceInfo != null)
+                {
+                    invocationPerformanceInfo.CallerPerformanceInfo.Add(methodPerformanceInfo);
+                    methodPerformanceInfo.CalleePerformanceInfo.Add(invocationPerformanceInfo);
+                    _methodAdornmentLayer.DrawMethodInvocationPerformanceInfo(invocationExpressionSyntax, invocationPerformanceInfo);
+                }
             }
 
             // Loops
