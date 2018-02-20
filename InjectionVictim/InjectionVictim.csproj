@@ -56,4 +56,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>cd C:\Users\jerom\VisualStudioWorkspace\visual-studio-perfviz\ProbeInjector\bin\Release
+ProbeInjector.exe -p C:\Users\jerom\VisualStudioWorkspace\visual-studio-perfviz\AzureTelemetryProbe\bin\Release\AzureTelemetryProbe.dll -r C:\Users\jerom\VisualStudioWorkspace\visual-studio-perfviz\InjectionVictim\bin\Release\InjectionVictim.exe -w C:\Users\jerom\VisualStudioWorkspace\visual-studio-perfviz\ProbeInjector\bin\Release\InjectionVictim.exe</PostBuildEvent>
+  </PropertyGroup>
 </Project>

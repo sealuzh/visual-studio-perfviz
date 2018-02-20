@@ -85,9 +85,10 @@ namespace InjectionVictim
 
         public static string ReturnString(bool skip)
         {
+            string somestring = "blub";
             if (skip)
             {
-                return "somethingSkipped";
+                return somestring+"somethingSkipped";
             }
             return "somestring";
         }

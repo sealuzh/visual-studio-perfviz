@@ -66,16 +66,20 @@ namespace AzureTelemetryProbe
                 return;
             }
 
-            var telemetry = new EventTelemetry("Exception")
-            {
-                Properties =
-                {
-                    {"Method", documentationCommentId}
-                },
-                Timestamp = DateTime.UtcNow
-            };
+            _telemetryClient.TrackDependency("exception", "-target-", documentationCommentId, "-data-", DateTime.UtcNow, TimeSpan.Zero, "0", true);
+            _telemetryClient.Flush();
+            Console.WriteLine("Just sent data.");
 
-            _telemetryClient?.TrackEvent(telemetry);
+            //var telemetry = new EventTelemetry("Exception")
+            //{
+            //    Properties =
+            //    {
+            //        {"Method", documentationCommentId}
+            //    },
+            //    Timestamp = DateTime.UtcNow
+            //};
+
+            //_telemetryClient?.TrackEvent(telemetry);
         }
 
     }
