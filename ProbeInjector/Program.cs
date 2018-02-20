@@ -54,7 +54,6 @@ namespace ProbeInjector
                     }
                 }
 
-
                 Console.WriteLine("Copying Dlls to Output-Directory...");
                 var sourceDirectory = Path.GetDirectoryName(options.ProbeFilePath) ?? throw new InvalidOperationException("probe has no directory");
                 var destinationDirectory = Path.GetDirectoryName(options.TargetFilePath) ?? throw new InvalidOperationException("target has no directory");
