@@ -45,9 +45,14 @@ namespace ProbeInjector
                     rewriter.Inject(probeAssembly);
 
                     Console.WriteLine("Writing Output...");
-                    var outputFilePath =
-                        options.OutputFilePath ?? FileHelper.GetAvailableFilePath(options.TargetFilePath);
-                    targetAssemblyDefinition.Write(outputFilePath);
+                    if (!string.IsNullOrWhiteSpace(options.OutputFilePath))
+                    {
+                        targetAssemblyDefinition.Write(options.OutputFilePath);
+                    }
+                    else
+                    {
+                        targetAssemblyDefinition.Write();
+                    }
                 }
 
                 Console.WriteLine("Copying Dlls to Output-Directory...");
