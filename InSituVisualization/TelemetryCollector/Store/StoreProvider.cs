@@ -13,11 +13,31 @@ namespace InSituVisualization.TelemetryCollector.Store
         private Store<ConcreteMethodTelemetry> _telemetryStore;
         private List<Store> _stores;
 
-        public Store<ConcreteMethodException> ExceptionStore =>
-            _exceptionStore ?? (_exceptionStore = new Store<ConcreteMethodException>("VSIX_Exceptions.json"));
-
-        public Store<ConcreteMethodTelemetry> TelemetryStore =>
-            _telemetryStore ?? (_telemetryStore = new Store<ConcreteMethodTelemetry>("VSIX_Telemetries.json"));
+        public Store<ConcreteMethodException> ExceptionStore
+        {
+            get
+            {
+                if (_exceptionStore == null)
+                {
+                    _exceptionStore = new Store<ConcreteMethodException>("VSIX_Exceptions.json");
+                    _exceptionStore.Init();
+                }
+                return _exceptionStore;
+            }
+        }
+            
+        public Store<ConcreteMethodTelemetry> TelemetryStore
+        {
+            get
+            {
+                if (_telemetryStore == null)
+                {
+                    _telemetryStore = new Store<ConcreteMethodTelemetry>("VSIX_Exceptions.json");
+                    _telemetryStore.Init();
+                }
+                return _telemetryStore;
+            }
+        }
 
         public void Init()
         {
@@ -25,8 +45,8 @@ namespace InSituVisualization.TelemetryCollector.Store
             {
                 _stores = new List<Store>
                 {
-                    TelemetryStore.Init(),
-                    ExceptionStore.Init()
+                    TelemetryStore,
+                    ExceptionStore
                 };
             }
             //first time build of averagedDictionary

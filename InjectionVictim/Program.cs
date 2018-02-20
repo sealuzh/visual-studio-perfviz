@@ -44,7 +44,8 @@ namespace InjectionVictim
 
             LongRunningMethodTest1();
 
-            var teststring = ReturnString();
+            var teststring = ReturnString(true);
+            var teststring2 = ReturnString(false);
         }
 
         private static void CallingConventionTest(string a, string b, int c)
@@ -82,8 +83,12 @@ namespace InjectionVictim
             Console.WriteLine(toPrint);
         }
 
-        public static string ReturnString()
+        public static string ReturnString(bool skip)
         {
+            if (skip)
+            {
+                return "somethingSkipped";
+            }
             return "somestring";
         }
 

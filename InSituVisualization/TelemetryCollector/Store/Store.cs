@@ -23,10 +23,9 @@ namespace InSituVisualization.TelemetryCollector.Store
             _persistanceService = new PersistanceService<T>(fileName);
         }
 
-        public Store<T> Init()
+        public void Init()
         {
             _allMemberTelemetries = _persistanceService.FetchSystemCacheData();
-            return this;
         }
 
         public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> GetAllMethodTelemetries() => _allMemberTelemetries;
