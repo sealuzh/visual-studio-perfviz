@@ -38,22 +38,22 @@ namespace ProbeInjector
                 var probeAssembly = ProbeAssemblyFactory.LoadAssembly(options.ProbeFilePath);
 
                 Console.WriteLine($"Loading Target {assemblyName.Name}...");
-                using (var targetAssemblyDefinition = AssemblyDefinition.ReadAssembly(options.TargetFilePath))
+                var fileBytes = File.ReadAllBytes(options.TargetFilePath);
+                using (var memoryStream = new MemoryStream(fileBytes))
                 {
-                    Console.WriteLine("Injecting References...");
-                    var rewriter = new IlRewriter(targetAssemblyDefinition);
-                    rewriter.Inject(probeAssembly);
+                    using (var targetAssemblyDefinition = AssemblyDefinition.ReadAssembly(memoryStream))
+                    {
+                        Console.WriteLine("Injecting References...");
+                        var rewriter = new IlRewriter(targetAssemblyDefinition);
+                        rewriter.Inject(probeAssembly);
 
-                    Console.WriteLine("Writing Output...");
-                    if (!string.IsNullOrWhiteSpace(options.OutputFilePath))
-                    {
-                        targetAssemblyDefinition.Write(options.OutputFilePath);
-                    }
-                    else
-                    {
-                        targetAssemblyDefinition.Write();
+                        Console.WriteLine("Writing Output...");
+                        targetAssemblyDefinition.Write(!string.IsNullOrWhiteSpace(options.OutputFilePath)
+                            ? options.OutputFilePath
+                            : options.TargetFilePath);
                     }
                 }
+
 
                 Console.WriteLine("Copying Dlls to Output-Directory...");
                 var sourceDirectory = Path.GetDirectoryName(options.ProbeFilePath) ?? throw new InvalidOperationException("probe has no directory");
