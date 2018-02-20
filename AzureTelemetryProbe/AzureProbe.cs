@@ -61,10 +61,11 @@ namespace AzureTelemetryProbe
         // ReSharper disable once UnusedMember.Global Justification: Reflection
         public static void OnException(string documentationCommentId)
         {
-            if (_telemetryClient == null)
+            if (!_methodStartDateTimes.TryRemove(documentationCommentId, out var startDateTime))
             {
-                Init();
+                return;
             }
+
             var telemetry = new EventTelemetry("Exception")
             {
                 Properties =
