@@ -84,7 +84,7 @@ namespace ProbeInjector
             catch (Exception exception)
             {
                 Console.WriteLine("An unknown error occurred.");
-                ConsoleWriteExceptionIfVerbose(exception, verbose);
+                Console.WriteLine(exception);
             }
             Console.Read();
         }

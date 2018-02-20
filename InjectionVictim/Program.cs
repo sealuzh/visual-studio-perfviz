@@ -46,6 +46,7 @@ namespace InjectionVictim
 
             var teststring = ReturnString(true);
             var teststring2 = ReturnString(false);
+            PredictionLoopTest();
         }
 
         private static void CallingConventionTest(string a, string b, int c)
@@ -71,11 +72,18 @@ namespace InjectionVictim
             for (int i = 0; i < 1000000; i++)
             {
                 x += Math.Pow(121, 123);
-                SimpleMethodTest("SimpleMethodTest");
             }
             x = x + 1;
             x = x + 2;
             Thread.Sleep(1234);
+        }
+
+        private static void PredictionLoopTest()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                SimpleMethodTest("SimpleMethodTest");
+            }
         }
 
         public static void SimpleMethodTest(string toPrint)
