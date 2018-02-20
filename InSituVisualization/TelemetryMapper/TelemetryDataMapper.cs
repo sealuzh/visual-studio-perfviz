@@ -1,4 +1,5 @@
-﻿using InSituVisualization.Model;
+﻿using System;
+using InSituVisualization.Model;
 using InSituVisualization.TelemetryCollector;
 using Microsoft.CodeAnalysis;
 
@@ -44,7 +45,7 @@ namespace InSituVisualization.TelemetryMapper
                 };
                 return performanceInfo;
             }
-            catch
+            catch (Exception e)
             {
                 // TODO RR: Check CatchAll
                 return null;

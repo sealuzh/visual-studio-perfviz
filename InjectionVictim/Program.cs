@@ -43,6 +43,8 @@ namespace InjectionVictim
             }
 
             LongRunningMethodTest1();
+
+            var teststring = ReturnString();
         }
 
         private static void CallingConventionTest(string a, string b, int c)
@@ -68,6 +70,7 @@ namespace InjectionVictim
             for (int i = 0; i < 1000000; i++)
             {
                 x += Math.Pow(121, 123);
+                SimpleMethodTest("SimpleMethodTest");
             }
             x = x + 1;
             x = x + 2;
@@ -77,6 +80,11 @@ namespace InjectionVictim
         public static void SimpleMethodTest(string toPrint)
         {
             Console.WriteLine(toPrint);
+        }
+
+        public static string ReturnString()
+        {
+            return "somestring";
         }
 
         /// <summary>
