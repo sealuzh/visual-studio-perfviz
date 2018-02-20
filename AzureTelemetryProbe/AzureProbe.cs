@@ -51,7 +51,6 @@ namespace AzureTelemetryProbe
             }
             _telemetryClient.TrackDependency("telemetry", "-target-", documentationCommentId, "-data-", startDateTime, DateTime.UtcNow - startDateTime, "0", true);
             _telemetryClient.Flush();
-            Console.WriteLine("Just sent data.");
         }
 
         /// <summary>
