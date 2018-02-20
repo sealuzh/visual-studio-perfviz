@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 
-namespace DotNetCoreAzureTelemetryProbe
+namespace DotNetStandardAzureTelemetryProbe
 {
     // ReSharper disable once UnusedMember.Global Justification: Reflection
     public class AzureProbe
@@ -59,7 +59,7 @@ namespace DotNetCoreAzureTelemetryProbe
         // ReSharper disable once UnusedMember.Global Justification: Reflection
         public static void OnException(string documentationCommentId)
         {
-            if (!_methodStartDateTimes.TryRemove(documentationCommentId, out var startDateTime))
+            if (!_methodStartDateTimes.TryRemove(documentationCommentId, out var _))
             {
                 return;
             }

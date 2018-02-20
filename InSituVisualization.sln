@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Probes", "Probes", "{F12BAF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiagnosticsTraceProbe", "DiagnosticsTraceProbe\DiagnosticsTraceProbe.csproj", "{4A4B0054-D6C5-43FB-945D-A4050004C6B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetCoreAzureTelemetryProbe", "DotNetCoreAzureTelemetryProbe\DotNetCoreAzureTelemetryProbe.csproj", "{8AF8923B-F5DE-47E0-B76E-B7C479454D2F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetStandardAzureTelemetryProbe", "DotNetStandardAzureTelemetryProbe\DotNetStandardAzureTelemetryProbe.csproj", "{3637AB79-B141-4484-AA40-774E3F929DA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,10 +49,10 @@ Global
 		{4A4B0054-D6C5-43FB-945D-A4050004C6B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A4B0054-D6C5-43FB-945D-A4050004C6B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A4B0054-D6C5-43FB-945D-A4050004C6B8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8AF8923B-F5DE-47E0-B76E-B7C479454D2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8AF8923B-F5DE-47E0-B76E-B7C479454D2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8AF8923B-F5DE-47E0-B76E-B7C479454D2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8AF8923B-F5DE-47E0-B76E-B7C479454D2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3637AB79-B141-4484-AA40-774E3F929DA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3637AB79-B141-4484-AA40-774E3F929DA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3637AB79-B141-4484-AA40-774E3F929DA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3637AB79-B141-4484-AA40-774E3F929DA6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,7 +60,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{0F840844-D7C3-4671-BE00-9DCDC517962A} = {F12BAF43-F0D1-484F-87BC-6D3655E98268}
 		{4A4B0054-D6C5-43FB-945D-A4050004C6B8} = {F12BAF43-F0D1-484F-87BC-6D3655E98268}
-		{8AF8923B-F5DE-47E0-B76E-B7C479454D2F} = {F12BAF43-F0D1-484F-87BC-6D3655E98268}
+		{3637AB79-B141-4484-AA40-774E3F929DA6} = {F12BAF43-F0D1-484F-87BC-6D3655E98268}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {03F182BD-3959-4F7D-927F-EE36A6BCE8B9}
