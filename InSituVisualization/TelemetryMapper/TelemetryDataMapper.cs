@@ -13,7 +13,7 @@ namespace InSituVisualization.TelemetryMapper
 
         public TelemetryDataMapper(ITelemetryProvider telemetryProvider)
         {
-            _telemetryProvider = telemetryProvider;
+            _telemetryProvider = telemetryProvider ?? throw new ArgumentNullException(nameof(telemetryProvider));
         }
 
         public MethodPerformanceInfo GetMethodPerformanceInfo(IMethodSymbol methodSymbol)
@@ -24,24 +24,20 @@ namespace InSituVisualization.TelemetryMapper
             // TODO RR: Do one Dictionary per Class/File
             try
             {
-                // TODO RR: Do Real Mapping
-                var averageMemberTelemetries = _telemetryProvider.GetAveragedMemberTelemetry();
-                //var averageMemberTelemetries = dataStore.GetAveragedMemberTelemetry();
-                // is null when being written to at the same time
-                if (averageMemberTelemetries == null)
+                if (_telemetryProvider.TelemetryData == null)
                 {
                     return null;
                 }
                 // if no information given for this method it does not exist in dict
-                if (!averageMemberTelemetries.ContainsKey(documentationCommentId))
+                if (!_telemetryProvider.TelemetryData.ContainsKey(documentationCommentId))
                 {
                     return null;
                 }
                 var performanceInfo = new MethodPerformanceInfo(methodSymbol)
                 {
-                    MeanExecutionTime = averageMemberTelemetries[documentationCommentId].Duration,
+                    MeanExecutionTime = _telemetryProvider.TelemetryData[documentationCommentId].Duration,
                     //TODO RR: integrate MemberCount in interface.
-                    MemberCount = averageMemberTelemetries[documentationCommentId].MemberCount
+                    MemberCount = _telemetryProvider.TelemetryData[documentationCommentId].MemberCount
                 };
                 return performanceInfo;
             }

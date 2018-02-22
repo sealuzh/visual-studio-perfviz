@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using DryIoc;
+using InSituVisualization.TelemetryCollector;
 using InSituVisualization.TelemetryMapper;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
@@ -76,6 +78,12 @@ namespace InSituVisualization
                 var treeChanges = syntaxTree.GetChanges(_originalTree).Where(treeChange => !string.IsNullOrWhiteSpace(treeChange.NewText)).ToList();
 
                 var semanticModel = await Document.GetSemanticModelAsync();
+
+                // TODO RR: THIS IS A MAYOR WORKAROUND TO FIX THE DEFERRED DLL LOADING PROBLEM:
+                // SOME DDLS, SUCH AS NEWTONSOFT.JSON ARE NOT LOADABLE IN THE FIRST SECONDS...
+                var telemetryProvider = IocHelper.Container.Resolve<ITelemetryProvider>();
+                await (telemetryProvider as StoreManager)?.StartBackgroundWorkerAsync(CancellationToken.None);
+
 
                 var telemetryDataMapper = IocHelper.Container.Resolve<ITelemetryDataMapper>();
 

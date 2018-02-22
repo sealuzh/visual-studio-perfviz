@@ -5,6 +5,6 @@ namespace InSituVisualization.TelemetryCollector
 {
     internal interface ITelemetryProvider
     {
-        IDictionary<string, AveragedMethod> GetAveragedMemberTelemetry();
+        IDictionary<string, AveragedMethod> TelemetryData { get; }
     }
 }

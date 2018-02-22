@@ -2,35 +2,44 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using InSituVisualization.TelemetryCollector.DataCollection;
 using InSituVisualization.TelemetryCollector.Model.AveragedMember;
 using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
+using InSituVisualization.TelemetryCollector.Persistance;
 using InSituVisualization.TelemetryCollector.Store;
 
 namespace InSituVisualization.TelemetryCollector
 {
     // ReSharper disable once ClassNeverInstantiated.Global Justification: IOC
-    internal class StoreHandler : ITelemetryProvider
+    internal class StoreManager : ITelemetryProvider
     {
+        private static readonly string BasePath = Path.GetDirectoryName(Path.GetTempPath()) + "\\InSitu";
+
         private readonly TimeSpan _taskDelay = TimeSpan.FromMinutes(1);
 
-        private readonly StoreProvider _storeProvider;
-
-        private ConcurrentDictionary<string, AveragedMethod> _currentAveragedMemberTelemetry;
         private Task _task;
+        private ConcurrentDictionary<string, AveragedMethod> _telemetryData;
 
-        public StoreHandler(StoreProvider storeProvider)
+        private Store<ConcreteMethodTelemetry> TelemetryStore { get; } = new Store<ConcreteMethodTelemetry>(new FilePersistentStorage(Path.Combine(BasePath, "VSIX_Telemetries.json")));
+        private Store<ConcreteMethodException> ExceptionStore { get; } = new Store<ConcreteMethodException>(new FilePersistentStorage(Path.Combine(BasePath, "VSIX_Exceptions.json")));
+
+        public IDictionary<string, AveragedMethod> TelemetryData => _telemetryData;
+
+        public async Task StartBackgroundWorkerAsync(CancellationToken cancellationToken)
         {
-            _storeProvider = storeProvider;
-        }
+            if (_task != null)
+            {
+                return;
+            }
 
-        public void StartBackgroundTask(CancellationToken cancellationToken)
-        {
-            _storeProvider.Init();
-            _currentAveragedMemberTelemetry = GenerateAveragedMethodDictionary(_storeProvider.TelemetryStore.GetCurrentMethodTelemetries(), _storeProvider.ExceptionStore.GetCurrentMethodTelemetries());
+            await TelemetryStore.LoadAsync();
+            await ExceptionStore.LoadAsync();
+            _telemetryData = GenerateAveragedMethodDictionary();
 
+            // not awaiting new Task
             _task = Task.Run(async () =>
             {
                 while (!cancellationToken.IsCancellationRequested)
@@ -64,14 +73,14 @@ namespace InSituVisualization.TelemetryCollector
                     {
                         case "telemetry":
                             var telemetry = restReturnMember.GetConcreteMethodTelemetry();
-                            if (_storeProvider.TelemetryStore.GetAllMethodTelemetries()
+                            if (TelemetryStore.AllMethodTelemetries
                                 .ContainsKey(telemetry.DocumentationCommentId))
                             {
                                 {
-                                    if (!_storeProvider.TelemetryStore.GetAllMethodTelemetries()[telemetry.DocumentationCommentId].ContainsKey(telemetry.Id))
+                                    if (!TelemetryStore.AllMethodTelemetries[telemetry.DocumentationCommentId].ContainsKey(telemetry.Id))
                                     {
                                         //element is missing --> new element. Add it to the dict
-                                        if (!_storeProvider.TelemetryStore.GetAllMethodTelemetries()[telemetry.DocumentationCommentId]
+                                        if (!TelemetryStore.AllMethodTelemetries[telemetry.DocumentationCommentId]
                                             .TryAdd(telemetry.Id, telemetry))
                                         {
                                             Debug.WriteLine(
@@ -89,7 +98,7 @@ namespace InSituVisualization.TelemetryCollector
                                 {
                                     Debug.WriteLine("Could not add dict " + telemetry.Id);
                                 }
-                                if (!_storeProvider.TelemetryStore.GetAllMethodTelemetries()
+                                if (!TelemetryStore.AllMethodTelemetries
                                     .TryAdd(telemetry.DocumentationCommentId, newDict))
                                 {
                                     Debug.WriteLine("Could not add dict " + telemetry.DocumentationCommentId);
@@ -99,15 +108,15 @@ namespace InSituVisualization.TelemetryCollector
                             break;
                         case "exception":
                             var exception = restReturnMember.GetConcreteMethodException();
-                            if (_storeProvider.ExceptionStore.GetAllMethodTelemetries()
+                            if (ExceptionStore.AllMethodTelemetries
                                 .ContainsKey(exception.DocumentationCommentId))
                             {
                                 {
-                                    if (!_storeProvider.ExceptionStore.GetAllMethodTelemetries()[
+                                    if (!ExceptionStore.AllMethodTelemetries[
                                         exception.DocumentationCommentId].ContainsKey(exception.Id))
                                     {
                                         //element is missing --> new element. Add it to the dict
-                                        if (!_storeProvider.ExceptionStore.GetAllMethodTelemetries()[
+                                        if (!ExceptionStore.AllMethodTelemetries[
                                                 exception.DocumentationCommentId]
                                             .TryAdd(exception.Id, exception))
                                         {
@@ -125,8 +134,7 @@ namespace InSituVisualization.TelemetryCollector
                                 {
                                     Debug.WriteLine("Could not add dict " + exception.Id);
                                 }
-                                if (!_storeProvider.ExceptionStore.GetAllMethodTelemetries()
-                                    .TryAdd(exception.DocumentationCommentId, newDict))
+                                if (!ExceptionStore.AllMethodTelemetries.TryAdd(exception.DocumentationCommentId, newDict))
                                 {
                                     Debug.WriteLine("Could not add dict " + exception.DocumentationCommentId);
                                 }
@@ -138,15 +146,17 @@ namespace InSituVisualization.TelemetryCollector
             }
             if (updateOccured)
             {
-                _storeProvider.UpdateStores(true);
-                _currentAveragedMemberTelemetry = GenerateAveragedMethodDictionary(
-                    _storeProvider.TelemetryStore.GetCurrentMethodTelemetries(),
-                    _storeProvider.ExceptionStore.GetCurrentMethodTelemetries());
+                await TelemetryStore.UpdateAsync();
+                await ExceptionStore.UpdateAsync();
+                _telemetryData = GenerateAveragedMethodDictionary();
             }
         }
 
-        private ConcurrentDictionary<string, AveragedMethod> GenerateAveragedMethodDictionary(ConcurrentDictionary<string, ConcurrentDictionary<string, ConcreteMethodTelemetry>> telemetryData, ConcurrentDictionary<string, ConcurrentDictionary<string, ConcreteMethodException>> exceptionData)
+        private ConcurrentDictionary<string, AveragedMethod> GenerateAveragedMethodDictionary()
         {
+            // TODO RR: Refactor
+            var telemetryData = TelemetryStore.CurrentMethodTelemetries;
+            var exceptionData = ExceptionStore.CurrentMethodTelemetries;
             //TODO JO: change this, not nice (should not use if)
             var averagedDictionary = new ConcurrentDictionary<string, AveragedMethod>();
             foreach (var key in telemetryData.Keys)
@@ -167,15 +177,6 @@ namespace InSituVisualization.TelemetryCollector
                 }
             }
             return averagedDictionary;
-        }
-
-        public IDictionary<string, AveragedMethod> GetAveragedMemberTelemetry()
-        {
-            if (_task == null)
-            {
-                StartBackgroundTask(CancellationToken.None);
-            }
-            return _currentAveragedMemberTelemetry;
         }
     }
 }

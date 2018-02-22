@@ -1,48 +1,46 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using InSituVisualization.TelemetryCollector.Filter;
+using InSituVisualization.TelemetryCollector.Filter.Property;
 using InSituVisualization.TelemetryCollector.Persistance;
 
 namespace InSituVisualization.TelemetryCollector.Store
 {
-    public abstract class Store
+    public class Store<T>
     {
-        public abstract void Update(bool persist);
-    }
-
-    public class Store<T> : Store
-    {
-        private ConcurrentDictionary<string, ConcurrentDictionary<string, T>> _allMemberTelemetries = new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>();
-        private ConcurrentDictionary<string, ConcurrentDictionary<string, T>> _currentMemberTelemetries = new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>();
-
         private readonly FilterController<T> _filterController = new FilterController<T>();
 
-        private readonly PersistanceService<T> _persistanceService;
+        private readonly IPersistentStorage _persistentStorage;
 
-        public Store(string fileName)
+        public Store(IPersistentStorage persistentStorage)
         {
-            _persistanceService = new PersistanceService<T>(fileName);
+            _persistentStorage = persistentStorage;
         }
 
-        public void Init()
+        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> AllMethodTelemetries { get; private set; } = new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>();
+
+        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> CurrentMethodTelemetries { get; private set; } = new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>();
+
+        public async Task LoadAsync()
         {
-            _allMemberTelemetries = _persistanceService.FetchSystemCacheData();
+            AllMethodTelemetries = await _persistentStorage.GetDataAsync<T>();
+            CurrentMethodTelemetries = _filterController.ApplyFilters(AllMethodTelemetries);
         }
 
-        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> GetAllMethodTelemetries() => _allMemberTelemetries;
-
-        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> GetCurrentMethodTelemetries() => _currentMemberTelemetries;
-
-        public PersistanceService<T> GetPersistanceService() => _persistanceService;
-
-        public FilterController<T> GetFilterController() => _filterController;
-
-        public override void Update(bool persist)
+        [Conditional("DEBUG")]
+        public void AddDebugFilters()
         {
-            if (persist)
-            {
-                _persistanceService.WriteSystemCacheData(_allMemberTelemetries);
-            }
-            _currentMemberTelemetries = _filterController.ApplyFilters(_allMemberTelemetries);
+            _filterController.AddFilterGlobal(
+                _filterController.GetFilterProperties()[3],
+                FilterKind.IsGreaterEqualThen, new DateTime(2018, 1, 15, 12, 45, 00));
+        }
+
+        public async Task UpdateAsync()
+        {
+            await _persistentStorage.StoreDataAsync(AllMethodTelemetries);
+            CurrentMethodTelemetries = _filterController.ApplyFilters(AllMethodTelemetries);
         }
     }
 }

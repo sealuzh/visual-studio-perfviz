@@ -14,7 +14,7 @@ namespace InSituVisualization.TelemetryCollector.Model.AveragedMember
         public TimeSpan Duration { get; }
         public int MemberCount { get; }
         public int ExceptionCount { get; }
-        public ConcurrentDictionary<String, ConcreteMethodTelemetry> TelemetryMembers { get; }
+        public ConcurrentDictionary<string, ConcreteMethodTelemetry> TelemetryMembers { get; }
         public ConcurrentDictionary<string, ConcreteMethodException> ExceptionMembers { get; }
 
         public AveragedMethod(string documentationCommentId, ConcurrentDictionary<string, ConcreteMethodTelemetry> telemetryMembers, ConcurrentDictionary<string, ConcreteMethodException> exceptionMembers) : base(documentationCommentId)
