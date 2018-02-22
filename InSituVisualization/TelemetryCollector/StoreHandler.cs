@@ -14,7 +14,7 @@ namespace InSituVisualization.TelemetryCollector
     // ReSharper disable once ClassNeverInstantiated.Global Justification: IOC
     internal class StoreHandler : ITelemetryProvider
     {
-        private readonly TimeSpan _taskDelay = TimeSpan.FromSeconds(5);
+        private readonly TimeSpan _taskDelay = TimeSpan.FromMinutes(1);
 
         private readonly StoreProvider _storeProvider;
 
