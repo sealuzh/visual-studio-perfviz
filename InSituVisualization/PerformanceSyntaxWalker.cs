@@ -48,6 +48,11 @@ namespace InSituVisualization
 
 
             var methodPerformanceInfo = _telemetryDataMapper.GetMethodPerformanceInfo(methodSymbol);
+            if (methodPerformanceInfo == null)
+            {
+                return;
+            }
+
             _methodAdornmentLayer.DrawMethodPerformanceInfo(methodDeclarationSyntax, methodPerformanceInfo);
 
             // TODO RR: var syntaxReference = methodSymbol.DeclaringSyntaxReferences

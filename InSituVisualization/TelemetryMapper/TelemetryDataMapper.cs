@@ -29,15 +29,15 @@ namespace InSituVisualization.TelemetryMapper
                     return null;
                 }
                 // if no information given for this method it does not exist in dict
-                if (!_telemetryProvider.TelemetryData.ContainsKey(documentationCommentId))
+                if (!_telemetryProvider.TelemetryData.TryGetValue(documentationCommentId, out var methodTelemetry))
                 {
                     return null;
                 }
                 var performanceInfo = new MethodPerformanceInfo(methodSymbol)
                 {
-                    MeanExecutionTime = _telemetryProvider.TelemetryData[documentationCommentId].Duration,
+                    MeanExecutionTime = methodTelemetry.Duration,
                     //TODO RR: integrate MemberCount in interface.
-                    MemberCount = _telemetryProvider.TelemetryData[documentationCommentId].MemberCount
+                    MemberCount = methodTelemetry.MemberCount
                 };
                 return performanceInfo;
             }

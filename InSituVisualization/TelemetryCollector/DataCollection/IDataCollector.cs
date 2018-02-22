@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace InSituVisualization.TelemetryCollector.DataCollection
 {
-    public interface IDataCollectionService
+    public interface IDataCollector
     {
         Task<IList<CollectedDataEntity>> GetNewTelemetriesTaskAsync();
     }

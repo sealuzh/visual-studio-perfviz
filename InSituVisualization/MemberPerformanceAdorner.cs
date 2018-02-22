@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using DryIoc;
@@ -75,7 +76,8 @@ namespace InSituVisualization
                 // getting Changes
                 // https://github.com/dotnet/roslyn/issues/17498
                 // https://stackoverflow.com/questions/34243031/reliably-compare-type-symbols-itypesymbol-with-roslyn
-                var treeChanges = syntaxTree.GetChanges(_originalTree).Where(treeChange => !string.IsNullOrWhiteSpace(treeChange.NewText)).ToList();
+                var treeChanges = syntaxTree.GetChanges(_originalTree)
+                    .Where(treeChange => !string.IsNullOrWhiteSpace(treeChange.NewText)).ToList();
 
                 var semanticModel = await Document.GetSemanticModelAsync();
 
@@ -93,6 +95,11 @@ namespace InSituVisualization
 
                 var root = await Document.GetSyntaxRootAsync();
                 performanceSyntaxWalker.Visit(root);
+            }
+            catch (FileNotFoundException exception)
+            {
+                // This is a quasi expected exception
+                // in the first seconds the dlls cannot be loaded and throw this exception
             }
             catch (Exception exception)
             {

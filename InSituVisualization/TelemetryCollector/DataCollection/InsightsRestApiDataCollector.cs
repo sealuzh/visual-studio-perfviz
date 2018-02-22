@@ -9,7 +9,11 @@ using Newtonsoft.Json;
 
 namespace InSituVisualization.TelemetryCollector.DataCollection
 {
-    class InsightsExternalReferencesRestApiDataCollectionService : IDataCollectionService
+    /// <summary>
+    /// See Azure Application Insights REST API
+    /// https://dev.applicationinsights.io/apiexplorer/events
+    /// </summary>
+    internal class InsightsRestApiDataCollector : IDataCollector
     {
         private const string Url = "https://api.applicationinsights.io/v1/apps/{0}/{1}/{2}?{3}";
 
@@ -21,7 +25,7 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
         private readonly string _apiKey;
         
 
-        public InsightsExternalReferencesRestApiDataCollectionService()
+        public InsightsRestApiDataCollector()
         {
             _appId = (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "AppId", typeof(string));
             _apiKey = (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "ApiKey", typeof(string));
@@ -59,7 +63,7 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
             client.DefaultRequestHeaders.Add("x-api-key", apikey);
             var req = string.Format(Url, appid, queryType, queryPath, parameterString);
             var response = await client.GetAsync(req);
-            return response.IsSuccessStatusCode ? response.Content.ReadAsStringAsync().Result : throw new InvalidOperationException(response.ReasonPhrase);
+            return response.IsSuccessStatusCode ? await response.Content.ReadAsStringAsync() : throw new InvalidOperationException(response.ReasonPhrase);
         }
     }
 }

@@ -5,11 +5,11 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
     // ReSharper disable once ClassNeverInstantiated.Global Justification: IOC
     public class DataCollectionServiceProvider
     {
-        private static List<IDataCollectionService> _dataPullingServices;
+        private static List<IDataCollector> _dataPullingServices;
 
-        public static IEnumerable<IDataCollectionService> GetDataCollectionServices()
+        public static IEnumerable<IDataCollector> GetDataCollectionServices()
         {
-            return _dataPullingServices ?? (_dataPullingServices = new List<IDataCollectionService> { new InsightsExternalReferencesRestApiDataCollectionService() });
+            return _dataPullingServices ?? (_dataPullingServices = new List<IDataCollector> { new InsightsRestApiDataCollector() });
         }
     }
 }

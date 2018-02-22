@@ -64,7 +64,7 @@ namespace InSituVisualization.TelemetryCollector
         private async Task UpdateStoresAsync()
         {
             var updateOccured = false;
-            foreach (IDataCollectionService service in DataCollectionServiceProvider.GetDataCollectionServices())
+            foreach (IDataCollector service in DataCollectionServiceProvider.GetDataCollectionServices())
             {
                 var newRestData = await service.GetNewTelemetriesTaskAsync();
                 foreach (var restReturnMember in newRestData)
