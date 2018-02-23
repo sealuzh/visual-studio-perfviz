@@ -152,7 +152,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="index.html" />
     <VSCTCompile Include="Pack\PerformanceInfoDetailWindowPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
@@ -164,7 +163,6 @@
     <Content Include="Resources\PerformanceInfoDetailWindowPackage.ico" />
     <Content Include="Resources\PerformanceInfoFilterWindowCommand.png" />
     <Content Include="Resources\PerformanceInfoFilterWindowPackage.ico" />
-    <Content Include="stylesheet.css" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
