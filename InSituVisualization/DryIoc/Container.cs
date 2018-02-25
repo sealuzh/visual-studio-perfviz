@@ -3086,7 +3086,7 @@ namespace DryIoc
             return New(typeof(LazyEnumerable<>).MakeGenericType(itemType).Constructor(), callResolveManyExpr);
         }
 
-        /// <summary>Gets the expression for <see cref="Lazy{ConcreteMethodTelemetry}"/> wrapper.</summary>
+        /// <summary>Gets the expression for <see cref="Lazy{T}"/> wrapper.</summary>
         /// <param name="request">The resolution request.</param>
         /// <param name="nullWrapperForUnresolvedService">if set to <c>true</c> then check for service registration before creating resolution expression.</param>
         /// <returns>Expression: r => new Lazy{TService}(() => r.Resolve{TService}(key, ifUnresolved, requiredType));</returns>
@@ -9564,7 +9564,7 @@ namespace DryIoc
         }
     }
 
-    /// <summary>ConcreteMethodException that container throws in case of error. Dedicated exception type simplifies
+    /// <summary>Exception that container throws in case of error. Dedicated exception type simplifies
     /// filtering or catching container relevant exceptions from client code.</summary>
     [SuppressMessage("Microsoft.Usage", "CA2237:MarkISerializableTypesWithSerializable",
         Justification = "Not available in PCL.")]

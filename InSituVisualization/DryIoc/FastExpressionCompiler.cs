@@ -1533,7 +1533,7 @@ namespace FastExpressionCompiler
 
                     il.BeginCatchBlock(catchBlock.Test);
 
-                    // at the beginning of catch the ConcreteMethodException value is on the stack,
+                    // at the beginning of catch the Exception value is on the stack,
                     // we will store into local variable.
                     var catchExpr = catchBlock.Body;
                     var exceptionVarExpr = catchBlock.Variable;
