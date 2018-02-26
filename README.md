@@ -10,3 +10,16 @@ Visual Studio Perfviz (Perfviz) is a set of programs that allows visualization i
 Perfviz is programmed to work together with Microsoft Azure, but it contains interfaces to work with any kind of online database or REST interface to query data. Effort has been put into designing a very responsive data store that can be filtered.
 
 Learn more in the wiki here: https://github.com/sealuzh/visual-studio-perfviz/wiki/Home
+
+# Open Points / Improvements
+
+* Currently, the data is pulled using the Azure External References API. This could be changed by using more appropriate method calls such as TrackEvent(), where for example exceptions could be handled with.
+* To be able to submit data when the injected application is running locally, the ApplicationInsights calls not only need a call as TrackDependency, but also the call Flush() that clears the in-memory buffer. This call is not needed when the instance is running in the cloud and slows down the application itself.
+* Currently, the solution lacks an user interace where filters can be added and removed.
+* The plugin should track when the solution is published and therefore set a global datetime filter to only display the newest data that matches the current architecture.
+
+# Bug Tracker
+
+* Loop-Inference: Currently the method calls in a loop are not being annotated.
+* Loop-Inference: Detection of changes and updating the inferred values accordingly is currently not working, as the previous state is currently unknown (e.g. when inserting a new method into the loop, the plugin assumes that this is the currently deployed version and therefore calculates the inferred value wrongly).
+* Dependency problem: For some reason some dependencies are not loaded into the build correctly. This differs from development environment to development environment (for some development environments, e.g., Newtonsoft.Json v10.0.0 is working fine, but v11.0.0 cannot be loaded. For some other development environment, this is exactly the other way round). This doesnt only account for one dependency, but for a random selection of them.
