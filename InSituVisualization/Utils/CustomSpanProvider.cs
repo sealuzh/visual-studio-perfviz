@@ -20,12 +20,32 @@ namespace InSituVisualization.Utils
                     return GetConstructorSpan(constructorDeclarationSyntax);
                 case PropertyDeclarationSyntax propertyDeclarationSyntax:
                     return GetPropertyGetterSpan(propertyDeclarationSyntax);
+                case ForEachStatementSyntax forEachStatementSyntax:
+                    return GetLoopIdentifierSpan(forEachStatementSyntax);
+                case ForStatementSyntax forStatementSyntax:
+                    return GetLoopIdentifierSpan(forStatementSyntax);
+                case DoStatementSyntax doStatementSyntax:
+                    return GetLoopIdentifierSpan(doStatementSyntax);
+                case WhileStatementSyntax whileStatementSyntax:
+                    return GetLoopIdentifierSpan(whileStatementSyntax);
                 // ReSharper disable once RedundantCaseLabel
                 case InvocationExpressionSyntax invocationExpressionSyntax:
                 default:
                     var lineSyntax = GetLineSyntaxNode(memberDeclarationSyntax);
                     return Span.FromBounds(lineSyntax.SpanStart, lineSyntax.FullSpan.End);
             }
+        }
+
+        private Span GetLoopIdentifierSpan(SyntaxNode syntaxNode)
+        {
+            foreach (var token in syntaxNode.DescendantNodesAndTokens(descend => true))
+            {
+                if (token.GetTrailingTrivia().Any(trivia => trivia.RawKind == (int)SyntaxKind.EndOfLineTrivia))
+                {
+                    return Span.FromBounds(syntaxNode.SpanStart, token.FullSpan.End);
+                }
+            }
+            return Span.FromBounds(syntaxNode.SpanStart, syntaxNode.FullSpan.End);
         }
 
 
