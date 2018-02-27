@@ -3,18 +3,18 @@ using InSituVisualization.TelemetryCollector.DataCollection;
 
 namespace InSituVisualization.Model
 {
-    public class ConcreteMethodException : ConcreteMethod
+    public class RecordedExceptionMethodTelemetry : RecordedMethodTelemetry
     {
         public string ErrorText;
 
-        public ConcreteMethodException(string documentationCommentId, string id, DateTime timestamp, string name, string errorText) : base(documentationCommentId, id, timestamp, name)
+        public RecordedExceptionMethodTelemetry(string documentationCommentId, string id, DateTime timestamp, string name, string errorText) : base(documentationCommentId, id, timestamp, name)
         {
             ErrorText = errorText;
         }
 
-        public static ConcreteMethodException FromDataEntity(CollectedDataEntity dataEntity)
+        public static RecordedExceptionMethodTelemetry FromDataEntity(CollectedDataEntity dataEntity)
         {
-            return new ConcreteMethodException(
+            return new RecordedExceptionMethodTelemetry(
                 dataEntity.DependencyData.Name, 
                 dataEntity.Id, 
                 dataEntity.Timestamp, 

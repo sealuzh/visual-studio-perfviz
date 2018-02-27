@@ -2,13 +2,13 @@
 
 namespace InSituVisualization.Model
 {
-    public class ConcreteMethod : Method
+    public class RecordedMethodTelemetry : MethodTelemetry
     {
         public string Id { get; }
         public DateTime Timestamp { get; }
         public string Name { get;  } 
 
-        public ConcreteMethod(string documentationCommentId, string id, DateTime timestamp, string name) : base(documentationCommentId)
+        public RecordedMethodTelemetry(string documentationCommentId, string id, DateTime timestamp, string name) : base(documentationCommentId)
         {
             Id = id;
             Timestamp = timestamp;

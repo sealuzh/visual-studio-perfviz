@@ -44,7 +44,6 @@ namespace InSituVisualization.Model
         }
 
         public ObservableCollection<MethodPerformanceInfo> CallerPerformanceInfo => _callerPerformanceInfo;
-
         public ObservableCollection<MethodPerformanceInfo> CalleePerformanceInfo => _calleePerformanceInfo;
     }
 }

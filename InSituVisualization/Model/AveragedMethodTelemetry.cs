@@ -8,15 +8,15 @@ namespace InSituVisualization.Model
     /// <summary>
     /// Aggregated Average Data
     /// </summary>
-    internal class AveragedMethod : Method
+    internal class AveragedMethodTelemetry : MethodTelemetry
     {
         public TimeSpan Duration { get; }
         public int MemberCount { get; }
         public int ExceptionCount { get; }
-        public ConcurrentDictionary<string, ConcreteMethodTelemetry> TelemetryMembers { get; }
-        public ConcurrentDictionary<string, ConcreteMethodException> ExceptionMembers { get; }
+        public ConcurrentDictionary<string, RecordedDurationMethodTelemetry> TelemetryMembers { get; }
+        public ConcurrentDictionary<string, RecordedExceptionMethodTelemetry> ExceptionMembers { get; }
 
-        public AveragedMethod(string documentationCommentId, ConcurrentDictionary<string, ConcreteMethodTelemetry> telemetryMembers, ConcurrentDictionary<string, ConcreteMethodException> exceptionMembers) : base(documentationCommentId)
+        public AveragedMethodTelemetry(string documentationCommentId, ConcurrentDictionary<string, RecordedDurationMethodTelemetry> telemetryMembers, ConcurrentDictionary<string, RecordedExceptionMethodTelemetry> exceptionMembers) : base(documentationCommentId)
         {
             TelemetryMembers = telemetryMembers;
             ExceptionMembers = exceptionMembers;
@@ -25,7 +25,7 @@ namespace InSituVisualization.Model
             Duration = GetAverage();
         }
 
-        public AveragedMethod(string documentationCommentId, ConcurrentDictionary<string, ConcreteMethodTelemetry> telemetryMembers) : base(documentationCommentId)
+        public AveragedMethodTelemetry(string documentationCommentId, ConcurrentDictionary<string, RecordedDurationMethodTelemetry> telemetryMembers) : base(documentationCommentId)
         {
             TelemetryMembers = telemetryMembers;
             ExceptionMembers = null;

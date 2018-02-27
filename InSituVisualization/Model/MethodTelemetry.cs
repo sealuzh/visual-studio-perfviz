@@ -3,9 +3,9 @@
     /// <summary>
     /// The abstract telemetry collected on a specific method
     /// </summary>
-    public abstract class Method
+    public abstract class MethodTelemetry
     {
-        protected Method(string documentationCommentId)
+        protected MethodTelemetry(string documentationCommentId)
         {
             DocumentationCommentId = documentationCommentId;
         }

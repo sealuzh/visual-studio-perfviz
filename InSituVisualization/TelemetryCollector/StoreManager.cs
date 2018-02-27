@@ -21,17 +21,17 @@ namespace InSituVisualization.TelemetryCollector
         private readonly TimeSpan _taskDelay = TimeSpan.FromMinutes(1);
 
         private Task _task;
-        private ConcurrentDictionary<string, AveragedMethod> _telemetryData;
+        private ConcurrentDictionary<string, AveragedMethodTelemetry> _telemetryData;
 
         public StoreManager(DataCollectionServiceProvider dataCollectionServiceProvider)
         {
             _dataCollectionServiceProvider = dataCollectionServiceProvider;
         }
 
-        private Store<ConcreteMethodTelemetry> TelemetryStore { get; } = new Store<ConcreteMethodTelemetry>(new FilePersistentStorage(Path.Combine(BasePath, "VSIX_Telemetries.json")));
-        private Store<ConcreteMethodException> ExceptionStore { get; } = new Store<ConcreteMethodException>(new FilePersistentStorage(Path.Combine(BasePath, "VSIX_Exceptions.json")));
+        private Store<RecordedDurationMethodTelemetry> TelemetryStore { get; } = new Store<RecordedDurationMethodTelemetry>(new FilePersistentStorage(Path.Combine(BasePath, "VSIX_Telemetries.json")));
+        private Store<RecordedExceptionMethodTelemetry> ExceptionStore { get; } = new Store<RecordedExceptionMethodTelemetry>(new FilePersistentStorage(Path.Combine(BasePath, "VSIX_Exceptions.json")));
 
-        public IDictionary<string, AveragedMethod> TelemetryData => _telemetryData;
+        public IDictionary<string, AveragedMethodTelemetry> TelemetryData => _telemetryData;
 
         public async Task StartBackgroundWorkerAsync(CancellationToken cancellationToken)
         {
@@ -77,40 +77,35 @@ namespace InSituVisualization.TelemetryCollector
                     switch (dataEntity.DependencyData.Type)
                     {
                         case "telemetry":
-                            var telemetry = ConcreteMethodTelemetry.FromDataEntity(dataEntity);
+                            var telemetry = RecordedDurationMethodTelemetry.FromDataEntity(dataEntity);
                             if (TelemetryStore.AllMethodTelemetries.ContainsKey(telemetry.DocumentationCommentId))
                             {
+                                if (!TelemetryStore.AllMethodTelemetries[telemetry.DocumentationCommentId].ContainsKey(telemetry.Id))
                                 {
-                                    if (!TelemetryStore.AllMethodTelemetries[telemetry.DocumentationCommentId].ContainsKey(telemetry.Id))
-                                    {
-                                        //element is missing --> new element. Add it to the dict
-                                        TelemetryStore.AllMethodTelemetries[telemetry.DocumentationCommentId].TryAdd(telemetry.Id, telemetry);
-                                        updateOccured = true;
-                                    } //else: already exists, no need to add it
-                                }
+                                    //element is missing --> new element. Add it to the dict
+                                    TelemetryStore.AllMethodTelemetries[telemetry.DocumentationCommentId].TryAdd(telemetry.Id, telemetry);
+                                    updateOccured = true;
+                                } //else: already exists, no need to add it
                             }
                             else
                             {
                                 //case methodname does not exist: add a new dict for the new method, put the element inside.
-                                var newDict = new ConcurrentDictionary<string, ConcreteMethodTelemetry>();
+                                var newDict = new ConcurrentDictionary<string, RecordedDurationMethodTelemetry>();
                                 newDict.TryAdd(telemetry.Id, telemetry);
                                 TelemetryStore.AllMethodTelemetries.TryAdd(telemetry.DocumentationCommentId, newDict);
                                 updateOccured = true;
                             }
                             break;
                         case "exception":
-                            var exception = ConcreteMethodException.FromDataEntity(dataEntity);
-                            if (ExceptionStore.AllMethodTelemetries
-                                .ContainsKey(exception.DocumentationCommentId))
+                            var exception = RecordedExceptionMethodTelemetry.FromDataEntity(dataEntity);
+                            if (ExceptionStore.AllMethodTelemetries.ContainsKey(exception.DocumentationCommentId))
                             {
                                 {
                                     if (!ExceptionStore.AllMethodTelemetries[
                                         exception.DocumentationCommentId].ContainsKey(exception.Id))
                                     {
                                         //element is missing --> new element. Add it to the dict
-                                        if (!ExceptionStore.AllMethodTelemetries[
-                                                exception.DocumentationCommentId]
-                                            .TryAdd(exception.Id, exception))
+                                        if (!ExceptionStore.AllMethodTelemetries[exception.DocumentationCommentId].TryAdd(exception.Id, exception))
                                         {
                                             Debug.WriteLine("Could not add element " + exception.DocumentationCommentId);
                                         }
@@ -121,7 +116,7 @@ namespace InSituVisualization.TelemetryCollector
                             else
                             {
                                 //case methodname does not exist: add a new dict for the new method, put the element inside.
-                                var newDict = new ConcurrentDictionary<string, ConcreteMethodException>();
+                                var newDict = new ConcurrentDictionary<string, RecordedExceptionMethodTelemetry>();
                                 if (!newDict.TryAdd(exception.Id, exception))
                                 {
                                     Debug.WriteLine("Could not add dict " + exception.Id);
@@ -144,25 +139,25 @@ namespace InSituVisualization.TelemetryCollector
             }
         }
 
-        private ConcurrentDictionary<string, AveragedMethod> GenerateAveragedMethodDictionary()
+        private ConcurrentDictionary<string, AveragedMethodTelemetry> GenerateAveragedMethodDictionary()
         {
             // TODO RR: Refactor
             var telemetryData = TelemetryStore.CurrentMethodTelemetries;
             var exceptionData = ExceptionStore.CurrentMethodTelemetries;
             //TODO JO: change this, not nice (should not use if)
-            var averagedDictionary = new ConcurrentDictionary<string, AveragedMethod>();
+            var averagedDictionary = new ConcurrentDictionary<string, AveragedMethodTelemetry>();
             foreach (var key in telemetryData.Keys)
             {
                 if (exceptionData.ContainsKey(key))
                 {
-                    if (!averagedDictionary.TryAdd(key, new AveragedMethod(key, telemetryData[key], exceptionData[key])))
+                    if (!averagedDictionary.TryAdd(key, new AveragedMethodTelemetry(key, telemetryData[key], exceptionData[key])))
                     {
                         Debug.WriteLine("Could not add element to dictionary with key " + key);
                     }
                 }
                 else
                 {
-                    if (!averagedDictionary.TryAdd(key, new AveragedMethod(key, telemetryData[key])))
+                    if (!averagedDictionary.TryAdd(key, new AveragedMethodTelemetry(key, telemetryData[key])))
                     {
                         Debug.WriteLine("Could not add element to dictionary with key " + key);
                     }
