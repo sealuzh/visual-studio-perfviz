@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using InSituVisualization.TelemetryCollector.Model.AveragedMember;
+using InSituVisualization.TelemetryCollector.Model;
 
 namespace InSituVisualization.TelemetryCollector
 {

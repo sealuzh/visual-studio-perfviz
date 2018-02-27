@@ -66,8 +66,8 @@
     <Compile Include="TelemetryCollector\DataCollection\CollectedDataEntity.cs" />
     <Compile Include="TelemetryCollector\Filter\Filter.cs" />
     <Compile Include="TelemetryCollector\DataCollection\DataCollectionServiceProvider.cs" />
-    <Compile Include="TelemetryCollector\Model\ConcreteMember\ConcreteMethod.cs" />
-    <Compile Include="TelemetryCollector\Model\ConcreteMember\ConcreteMethodException.cs" />
+    <Compile Include="TelemetryCollector\Model\ConcreteMethod.cs" />
+    <Compile Include="TelemetryCollector\Model\ConcreteMethodException.cs" />
     <Compile Include="TelemetryCollector\Persistance\IPersistentStorage.cs" />
     <Compile Include="TelemetryCollector\Store\Store.cs" />
     <Compile Include="TelemetryCollector\StoreManager.cs" />
@@ -102,8 +102,8 @@
     <Compile Include="Views\PerformanceInfoDetailWindow.cs" />
     <Compile Include="Commands\PerformanceInfoDetailWindowCommand.cs" />
     <Compile Include="TelemetryMapper\MockTelemetryDataMapper.cs" />
-    <Compile Include="TelemetryCollector\Model\AveragedMember\AveragedMethod.cs" />
-    <Compile Include="TelemetryCollector\Model\ConcreteMember\ConcreteMethodTelemetry.cs" />
+    <Compile Include="TelemetryCollector\Model\AveragedMethod.cs" />
+    <Compile Include="TelemetryCollector\Model\ConcreteMethodTelemetry.cs" />
     <Compile Include="TelemetryCollector\Filter\IntFilter.cs" />
     <Compile Include="TelemetryCollector\Filter\Property\FilterProperty.cs" />
     <Compile Include="TelemetryCollector\Filter\DateTimeFilter.cs" />
