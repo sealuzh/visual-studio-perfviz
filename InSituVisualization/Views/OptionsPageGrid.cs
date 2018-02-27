@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
-using InSituVisualization.TelemetryCollector;
-using InSituVisualization.TelemetryCollector.Persistance;
+using DryIoc;
 using Microsoft.VisualStudio.Shell;
 
 namespace InSituVisualization.Views
@@ -18,14 +17,20 @@ namespace InSituVisualization.Views
     /// </summary>
     public class OptionsPageGrid : DialogPage
     {
+        private readonly Settings _settings;
+
+        public OptionsPageGrid()
+        {
+            _settings = IocHelper.Container.Resolve<Settings>();
+        }
 
         [Category("Credentials")]
         [DisplayName("Insights Application ID")]
         [Description("Azure Application Insights REST API: Application ID")]
         public string AppId
         {
-            get => (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "AppId", typeof(string));
-            set => WritableSettingsStoreController.SetWritableSettingsStoreValue("Performance Visualization", "AppId", value);
+            get => _settings.AppId;
+            set => _settings.AppId = value;
         }
 
         [Category("Credentials")]
@@ -33,8 +38,8 @@ namespace InSituVisualization.Views
         [Description("Azure Application Insights REST API: API Key")]
         public string ApiKey
         {
-            get => (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "ApiKey", typeof(string));
-            set => WritableSettingsStoreController.SetWritableSettingsStoreValue("Performance Visualization", "ApiKey", value);
+            get => _settings.ApiKey;
+            set => _settings.ApiKey = value;
         }
 
         [Category("Settings")]
@@ -42,8 +47,8 @@ namespace InSituVisualization.Views
         [Description("Maximum amount of performance elements to be downloaded per request.")]
         public int MaxPullingAmount
         {
-            get => (int)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "MaxPullingAmount", typeof(int));
-            set => WritableSettingsStoreController.SetWritableSettingsStoreValue("Performance Visualization", "MaxPullingAmount", value);
+            get => _settings.MaxPullingAmount;
+            set => _settings.MaxPullingAmount = value;
         }
     }
 }

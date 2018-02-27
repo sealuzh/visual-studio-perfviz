@@ -1,8 +1,7 @@
-﻿//#define TestMapping
+﻿#define TestMapping
 using DryIoc;
 using InSituVisualization.TelemetryCollector;
 using InSituVisualization.TelemetryCollector.DataCollection;
-using InSituVisualization.TelemetryCollector.Store;
 using InSituVisualization.TelemetryMapper;
 using InSituVisualization.Utils;
 
@@ -21,8 +20,9 @@ namespace InSituVisualization
 
         public static void Register()
         {
-            Container.Register<CustomSpanProvider>();
-            Container.Register<MemberPerformanceAdorner>();
+            Container.Register<Settings>(Reuse.Singleton);
+            Container.Register<CustomSpanProvider>(Reuse.Singleton);
+            Container.Register<MemberPerformanceAdorner>(Reuse.Singleton);
 #if TestMapping
             Container.Register<ITelemetryDataMapper, MockTelemetryDataMapper>(Reuse.Singleton);
 #else

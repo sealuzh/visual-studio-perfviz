@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 using System.Windows.Media;
+using DryIoc;
 using InSituVisualization.Model;
 
 namespace InSituVisualization.ViewModels
@@ -59,7 +60,8 @@ namespace InSituVisualization.ViewModels
 
         public void OnOpenDetailViewCommand()
         {
-            Settings.PerformanceInfoDetailWindow.ShowMethodPerformance(MethodPerformanceInfo);
+            var settings = IocHelper.Container.Resolve<Settings>();
+            settings.PerformanceInfoDetailWindow.ShowMethodPerformance(MethodPerformanceInfo);
         }
 
     }

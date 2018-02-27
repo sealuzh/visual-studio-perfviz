@@ -25,12 +25,10 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
         private readonly string _apiKey;
         
 
-        public InsightsRestApiDataCollector()
+        public InsightsRestApiDataCollector(string appId, string apiKey, int maxPullingAmount)
         {
-            _appId = (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "AppId", typeof(string));
-            _apiKey = (string)WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "ApiKey", typeof(string));
-            var maxPullingAmount = (int) WritableSettingsStoreController.GetWritableSettingsStoreValue("Performance Visualization", "MaxPullingAmount", typeof(int));
-            
+            _appId = appId;
+            _apiKey = apiKey;
             _parameterString = _parameterString + "&$top=" + maxPullingAmount;
         }
 

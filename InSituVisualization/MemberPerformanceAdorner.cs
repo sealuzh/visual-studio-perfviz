@@ -81,10 +81,14 @@ namespace InSituVisualization
 
                 var semanticModel = await Document.GetSemanticModelAsync();
 
+#if REMOVE
+
                 // TODO RR: THIS IS A MAYOR WORKAROUND TO FIX THE DEFERRED DLL LOADING PROBLEM:
                 // SOME DDLS, SUCH AS NEWTONSOFT.JSON ARE NOT LOADABLE IN THE FIRST SECONDS...
                 var telemetryProvider = IocHelper.Container.Resolve<ITelemetryProvider>();
                 await (telemetryProvider as StoreManager)?.StartBackgroundWorkerAsync(CancellationToken.None);
+
+#endif
 
 
                 var telemetryDataMapper = IocHelper.Container.Resolve<ITelemetryDataMapper>();

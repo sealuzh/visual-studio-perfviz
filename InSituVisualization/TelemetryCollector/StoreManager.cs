@@ -16,12 +16,18 @@ namespace InSituVisualization.TelemetryCollector
     // ReSharper disable once ClassNeverInstantiated.Global Justification: IOC
     internal class StoreManager : ITelemetryProvider
     {
+        private readonly DataCollectionServiceProvider _dataCollectionServiceProvider;
         private static readonly string BasePath = Path.GetDirectoryName(Path.GetTempPath()) + "\\InSitu";
 
         private readonly TimeSpan _taskDelay = TimeSpan.FromMinutes(1);
 
         private Task _task;
         private ConcurrentDictionary<string, AveragedMethod> _telemetryData;
+
+        public StoreManager(DataCollectionServiceProvider dataCollectionServiceProvider)
+        {
+            _dataCollectionServiceProvider = dataCollectionServiceProvider;
+        }
 
         private Store<ConcreteMethodTelemetry> TelemetryStore { get; } = new Store<ConcreteMethodTelemetry>(new FilePersistentStorage(Path.Combine(BasePath, "VSIX_Telemetries.json")));
         private Store<ConcreteMethodException> ExceptionStore { get; } = new Store<ConcreteMethodException>(new FilePersistentStorage(Path.Combine(BasePath, "VSIX_Exceptions.json")));
@@ -64,7 +70,7 @@ namespace InSituVisualization.TelemetryCollector
         private async Task UpdateStoresAsync()
         {
             var updateOccured = false;
-            foreach (IDataCollector service in DataCollectionServiceProvider.GetDataCollectionServices())
+            foreach (IDataCollector service in _dataCollectionServiceProvider.GetDataCollectionServices())
             {
                 var newRestData = await service.GetNewTelemetriesTaskAsync();
                 foreach (var restReturnMember in newRestData)
