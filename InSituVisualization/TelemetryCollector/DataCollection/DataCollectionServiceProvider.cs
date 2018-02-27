@@ -15,7 +15,10 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
 
         public IEnumerable<IDataCollector> GetDataCollectionServices()
         {
-            return _dataPullingServices ?? (_dataPullingServices = new List<IDataCollector> { new InsightsRestApiDataCollector(_settings.AppId, _settings.ApiKey, _settings.MaxPullingAmount) });
+            return _dataPullingServices ?? (_dataPullingServices = new List<IDataCollector>
+            {
+                new InsightsRestApiDataCollector(_settings.AppId, _settings.ApiKey, _settings.MaxPullingAmount)
+            });
         }
     }
 }

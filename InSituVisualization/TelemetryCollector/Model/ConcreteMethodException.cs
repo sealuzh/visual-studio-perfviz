@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace InSituVisualization.TelemetryCollector.Model.ConcreteMember
+namespace InSituVisualization.TelemetryCollector.Model
 {
     public class ConcreteMethodException : ConcreteMethod
     {

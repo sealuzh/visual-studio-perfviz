@@ -2,9 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
 
-namespace InSituVisualization.TelemetryCollector.Model.AveragedMember
+namespace InSituVisualization.TelemetryCollector.Model
 {
     /// <summary>
     /// Aggregated Average Data

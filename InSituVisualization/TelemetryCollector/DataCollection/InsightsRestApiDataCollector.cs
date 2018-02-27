@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using InSituVisualization.TelemetryCollector.Model.ConcreteMember;
-using InSituVisualization.TelemetryCollector.Persistance;
 using Newtonsoft.Json;
 
 namespace InSituVisualization.TelemetryCollector.DataCollection
@@ -19,17 +17,17 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
 
         private const string QueryType = "events";
         private const string QueryPath = "dependencies";
-        private readonly string _parameterString = "timespan=P30D&$orderby=timestamp%20desc";
+        private const string ParameterString = "timespan=P30D&$orderby=timestamp%20desc";
 
         private readonly string _appId;
         private readonly string _apiKey;
-        
+        private readonly int _maxPullingAmount;
 
         public InsightsRestApiDataCollector(string appId, string apiKey, int maxPullingAmount)
         {
             _appId = appId;
             _apiKey = apiKey;
-            _parameterString = _parameterString + "&$top=" + maxPullingAmount;
+            _maxPullingAmount = maxPullingAmount;
         }
 
         public async Task<IList<CollectedDataEntity>> GetNewTelemetriesTaskAsync()
@@ -40,7 +38,7 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
                 return null;
             }
 
-            var telemetryJson = await GetTelemetryAsync(_appId, _apiKey, QueryType, QueryPath, _parameterString);
+            var telemetryJson = await GetTelemetryAsync(_appId, _apiKey, QueryType, QueryPath, ParameterString + "&$top=" + _maxPullingAmount);
             dynamic telemetryData = JsonConvert.DeserializeObject(telemetryJson);
 
             var performanceInfoList = new List<CollectedDataEntity>();

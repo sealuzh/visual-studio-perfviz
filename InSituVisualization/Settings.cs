@@ -12,7 +12,7 @@ namespace InSituVisualization
 
         private ShellSettingsManager ShellSettingsManager { get; } = new ShellSettingsManager(ServiceProvider.GlobalProvider);
 
-        private WritableSettingsStore PerfVizSettingsStore
+        public WritableSettingsStore PerfVizSettingsStore
         {
             get
             {
@@ -42,7 +42,6 @@ namespace InSituVisualization
             get => PerfVizSettingsStore.GetInt32(SettingsCategory, "MaxPullingAmount");
             set => PerfVizSettingsStore.SetInt32(SettingsCategory, "MaxPullingAmount", value);
         }
-
 
         public IPerformanceInfoDetailWindow PerformanceInfoDetailWindow { get; set; }
 

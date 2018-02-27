@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace InSituVisualization.TelemetryCollector.Model.ConcreteMember
+namespace InSituVisualization.TelemetryCollector.Model
 {
     /// <summary>
     /// Telemetry collected about a specific method in a single run

@@ -81,18 +81,18 @@ namespace InSituVisualization.TelemetryCollector.Filter
                     newFilter = new StringFilter(filterProperty, (string)parameter, filterKind, filterMethodFullName);
                     _activeFilters.Add(newFilter);
                     return true;
-                    case "System.DateTime":
-                        if (!filterProperty.GetFilterKinds().HasFlag(filterKind)) return false;
+                case "System.DateTime":
+                    if (!filterProperty.GetFilterKinds().HasFlag(filterKind)) return false;
                     newFilter = new DateTimeFilter(filterProperty, (DateTime)parameter, filterKind, filterMethodFullName);
                     _activeFilters.Add(newFilter);
-                        return true;
-                  
+                    return true;
+
                 case "System.Int32":
                     if (!filterProperty.GetFilterKinds().HasFlag(filterKind)) return false;
                     newFilter = new IntFilter(filterProperty, (int)parameter, filterKind, filterMethodFullName);
                     _activeFilters.Add(newFilter);
                     return true;
-                   
+
                 default:
                     return false;
             }
