@@ -1,4 +1,4 @@
-﻿namespace InSituVisualization.TelemetryCollector.Model
+﻿namespace InSituVisualization.Model
 {
     /// <summary>
     /// The abstract telemetry collected on a specific method

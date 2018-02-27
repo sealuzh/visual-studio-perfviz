@@ -5,8 +5,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using InSituVisualization.Model;
 using InSituVisualization.TelemetryCollector.DataCollection;
-using InSituVisualization.TelemetryCollector.Model;
 using InSituVisualization.TelemetryCollector.Persistance;
 using InSituVisualization.TelemetryCollector.Store;
 

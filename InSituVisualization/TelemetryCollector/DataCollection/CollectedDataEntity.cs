@@ -1,7 +1,7 @@
 ﻿//#define DEBUG
 
 using System;
-using InSituVisualization.TelemetryCollector.Model;
+using InSituVisualization.Model;
 
 namespace InSituVisualization.TelemetryCollector.DataCollection
 {

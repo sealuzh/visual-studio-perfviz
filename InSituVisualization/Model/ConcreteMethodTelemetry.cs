@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace InSituVisualization.TelemetryCollector.Model
+namespace InSituVisualization.Model
 {
     /// <summary>
     /// Telemetry collected about a specific method in a single run
     /// </summary>
-    public class ConcreteMethodTelemetry : ConcreteMethod//, IConcreteMethod
+    public class ConcreteMethodTelemetry : ConcreteMethod
     {
         public int Duration { get; }
         public string City { get; }

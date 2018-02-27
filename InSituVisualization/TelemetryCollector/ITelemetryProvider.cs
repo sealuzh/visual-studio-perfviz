@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using InSituVisualization.TelemetryCollector.Model;
+using InSituVisualization.Model;
 
 namespace InSituVisualization.TelemetryCollector
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace InSituVisualization.TelemetryCollector.Model
+namespace InSituVisualization.Model
 {
     public class ConcreteMethod : Method
     {
