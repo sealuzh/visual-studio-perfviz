@@ -72,25 +72,19 @@ namespace InSituVisualization.TelemetryCollector
             foreach (IDataCollector service in _dataCollectionServiceProvider.GetDataCollectionServices())
             {
                 var newRestData = await service.GetNewTelemetriesTaskAsync();
-                foreach (var restReturnMember in newRestData)
+                foreach (var dataEntity in newRestData)
                 {
-                    switch (restReturnMember.Dependency.Type)
+                    switch (dataEntity.DependencyData.Type)
                     {
                         case "telemetry":
-                            var telemetry = restReturnMember.GetConcreteMethodTelemetry();
-                            if (TelemetryStore.AllMethodTelemetries
-                                .ContainsKey(telemetry.DocumentationCommentId))
+                            var telemetry = ConcreteMethodTelemetry.FromDataEntity(dataEntity);
+                            if (TelemetryStore.AllMethodTelemetries.ContainsKey(telemetry.DocumentationCommentId))
                             {
                                 {
                                     if (!TelemetryStore.AllMethodTelemetries[telemetry.DocumentationCommentId].ContainsKey(telemetry.Id))
                                     {
                                         //element is missing --> new element. Add it to the dict
-                                        if (!TelemetryStore.AllMethodTelemetries[telemetry.DocumentationCommentId]
-                                            .TryAdd(telemetry.Id, telemetry))
-                                        {
-                                            Debug.WriteLine(
-                                                "Could not add element " + telemetry.DocumentationCommentId);
-                                        }
+                                        TelemetryStore.AllMethodTelemetries[telemetry.DocumentationCommentId].TryAdd(telemetry.Id, telemetry);
                                         updateOccured = true;
                                     } //else: already exists, no need to add it
                                 }
@@ -99,20 +93,13 @@ namespace InSituVisualization.TelemetryCollector
                             {
                                 //case methodname does not exist: add a new dict for the new method, put the element inside.
                                 var newDict = new ConcurrentDictionary<string, ConcreteMethodTelemetry>();
-                                if (!newDict.TryAdd(telemetry.Id, telemetry))
-                                {
-                                    Debug.WriteLine("Could not add dict " + telemetry.Id);
-                                }
-                                if (!TelemetryStore.AllMethodTelemetries
-                                    .TryAdd(telemetry.DocumentationCommentId, newDict))
-                                {
-                                    Debug.WriteLine("Could not add dict " + telemetry.DocumentationCommentId);
-                                }
+                                newDict.TryAdd(telemetry.Id, telemetry);
+                                TelemetryStore.AllMethodTelemetries.TryAdd(telemetry.DocumentationCommentId, newDict);
                                 updateOccured = true;
                             }
                             break;
                         case "exception":
-                            var exception = restReturnMember.GetConcreteMethodException();
+                            var exception = ConcreteMethodException.FromDataEntity(dataEntity);
                             if (ExceptionStore.AllMethodTelemetries
                                 .ContainsKey(exception.DocumentationCommentId))
                             {

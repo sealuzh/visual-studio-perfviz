@@ -1,97 +1,86 @@
-﻿//#define DEBUG
-
-using System;
-using InSituVisualization.Model;
+﻿using System;
 
 namespace InSituVisualization.TelemetryCollector.DataCollection
 {
-    //TODO JO: Replace concreteMethodTelemetry with this.
     public class CollectedDataEntity
     {
-        public Dependency Dependency;
-        public Client Client;
-        public string Id;
-        public DateTime Timestamp;
-
-        private ConcreteMethodTelemetry _mappedConcreteMethodTelemetry;
-        private ConcreteMethodException _mappedConcreteMethodException;
-
         public CollectedDataEntity(dynamic inputTelemetryData)
         {
+            Id = (string)inputTelemetryData.id;
             Timestamp = Convert.ToDateTime(inputTelemetryData.timestamp);
-            Id = (string) inputTelemetryData.id;
-
-            Dependency.Target = (string) inputTelemetryData.dependency.target;
-            Dependency.Data = (string)inputTelemetryData.dependency.data;
-            Dependency.Success = (bool)inputTelemetryData.dependency.success;
-            Dependency.Duration = TimeSpan.FromMilliseconds((double)inputTelemetryData.dependency.duration).Milliseconds;
-            Dependency.PerformanceBucket = (string)inputTelemetryData.dependency.performanceBucket;
-            Dependency.ResultCode = (int)inputTelemetryData.dependency.resultCode;
-            Dependency.Type = (string)inputTelemetryData.dependency.type;
-            Dependency.Name = (string)inputTelemetryData.dependency.name;
-            Client.Model = (string) inputTelemetryData.client.model;
-            Client.Os = (string)inputTelemetryData.client.os;
-            Client.Type = (string)inputTelemetryData.client.type;
-            Client.Browser = (string)inputTelemetryData.client.browser;
-            Client.Ip = (string)inputTelemetryData.client.ip;
-            Client.City = (string)inputTelemetryData.client.city;
-            Client.StateOrProvince = (string)inputTelemetryData.client.stateOrProvince;
-            Client.CountryOrRegion = (string)inputTelemetryData.client.countryOrRegion;
-
+            ClientData = new ClientData(inputTelemetryData);
+            DependencyData = new DependencyData(inputTelemetryData);
         }
 
-        public ConcreteMethodTelemetry GetConcreteMethodTelemetry()
-        {
-            return _mappedConcreteMethodTelemetry ?? (_mappedConcreteMethodTelemetry =
-                       new ConcreteMethodTelemetry(Dependency.Name, Id, Timestamp, Dependency.Type, Dependency.Duration,
-                           Client.City));
-        }
-
-        public ConcreteMethodException GetConcreteMethodException()
-        {
-            return _mappedConcreteMethodException ?? (_mappedConcreteMethodException =
-                       new ConcreteMethodException(Dependency.Name, Id, Timestamp, Dependency.Type, Dependency.Data));
-        }
+        public string Id { get; }
+        public DateTime Timestamp { get; }
+        public ClientData ClientData { get; }
+        public DependencyData DependencyData { get; }
     }
 
-    public struct Dependency
+    public class DependencyData
     {
+
+        public DependencyData(dynamic inputTelemetryData)
+        {
+            Target = (string)inputTelemetryData.dependency.target;
+            Data = (string)inputTelemetryData.dependency.data;
+            Success = (bool)inputTelemetryData.dependency.success;
+            Duration = TimeSpan.FromMilliseconds((double)inputTelemetryData.dependency.duration).Milliseconds;
+            PerformanceBucket = (string)inputTelemetryData.dependency.performanceBucket;
+            ResultCode = (int)inputTelemetryData.dependency.resultCode;
+            Type = (string)inputTelemetryData.dependency.type;
+            Name = (string)inputTelemetryData.dependency.name;
+        }
+
         //Method Name of method that called
-        public string Target;
+        public string Target { get; }
         //Errormessage, other data.
-        public string Data;
+        public string Data { get; }
         //Whether the call was successfull
-        public bool Success;
+        public bool Success { get; }
         //Duration of the method execution
-        public int Duration; //used
+        public int Duration { get; }
         //Unknown
-        public string PerformanceBucket;
+        public string PerformanceBucket { get; }
         //Returned result code of the function (should always be 0)
-        public int ResultCode;
+        public int ResultCode { get; }
         //Exception / Telemetry
-        public string Type; //used
+        public string Type { get; }
         //Methodname
-        public string Name; //used
+        public string Name { get; }
 
     }
 
-    public struct Client
+    public class ClientData
     {
+        public ClientData(dynamic inputTelemetryData)
+        {
+            Model = (string)inputTelemetryData.client.model;
+            Os = (string)inputTelemetryData.client.os;
+            Type = (string)inputTelemetryData.client.type;
+            Browser = (string)inputTelemetryData.client.browser;
+            Ip = (string)inputTelemetryData.client.ip;
+            City = (string)inputTelemetryData.client.city;
+            StateOrProvince = (string)inputTelemetryData.client.stateOrProvince;
+            CountryOrRegion = (string)inputTelemetryData.client.countryOrRegion;
+        }
+
         //Unknown
-        public string Model;
+        public string Model { get; }
         //OS running on calling system
-        public string Os;
+        public string Os { get; }
         //PC / Mac
-        public string Type;
+        public string Type { get; }
         //Name of browser
-        public string Browser;
+        public string Browser { get; }
         //IP Adress
-        public string Ip;
+        public string Ip { get; }
         //City Name
-        public string City;
+        public string City { get; }
         //Region city is in
-        public string StateOrProvince;
+        public string StateOrProvince { get; }
         //Country of state
-        public string CountryOrRegion;
+        public string CountryOrRegion { get; }
     }
 }

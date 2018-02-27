@@ -44,7 +44,6 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
             var performanceInfoList = new List<CollectedDataEntity>();
             foreach (var obj in telemetryData.value.Children())
             {
-
                 var performanceInfo = new CollectedDataEntity(obj);
                 performanceInfoList.Add(performanceInfo);
                 

@@ -1,4 +1,5 @@
 ﻿using System;
+using InSituVisualization.TelemetryCollector.DataCollection;
 
 namespace InSituVisualization.Model
 {
@@ -14,6 +15,17 @@ namespace InSituVisualization.Model
         {
             Duration = duration;
             City = city;
+        }
+
+        public static ConcreteMethodTelemetry FromDataEntity(CollectedDataEntity dataEntity)
+        {
+            return new ConcreteMethodTelemetry(
+                dataEntity.DependencyData.Name,
+                dataEntity.Id,
+                dataEntity.Timestamp, 
+                dataEntity.DependencyData.Type, 
+                dataEntity.DependencyData.Duration, 
+                dataEntity.ClientData.City);
         }
 
     }
