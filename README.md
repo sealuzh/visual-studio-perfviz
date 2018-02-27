@@ -20,6 +20,5 @@ Learn more in the wiki here: https://github.com/sealuzh/visual-studio-perfviz/wi
 
 # Bug Tracker
 
-* Loop-Inference: Currently the method calls in a loop are not being annotated.
 * Loop-Inference: Detection of changes and updating the inferred values accordingly is currently not working, as the previous state is currently unknown (e.g. when inserting a new method into the loop, the plugin assumes that this is the currently deployed version and therefore calculates the inferred value wrongly).
 * Dependency problem: For some reason some dependencies are not loaded into the build correctly. This differs from development environment to development environment (for some development environments, e.g., Newtonsoft.Json v10.0.0 is working fine, but v11.0.0 cannot be loaded. For some other development environment, this is exactly the other way round). This doesnt only account for one dependency, but for a random selection of them.
