@@ -5,12 +5,14 @@ using Newtonsoft.Json;
 
 namespace InSituVisualization.TelemetryCollector.Persistance
 {
+
     public class FilePersistentStorage : IPersistentStorage
     {
         private readonly FileInfo _file;
 
-        public FilePersistentStorage(string filePath)
+        public FilePersistentStorage()
         {
+            var filePath = Path.Combine(Path.GetDirectoryName(Path.GetTempPath()) + "\\InSitu", "VSIX_Telemetries.json");
             _file = new FileInfo(filePath);
         }
 

@@ -1,7 +1,10 @@
 ﻿//#define TestMapping
+
+using System.IO;
 using DryIoc;
 using InSituVisualization.TelemetryCollector;
 using InSituVisualization.TelemetryCollector.DataCollection;
+using InSituVisualization.TelemetryCollector.Persistance;
 using InSituVisualization.TelemetryMapper;
 using InSituVisualization.Utils;
 
@@ -23,6 +26,7 @@ namespace InSituVisualization
             Container.Register<Settings>(Reuse.Singleton);
             Container.Register<CustomSpanProvider>(Reuse.Singleton);
             Container.Register<MemberPerformanceAdorner>(Reuse.Singleton);
+            Container.Register<IPersistentStorage, FilePersistentStorage>(Reuse.Singleton);
 #if TestMapping
             Container.Register<ITelemetryDataMapper, MockTelemetryDataMapper>(Reuse.Singleton);
 #else

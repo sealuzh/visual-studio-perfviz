@@ -16,20 +16,21 @@ namespace InSituVisualization.TelemetryCollector
     internal class StoreManager : ITelemetryProvider
     {
         private readonly DataCollectionServiceProvider _dataCollectionServiceProvider;
-        private static readonly string BasePath = Path.GetDirectoryName(Path.GetTempPath()) + "\\InSitu";
+        private readonly IPersistentStorage _persistentStorage;
 
         private readonly TimeSpan _taskDelay = TimeSpan.FromMinutes(1);
 
         private Task _task;
         private ConcurrentDictionary<string, BundleMethodTelemetry> _telemetryData = new ConcurrentDictionary<string, BundleMethodTelemetry>();
 
-        public StoreManager(DataCollectionServiceProvider dataCollectionServiceProvider)
+        public StoreManager(DataCollectionServiceProvider dataCollectionServiceProvider, IPersistentStorage persistentStorage)
         {
             _dataCollectionServiceProvider = dataCollectionServiceProvider;
+            _persistentStorage = persistentStorage;
         }
 
-        private Store<RecordedDurationMethodTelemetry> TelemetryStore { get; } = new Store<RecordedDurationMethodTelemetry>(new FilePersistentStorage(Path.Combine(BasePath, "VSIX_Telemetries.json")));
-        private Store<RecordedExceptionMethodTelemetry> ExceptionStore { get; } = new Store<RecordedExceptionMethodTelemetry>(new FilePersistentStorage(Path.Combine(BasePath, "VSIX_Exceptions.json")));
+        private Store<RecordedDurationMethodTelemetry> TelemetryStore { get; } = new Store<RecordedDurationMethodTelemetry>();
+        private Store<RecordedExceptionMethodTelemetry> ExceptionStore { get; } = new Store<RecordedExceptionMethodTelemetry>();
 
         public IDictionary<string, BundleMethodTelemetry> TelemetryData => _telemetryData;
 
@@ -40,8 +41,7 @@ namespace InSituVisualization.TelemetryCollector
                 return;
             }
 
-            await TelemetryStore.LoadAsync();
-            await ExceptionStore.LoadAsync();
+            _telemetryData = await _persistentStorage.GetDataAsync<BundleMethodTelemetry>();
             UpdateTelemetryData();
 
             // not awaiting new Task
@@ -94,9 +94,9 @@ namespace InSituVisualization.TelemetryCollector
                     }
                 }
             }
-            await TelemetryStore.UpdateAsync();
-            await ExceptionStore.UpdateAsync();
             UpdateTelemetryData();
+            // TODO RR: Now only the filtered data is stored ... fix
+            await _persistentStorage.StoreDataAsync(_telemetryData);
         }
 
         private void UpdateTelemetryData()
