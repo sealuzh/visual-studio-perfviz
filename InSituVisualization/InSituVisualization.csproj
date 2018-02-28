@@ -102,7 +102,7 @@
     <Compile Include="Views\PerformanceInfoDetailWindow.cs" />
     <Compile Include="Commands\PerformanceInfoDetailWindowCommand.cs" />
     <Compile Include="TelemetryMapper\MockTelemetryDataMapper.cs" />
-    <Compile Include="Model\AveragedMethodTelemetry.cs" />
+    <Compile Include="Model\BundleMethodTelemetry.cs" />
     <Compile Include="Model\RecordedDurationMethodTelemetry.cs" />
     <Compile Include="TelemetryCollector\Filter\IntFilter.cs" />
     <Compile Include="TelemetryCollector\Filter\Property\FilterProperty.cs" />

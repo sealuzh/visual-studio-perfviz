@@ -35,9 +35,9 @@ namespace InSituVisualization.TelemetryMapper
                 }
                 var performanceInfo = new MethodPerformanceInfo(methodSymbol)
                 {
-                    MeanExecutionTime = methodTelemetry.Duration,
+                    MeanExecutionTime = methodTelemetry.GetAverageDuration(),
                     //TODO RR: integrate MemberCount in interface.
-                    MemberCount = methodTelemetry.MemberCount
+                    MemberCount = methodTelemetry.Durations.Count
                 };
                 return performanceInfo;
             }
