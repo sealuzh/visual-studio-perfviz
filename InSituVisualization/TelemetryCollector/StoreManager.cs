@@ -143,7 +143,7 @@ namespace InSituVisualization.TelemetryCollector
                 }
                 else
                 {
-                    averagedDictionary.TryAdd(key, new BundleMethodTelemetry(key, telemetryData[key]));
+                    averagedDictionary.TryAdd(key, new BundleMethodTelemetry(key, telemetryData[key], null));
                 }
             }
             return averagedDictionary;
