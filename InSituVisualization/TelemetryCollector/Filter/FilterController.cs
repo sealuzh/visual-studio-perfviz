@@ -45,7 +45,7 @@ namespace InSituVisualization.TelemetryCollector.Filter
         }
 
         //Adds a Filter that is used over all different methods available in the syntax
-        public bool AddFilterGlobal(IFilterProperty filterProperty, FilterKind filterKind, object parameter)
+        public bool AddFilter(IFilterProperty filterProperty, FilterKind filterKind, object parameter)
         {
             Filter newFilter;
             switch (filterProperty.GetPropertyInfo().PropertyType.ToString())
@@ -70,42 +70,14 @@ namespace InSituVisualization.TelemetryCollector.Filter
             }
         }
 
-        //Adds a Filter that only applies to a single method in the syntax.
-        public bool AddFilterLocal(IFilterProperty filterProperty, FilterKind filterKind, object parameter, string filterMethodFullName)
-        {
-            Filter newFilter;
-            switch (filterProperty.GetPropertyInfo().PropertyType.ToString())
-            {
-                case "System.String":
-                    if (!filterProperty.GetFilterKinds().HasFlag(filterKind)) return false;
-                    newFilter = new StringFilter(filterProperty, (string)parameter, filterKind, filterMethodFullName);
-                    _activeFilters.Add(newFilter);
-                    return true;
-                case "System.DateTime":
-                    if (!filterProperty.GetFilterKinds().HasFlag(filterKind)) return false;
-                    newFilter = new DateTimeFilter(filterProperty, (DateTime)parameter, filterKind, filterMethodFullName);
-                    _activeFilters.Add(newFilter);
-                    return true;
-
-                case "System.Int32":
-                    if (!filterProperty.GetFilterKinds().HasFlag(filterKind)) return false;
-                    newFilter = new IntFilter(filterProperty, (int)parameter, filterKind, filterMethodFullName);
-                    _activeFilters.Add(newFilter);
-                    return true;
-
-                default:
-                    return false;
-            }
-        }
-
         //Applies the filters currently stored in _activeFilters.
-        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> ApplyFilters(ConcurrentDictionary<string, ConcurrentDictionary<string, T>> inDictionary)
+        public ConcurrentDictionary<string, T> ApplyFilters(ConcurrentDictionary<string, T> inDictionary)
         {
             if (_activeFilters.Count <= 0)
             {
                 return inDictionary;
             }
-            ConcurrentDictionary<string, ConcurrentDictionary<string, T>> outDictionary = new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>(inDictionary);
+            ConcurrentDictionary<string, T> outDictionary = new ConcurrentDictionary<string, T>(inDictionary);
             foreach (var filter in _activeFilters)
             {
                 outDictionary = filter.ApplyFilter(outDictionary);

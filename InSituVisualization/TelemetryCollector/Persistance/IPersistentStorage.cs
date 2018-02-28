@@ -5,7 +5,7 @@ namespace InSituVisualization.TelemetryCollector.Persistance
 {
     public interface IPersistentStorage
     {
-        Task<ConcurrentDictionary<string, ConcurrentDictionary<string, T>>> GetDataAsync<T>();
-        Task StoreDataAsync<T>(ConcurrentDictionary<string, ConcurrentDictionary<string, T>> toStoreTelemetryData);
+        Task<ConcurrentDictionary<string, T>> GetDataAsync<T>();
+        Task StoreDataAsync<T>(ConcurrentDictionary<string, T> toStoreTelemetryData);
     }
 }

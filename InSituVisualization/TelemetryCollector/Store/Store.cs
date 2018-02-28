@@ -2,13 +2,14 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using InSituVisualization.Model;
 using InSituVisualization.TelemetryCollector.Filter;
 using InSituVisualization.TelemetryCollector.Filter.Property;
 using InSituVisualization.TelemetryCollector.Persistance;
 
 namespace InSituVisualization.TelemetryCollector.Store
 {
-    public class Store<T>
+    public class Store<T> where T: RecordedMethodTelemetry
     {
         private readonly FilterController<T> _filterController = new FilterController<T>();
 
@@ -19,9 +20,15 @@ namespace InSituVisualization.TelemetryCollector.Store
             _persistentStorage = persistentStorage;
         }
 
-        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> AllMethodTelemetries { get; private set; } = new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>();
+        /// <summary>
+        /// Telemetries by ID
+        /// </summary>
+        public ConcurrentDictionary<string, T> AllMethodTelemetries { get; private set; } = new ConcurrentDictionary<string, T>();
 
-        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> CurrentMethodTelemetries { get; private set; } = new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>();
+        /// <summary>
+        /// Telemetries by ID
+        /// </summary>
+        public ConcurrentDictionary<string, T> CurrentMethodTelemetries { get; private set; } = new ConcurrentDictionary<string, T>();
 
         public async Task LoadAsync()
         {
@@ -32,7 +39,7 @@ namespace InSituVisualization.TelemetryCollector.Store
         [Conditional("DEBUG")]
         public void AddDebugFilters()
         {
-            _filterController.AddFilterGlobal(
+            _filterController.AddFilter(
                 _filterController.GetFilterProperties()[3],
                 FilterKind.IsGreaterEqualThen, new DateTime(2018, 1, 15, 12, 45, 00));
         }

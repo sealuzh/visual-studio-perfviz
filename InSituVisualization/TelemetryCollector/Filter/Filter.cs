@@ -4,60 +4,15 @@ using InSituVisualization.TelemetryCollector.Filter.Property;
 
 namespace InSituVisualization.TelemetryCollector.Filter
 {
-    public abstract class Filter// : IFilter
+    public abstract class Filter
     {
         protected readonly FilterKind FilterKind;
-        protected readonly bool IsGlobalFilter;
-        protected readonly string ToFilterMethodFullName;
 
-        protected Filter(FilterKind filterKind, bool isGlobalFilter)
+        protected Filter(FilterKind filterKind)
         {
             FilterKind = filterKind;
-            IsGlobalFilter = isGlobalFilter;
         }
 
-        protected Filter(FilterKind filterKind, bool isGlobalFilter, string toFilterMethodFullName)
-        {
-            FilterKind = filterKind;
-            IsGlobalFilter = isGlobalFilter;
-            ToFilterMethodFullName = toFilterMethodFullName;
-        }
-
-        protected abstract ConcurrentDictionary<string, T> ApplyFilterMethodLevel<T>(string kvpMethodKey, ConcurrentDictionary<string, T> inDictionary);
-
-        public ConcurrentDictionary<string, ConcurrentDictionary<string, T>> ApplyFilter<T>(ConcurrentDictionary<string, ConcurrentDictionary<string, T>> inDictionary)
-        {
-            var outDictionary = new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>();
-            foreach (var kvpMethod in inDictionary)
-            {
-                if (IsGlobalFilter)
-                {
-                    if (!outDictionary.TryAdd(kvpMethod.Key,
-                        ApplyFilterMethodLevel(kvpMethod.Key, inDictionary[kvpMethod.Key])))
-                    {
-                        Console.WriteLine("Could not add element " + inDictionary[kvpMethod.Key]);
-                    }
-                }
-                else
-                {
-                    if (kvpMethod.Key != ToFilterMethodFullName)
-                    {
-                        if (!outDictionary.TryAdd(kvpMethod.Key, new ConcurrentDictionary<string, T>(kvpMethod.Value)))
-                        {
-                            Console.WriteLine("Could not add element " + kvpMethod.Key);
-                        }
-                    }
-                    else
-                    {
-                        if (!outDictionary.TryAdd(kvpMethod.Key,
-                            ApplyFilterMethodLevel(kvpMethod.Key, inDictionary[kvpMethod.Key])))
-                        {
-                            Console.WriteLine("Could not add element " + inDictionary[kvpMethod.Key]);
-                        }
-                    }
-                }
-            }
-            return outDictionary;
-        }
+        public abstract ConcurrentDictionary<string, T> ApplyFilter<T>(ConcurrentDictionary<string, T> inDictionary);
     }
 }

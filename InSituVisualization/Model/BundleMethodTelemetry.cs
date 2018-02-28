@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace InSituVisualization.Model
@@ -9,22 +9,20 @@ namespace InSituVisualization.Model
     /// </summary>
     internal class BundleMethodTelemetry : MethodTelemetry
     {
-        public ConcurrentDictionary<string, RecordedDurationMethodTelemetry> Durations { get; }
-        public ConcurrentDictionary<string, RecordedExceptionMethodTelemetry> Exceptions { get; }
-
-        public BundleMethodTelemetry(string documentationCommentId, ConcurrentDictionary<string, RecordedDurationMethodTelemetry> durations, ConcurrentDictionary<string, RecordedExceptionMethodTelemetry> exceptions) : base(documentationCommentId)
+        public BundleMethodTelemetry(string documentationCommentId) : base(documentationCommentId)
         {
-            Durations = durations;
-            Exceptions = exceptions;
         }
+
+        public IList<RecordedDurationMethodTelemetry> Durations { get; } = new List<RecordedDurationMethodTelemetry>();
+        public IList<RecordedExceptionMethodTelemetry> Exceptions { get; } = new List<RecordedExceptionMethodTelemetry>();
 
         public TimeSpan GetAverageDuration()
         {
-            if (Durations.Values.Count <= 0)
+            if (Durations.Count <= 0)
             {
                 return TimeSpan.Zero;
             }
-            return TimeSpan.FromMilliseconds(Durations.Values.Select(telemetry => telemetry.Duration).Average());
+            return TimeSpan.FromMilliseconds(Durations.Select(telemetry => telemetry.Duration).Average());
         }
     }
 }

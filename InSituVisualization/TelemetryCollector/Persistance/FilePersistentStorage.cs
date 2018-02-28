@@ -11,28 +11,26 @@ namespace InSituVisualization.TelemetryCollector.Persistance
 
         public FilePersistentStorage(string filePath)
         {
-            //_instanceType = instanceType;
             _file = new FileInfo(filePath);
         }
 
-        public async Task<ConcurrentDictionary<string, ConcurrentDictionary<string, T>>> GetDataAsync<T>()
+        public async Task<ConcurrentDictionary<string, T>> GetDataAsync<T>()
         {
             if (!_file.Exists)
             {
-                return new ConcurrentDictionary<string, ConcurrentDictionary<string, T>>(); //first dict: Key Membername, second dict: Key RestSendID
+                return new ConcurrentDictionary<string, T>();
             }
 
             using (var reader = _file.OpenText())
             {
                 var fileText = await reader.ReadToEndAsync();
-                return JsonConvert.DeserializeObject<ConcurrentDictionary<string, ConcurrentDictionary<string, T>>>(fileText);
+                return JsonConvert.DeserializeObject<ConcurrentDictionary<string, T>>(fileText);
             }
         }
 
-        public async Task StoreDataAsync<T>(ConcurrentDictionary<string, ConcurrentDictionary<string, T>> toStoreTelemetryData)
+        public async Task StoreDataAsync<T>(ConcurrentDictionary<string, T> toStoreTelemetryData)
         {
-            _file.Directory?.Create(); // If the directory already exists, this method does nothing.
-            
+            _file.Directory?.Create();
             using (var writer = new StreamWriter(_file.OpenWrite()))
             {
                 await writer.WriteAsync(JsonConvert.SerializeObject(toStoreTelemetryData));
