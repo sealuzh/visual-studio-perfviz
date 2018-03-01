@@ -5,13 +5,26 @@ using System.Threading;
 using System.Threading.Tasks;
 using InSituVisualization.Model;
 using InSituVisualization.TelemetryCollector.DataCollection;
-using InSituVisualization.TelemetryCollector.Store;
 
 namespace InSituVisualization.TelemetryCollector
 {
     // ReSharper disable once ClassNeverInstantiated.Global Justification: IOC
     internal class StoreManager : ITelemetryProvider
     {
+
+        // TODO RR: Filters
+        //private readonly FilterController<T> _filterController = new FilterController<T>();
+
+        //public void AddDebugFilters()
+        //{
+        //    _filterController.AddFilter(
+        //        _filterController.GetFilterProperties()[3],
+        //        FilterKind.IsGreaterEqualThen, new DateTime(2018, 1, 15, 12, 45, 00));
+        //}
+        //        public ConcurrentDictionary<string, T> CurrentMethodTelemetries => _filterController.ApplyFilters(AllMethodTelemetries);
+
+
+
         private readonly DataCollectionServiceProvider _dataCollectionServiceProvider;
 
         private readonly TimeSpan _taskDelay = TimeSpan.FromMinutes(1);
@@ -22,10 +35,11 @@ namespace InSituVisualization.TelemetryCollector
         public StoreManager(DataCollectionServiceProvider dataCollectionServiceProvider)
         {
             _dataCollectionServiceProvider = dataCollectionServiceProvider;
+            StartBackgroundWorker(CancellationToken.None);
         }
 
-        private Store<RecordedDurationMethodTelemetry> TelemetryStore { get; } = new Store<RecordedDurationMethodTelemetry>();
-        private Store<RecordedExceptionMethodTelemetry> ExceptionStore { get; } = new Store<RecordedExceptionMethodTelemetry>();
+        private ConcurrentDictionary<string, RecordedDurationMethodTelemetry> TelemetryStore { get; } = new ConcurrentDictionary<string, RecordedDurationMethodTelemetry>();
+        private ConcurrentDictionary<string, RecordedExceptionMethodTelemetry> ExceptionStore { get; } = new ConcurrentDictionary<string, RecordedExceptionMethodTelemetry>();
 
         public Task<MethodPerformanceData> GetTelemetryDataAsync(string documentationCommentId)
         {
@@ -33,15 +47,12 @@ namespace InSituVisualization.TelemetryCollector
         }
 
 
-        public void StartBackgroundWorker(CancellationToken cancellationToken)
+        private void StartBackgroundWorker(CancellationToken cancellationToken)
         {
             if (_task != null)
             {
                 return;
             }
-
-            UpdateTelemetryData();
-
             // not awaiting new Task
             _task = Task.Run(async () =>
             {
@@ -71,65 +82,51 @@ namespace InSituVisualization.TelemetryCollector
                 var newRestData = await dataCollector.GetTelemetryAsync();
                 foreach (var dataEntity in newRestData)
                 {
+                    if (string.IsNullOrWhiteSpace(dataEntity.DependencyData.Name))
+                    {
+                        continue;
+                    }
                     switch (dataEntity.DependencyData.Type)
                     {
                         case "telemetry":
                             var telemetry = RecordedDurationMethodTelemetry.FromDataEntity(dataEntity);
-                            if (!TelemetryStore.AllMethodTelemetries.ContainsKey(telemetry.Id))
+                            if (!TelemetryStore.ContainsKey(telemetry.Id))
                             {
                                 //element is missing --> new element. Add it to the dict
-                                TelemetryStore.AllMethodTelemetries.TryAdd(telemetry.Id, telemetry);
-                            } //else: already exists, no need to add it
+                                TelemetryStore.TryAdd(telemetry.Id, telemetry);
+
+                                if (_telemetryData.TryGetValue(telemetry.DocumentationCommentId, out var methodPerformanceData))
+                                {
+                                    methodPerformanceData.Durations.Add(telemetry);
+                                }
+                                else
+                                {
+                                    var data = new MethodPerformanceData();
+                                    data.Durations.Add(telemetry);
+                                    _telemetryData.TryAdd(telemetry.DocumentationCommentId, data);
+                                }
+                            }
                             break;
                         case "exception":
                             var exception = RecordedExceptionMethodTelemetry.FromDataEntity(dataEntity);
-                            if (!ExceptionStore.AllMethodTelemetries.ContainsKey(exception.Id))
+                            if (!ExceptionStore.ContainsKey(exception.Id))
                             {
                                 //element is missing --> new element. Add it to the dict
-                                ExceptionStore.AllMethodTelemetries.TryAdd(exception.Id, exception);
-                            } //else: already exists, no need to add it
+                                ExceptionStore.TryAdd(exception.Id, exception);
+
+                                if (_telemetryData.TryGetValue(exception.DocumentationCommentId, out var methodPerformanceData))
+                                {
+                                    methodPerformanceData.Exceptions.Add(exception);
+                                }
+                                else
+                                {
+                                    var data = new MethodPerformanceData();
+                                    data.Exceptions.Add(exception);
+                                    _telemetryData.TryAdd(exception.DocumentationCommentId, data);
+                                }
+                            }
                             break;
                     }
-                }
-            }
-            UpdateTelemetryData();
-        }
-
-        private void UpdateTelemetryData()
-        {
-            // TODO RR: Remove Durations/Exceptions mapping to reduce this
-            foreach (var currentMethodTelemetry in TelemetryStore.CurrentMethodTelemetries.Values)
-            {
-                if (currentMethodTelemetry.DocumentationCommentId == null)
-                {
-                    return;
-                }
-                if (_telemetryData.TryGetValue(currentMethodTelemetry.DocumentationCommentId, out var bundleMethodTelemetry))
-                {
-                    bundleMethodTelemetry.Durations.Add(currentMethodTelemetry);
-                }
-                else
-                {
-                    var data = new MethodPerformanceData();
-                    data.Durations.Add(currentMethodTelemetry);
-                    _telemetryData.TryAdd(currentMethodTelemetry.DocumentationCommentId, data);
-                }
-            }
-            foreach (var currentMethodTelemetry in ExceptionStore.CurrentMethodTelemetries.Values)
-            {
-                if (currentMethodTelemetry.DocumentationCommentId == null)
-                {
-                    return;
-                }
-                if (_telemetryData.TryGetValue(currentMethodTelemetry.DocumentationCommentId, out var bundleMethodTelemetry))
-                {
-                    bundleMethodTelemetry.Exceptions.Add(currentMethodTelemetry);
-                }
-                else
-                {
-                    var data = new MethodPerformanceData();
-                    data.Exceptions.Add(currentMethodTelemetry);
-                    _telemetryData.TryAdd(currentMethodTelemetry.DocumentationCommentId, data);
                 }
             }
         }

@@ -42,10 +42,6 @@ namespace InSituVisualization
             _textView = textView ?? throw new ArgumentNullException(nameof(textView));
             _textView.LayoutChanged += OnLayoutChanged;
             _methodAdornerLayer = new MethodAdornmentLayer(textView);
-
-            // TODO RR: THIS IS A MAYOR WORKAROUND TO FIX THE DEFERRED DLL LOADING PROBLEM:
-            var telemetryProvider = IocHelper.Container.Resolve<ITelemetryProvider>();
-            (telemetryProvider as StoreManager)?.StartBackgroundWorker(CancellationToken.None);
         }
 
 
