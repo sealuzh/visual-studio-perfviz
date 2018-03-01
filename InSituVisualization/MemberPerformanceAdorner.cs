@@ -68,20 +68,14 @@ namespace InSituVisualization
 
             try
             {
-                // getting Changes
-                // https://github.com/dotnet/roslyn/issues/17498
-                // https://stackoverflow.com/questions/34243031/reliably-compare-type-symbols-itypesymbol-with-roslyn
-                var treeChanges = syntaxTree.GetChanges(_originalTree)
-                    .Where(treeChange => !string.IsNullOrWhiteSpace(treeChange.NewText)).ToList();
-
                 var semanticModel = await Document.GetSemanticModelAsync();
 
                 var telemetryDataMapper = IocHelper.Container.Resolve<ITelemetryDataMapper>();
 
                 var performanceSyntaxWalker = new AsyncSyntaxWalker(
-                    semanticModel, treeChanges,
+                    semanticModel,
                     telemetryDataMapper, _methodAdornerLayer);
-                await performanceSyntaxWalker.VisitAsync(syntaxTree);
+                await performanceSyntaxWalker.VisitAsync(syntaxTree, _originalTree);
             }
             catch (Exception exception)
             {

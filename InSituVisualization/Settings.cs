@@ -43,7 +43,7 @@ namespace InSituVisualization
             set => PerfVizSettingsStore.SetInt32(SettingsCategory, "MaxPullingAmount", value);
         }
 
-        public IPerformanceInfoDetailWindow PerformanceInfoDetailWindow { get; set; }
+        public IPerformanceInfoDetailWindow PerformanceInfoDetailWindow { get; } = new PerformanceInfoDetailWindowViewModel();
 
     }
 }

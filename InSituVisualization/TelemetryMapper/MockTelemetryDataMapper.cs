@@ -11,11 +11,16 @@ namespace InSituVisualization.TelemetryMapper
     /// </summary>
     internal class MockTelemetryDataMapper : ITelemetryDataMapper
     {
+        private class MockMethodPerformanceData : MethodPerformanceData
+        {
+
+        }
+
         private class MockMethodPerformanceInfo : MethodPerformanceInfo
         {
             private static readonly Random Random = new Random();
 
-            public MockMethodPerformanceInfo(IMethodSymbol methodSymbol) : base(methodSymbol)
+            public MockMethodPerformanceInfo(IMethodSymbol methodSymbol, MethodPerformanceData data) : base( methodSymbol, data)
             {
                 NumberOfCalls = Random.Next();
                 MeanExecutionTime = TimeSpan.FromMilliseconds(Random.Next(100));
@@ -33,7 +38,7 @@ namespace InSituVisualization.TelemetryMapper
             {
                 return Task.FromResult(performanceInfo);
             }
-            var newPerformanceInfo = new MockMethodPerformanceInfo(methodSymbol);
+            var newPerformanceInfo = new MockMethodPerformanceInfo(methodSymbol, new MockMethodPerformanceData());
             _telemetryDatas.Add(documentationCommentId, newPerformanceInfo);
             return Task.FromResult((MethodPerformanceInfo) newPerformanceInfo);
         }

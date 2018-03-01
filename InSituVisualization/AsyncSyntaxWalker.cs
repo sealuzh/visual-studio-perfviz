@@ -14,52 +14,58 @@ namespace InSituVisualization
 {
     internal class AsyncSyntaxWalker
     {
-
-        private readonly IList<TextChange> _textChanges;
         private readonly SemanticModel _semanticModel;
         private readonly ITelemetryDataMapper _telemetryDataMapper;
         private readonly MethodAdornmentLayer _methodAdornmentLayer;
 
-        public AsyncSyntaxWalker(SemanticModel semanticModel, IList<TextChange> textChanges, ITelemetryDataMapper telemetryDataMapper, MethodAdornmentLayer methodAdornmentLayer)
+        public AsyncSyntaxWalker(SemanticModel semanticModel, ITelemetryDataMapper telemetryDataMapper, MethodAdornmentLayer methodAdornmentLayer)
         {
-            _textChanges = textChanges;
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
             _telemetryDataMapper = telemetryDataMapper ?? throw new ArgumentNullException(nameof(telemetryDataMapper));
             _methodAdornmentLayer = methodAdornmentLayer ?? throw new ArgumentNullException(nameof(methodAdornmentLayer)); ;
         }
 
-        public async Task VisitAsync(SyntaxTree syntaxTree)
+        public async Task VisitAsync(SyntaxTree syntaxTree, SyntaxTree originalTree)
         {
+            if (syntaxTree == null)
+            {
+                throw new ArgumentNullException(nameof(syntaxTree));
+            }
+            if (originalTree == null)
+            {
+                throw new ArgumentNullException(nameof(originalTree));
+            }
+
+            // getting Changes
+            // https://github.com/dotnet/roslyn/issues/17498
+            // https://stackoverflow.com/questions/34243031/reliably-compare-type-symbols-itypesymbol-with-roslyn
+            var treeChanges = syntaxTree.GetChanges(originalTree).Where(treeChange => !string.IsNullOrWhiteSpace(treeChange.NewText)).ToList();
+
             var root = await syntaxTree.GetRootAsync();
             var methods = root.DescendantNodes().OfType<MethodDeclarationSyntax>();
             foreach (var methodDeclarationSyntax in methods)
             {
-                await VisitMethodDeclarationAsync(methodDeclarationSyntax);
+                var methodPerformanceInfo = await VisitMethodDeclarationAsync(methodDeclarationSyntax);
+                if (methodPerformanceInfo != null)
+                {
+                    methodPerformanceInfo.HasChanged = HasTextChangesInNode(treeChanges, methodDeclarationSyntax);
+                }
             }
         }
 
-        public async Task VisitMethodDeclarationAsync(MethodDeclarationSyntax methodDeclarationSyntax)
+        public async Task<MethodPerformanceInfo> VisitMethodDeclarationAsync(MethodDeclarationSyntax methodDeclarationSyntax)
         {
             var methodSymbol = _semanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
             if (methodSymbol == null)
             {
-                return;
+                return null;
             }
-
-            if (HasTextChanges(methodDeclarationSyntax))
-            {
-                // TODO RR: Method Changed...
-                _methodAdornmentLayer.DrawSpan(methodDeclarationSyntax, Colors.Red);
-                return;
-            }
-
 
             var methodPerformanceInfo = await _telemetryDataMapper.GetMethodPerformanceInfoAsync(methodSymbol);
             if (methodPerformanceInfo == null)
             {
-                return;
+                return null;
             }
-            _methodAdornmentLayer.DrawMethodPerformanceInfo(methodDeclarationSyntax, methodPerformanceInfo);
 
             // TODO RR: var syntaxReference = methodSymbol.DeclaringSyntaxReferences
             // syntaxReference.GetSyntax(context.CancellationToken);
@@ -68,7 +74,11 @@ namespace InSituVisualization
             var invocationExpressionSyntaxs = methodDeclarationSyntax.DescendantNodes(node => true).OfType<InvocationExpressionSyntax>();
             foreach (var invocationExpressionSyntax in invocationExpressionSyntaxs)
             {
-                await VisitInvocationAsync(invocationExpressionSyntax, methodPerformanceInfo);
+                var invocationPerformanceInfo = await VisitInvocationAsync(invocationExpressionSyntax, methodPerformanceInfo);
+                if (invocationPerformanceInfo != null)
+                {
+                    methodPerformanceInfo.CalleePerformanceInfo.Add(invocationPerformanceInfo);
+                }
             }
 
             // Loops
@@ -76,31 +86,37 @@ namespace InSituVisualization
             var loopSyntaxs = methodDeclarationSyntax.DescendantNodes(node => true).Where(IsLoopSyntax);
             foreach (var loopSyntax in loopSyntaxs)
             {
-                await VisitLoopAsync(loopSyntax, methodPerformanceInfo);
+                var loopPerformanceInfo = await VisitLoopAsync(loopSyntax, methodPerformanceInfo);
+                if (loopPerformanceInfo != null)
+                {
+                    methodPerformanceInfo.LoopPerformanceInfo.Add(loopPerformanceInfo);
+                }
             }
+
+            _methodAdornmentLayer.DrawMethodPerformanceInfo(methodDeclarationSyntax, methodPerformanceInfo);
+            return methodPerformanceInfo;
         }
 
-        private async Task VisitInvocationAsync(InvocationExpressionSyntax invocationExpressionSyntax, MethodPerformanceInfo methodPerformanceInfo)
+        private async Task<MethodPerformanceInfo> VisitInvocationAsync(InvocationExpressionSyntax invocationExpressionSyntax, MethodPerformanceInfo methodPerformanceInfo)
         {
             var invokedMethodSymbol = _semanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol as IMethodSymbol;
             // Only Drawing invocationSymbols that refer to the current assembly. Not drawing Information about other assemblies...
             if (invokedMethodSymbol == null || !Equals(_semanticModel.Compilation.Assembly, invokedMethodSymbol.ContainingAssembly))
             {
-                return;
+                return null;
             }
             var invocationPerformanceInfo = await _telemetryDataMapper.GetMethodPerformanceInfoAsync(invokedMethodSymbol);
             if (invocationPerformanceInfo == null)
             {
-                return;
+                return null;
             }
             // Setting Caller and CalleeInformation
             invocationPerformanceInfo.CallerPerformanceInfo.Add(methodPerformanceInfo);
-            methodPerformanceInfo.CalleePerformanceInfo.Add(invocationPerformanceInfo);
-
             _methodAdornmentLayer.DrawMethodInvocationPerformanceInfo(invocationExpressionSyntax, invocationPerformanceInfo);
+            return invocationPerformanceInfo;
         }
 
-        private async Task VisitLoopAsync(SyntaxNode loopSyntax, MethodPerformanceInfo methodPerformanceInfo)
+        private async Task<LoopPerformanceInfo> VisitLoopAsync(SyntaxNode loopSyntax, MethodPerformanceInfo methodPerformanceInfo)
         {
             var invocationExpressionSyntaxsInLoop = loopSyntax.DescendantNodes(node => true).OfType<InvocationExpressionSyntax>();
             var loopInvocationsList = new List<MethodPerformanceInfo>();
@@ -116,7 +132,9 @@ namespace InSituVisualization
                 var invocationPerformanceInfo = await _telemetryDataMapper.GetMethodPerformanceInfoAsync(invokedMethodSymbol);
                 loopInvocationsList.Add(invocationPerformanceInfo);
             }
-            _methodAdornmentLayer.DrawLoopPerformanceInfo(loopSyntax, new LoopPerformanceInfo(methodPerformanceInfo, loopInvocationsList));
+            var loopPerformanceInfo = new LoopPerformanceInfo(methodPerformanceInfo, loopInvocationsList);
+            _methodAdornmentLayer.DrawLoopPerformanceInfo(loopSyntax, loopPerformanceInfo);
+            return loopPerformanceInfo;
         }
 
 
@@ -128,9 +146,9 @@ namespace InSituVisualization
                    node is ForEachStatementSyntax;
         }
 
-        private bool HasTextChanges(SyntaxNode syntaxNode)
+        private static bool HasTextChangesInNode(IEnumerable<TextChange> textChanges, SyntaxNode syntaxNode)
         {
-            return _textChanges.Any(textChange => syntaxNode.Span.IntersectsWith(textChange.Span));
+            return textChanges.Any(textChange => syntaxNode.Span.IntersectsWith(textChange.Span));
         }
     }
 }

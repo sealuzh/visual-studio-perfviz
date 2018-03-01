@@ -103,7 +103,7 @@
     <Compile Include="Views\PerformanceInfoDetailWindow.cs" />
     <Compile Include="Commands\PerformanceInfoDetailWindowCommand.cs" />
     <Compile Include="TelemetryMapper\MockTelemetryDataMapper.cs" />
-    <Compile Include="Model\BundleMethodTelemetry.cs" />
+    <Compile Include="Model\MethodPerformanceData.cs" />
     <Compile Include="Model\RecordedDurationMethodTelemetry.cs" />
     <Compile Include="TelemetryCollector\Filter\IntFilter.cs" />
     <Compile Include="TelemetryCollector\Filter\Property\FilterProperty.cs" />
@@ -115,7 +115,6 @@
     <Compile Include="TelemetryCollector\DataCollection\IDataCollector.cs" />
     <Compile Include="TelemetryCollector\DataCollection\InsightsRestApiDataCollector.cs" />
     <Compile Include="TelemetryCollector\Filter\Property\StringFilterProperty.cs" />
-    <Compile Include="Model\MethodTelemetry.cs" />
     <Compile Include="TelemetryCollector\Filter\FilterController.cs" />
     <Compile Include="TelemetryCollector\Persistance\FilePersistentStorage.cs" />
     <Compile Include="TelemetryMapper\TelemetryDataMapper.cs" />

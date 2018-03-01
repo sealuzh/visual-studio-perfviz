@@ -9,18 +9,18 @@ namespace InSituVisualization.Model
 
         public LoopPerformanceInfo(MethodPerformanceInfo methodPerformanceInfo, IList<MethodPerformanceInfo> methodInvocationsPerformanceInfos)
         {
-            ParentMethodPerformanceInfo = methodPerformanceInfo ?? throw new ArgumentNullException(nameof(methodPerformanceInfo));
-            ChildMethodInvocationsPerformanceInfos = methodInvocationsPerformanceInfos ?? throw new ArgumentNullException(nameof(methodInvocationsPerformanceInfos));
+            MethodPerformanceInfo = methodPerformanceInfo ?? throw new ArgumentNullException(nameof(methodPerformanceInfo));
+            InvocationPerformanceInfos = methodInvocationsPerformanceInfos ?? throw new ArgumentNullException(nameof(methodInvocationsPerformanceInfos));
         }
 
-        public MethodPerformanceInfo ParentMethodPerformanceInfo { get; }
-        public IList<MethodPerformanceInfo> ChildMethodInvocationsPerformanceInfos { get; }
+        public MethodPerformanceInfo MethodPerformanceInfo { get; }
+        public IList<MethodPerformanceInfo> InvocationPerformanceInfos { get; }
 
         public TimeSpan SumOfMethodInvocations
         {
-            get { return ChildMethodInvocationsPerformanceInfos.Sum(p => p.MeanExecutionTime); }
+            get { return InvocationPerformanceInfos.Sum(p => p.MeanExecutionTime); }
         }
 
-        public int AverageLoopIterations => SumOfMethodInvocations.Milliseconds == 0 ? 0 : ParentMethodPerformanceInfo.MeanExecutionTime.Milliseconds / SumOfMethodInvocations.Milliseconds;
+        public int AverageLoopIterations => SumOfMethodInvocations.Milliseconds == 0 ? 0 : MethodPerformanceInfo.MeanExecutionTime.Milliseconds / SumOfMethodInvocations.Milliseconds;
     }
 }

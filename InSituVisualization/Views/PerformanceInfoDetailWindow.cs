@@ -30,7 +30,6 @@ namespace InSituVisualization.Views
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
             // the object returned by the Content property.
             var settings = IocHelper.Container.Resolve<Settings>();
-            settings.PerformanceInfoDetailWindow = new PerformanceInfoDetailWindowViewModel();
             Content = new PerformanceInfoDetailWindowControl { DataContext = settings.PerformanceInfoDetailWindow };
         }
     }

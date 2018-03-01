@@ -17,7 +17,7 @@ namespace InSituVisualization.TelemetryCollector
         private readonly TimeSpan _taskDelay = TimeSpan.FromMinutes(1);
 
         private Task _task;
-        private readonly ConcurrentDictionary<string, BundleMethodTelemetry> _telemetryData = new ConcurrentDictionary<string, BundleMethodTelemetry>();
+        private readonly ConcurrentDictionary<string, MethodPerformanceData> _telemetryData = new ConcurrentDictionary<string, MethodPerformanceData>();
 
         public StoreManager(DataCollectionServiceProvider dataCollectionServiceProvider)
         {
@@ -27,9 +27,9 @@ namespace InSituVisualization.TelemetryCollector
         private Store<RecordedDurationMethodTelemetry> TelemetryStore { get; } = new Store<RecordedDurationMethodTelemetry>();
         private Store<RecordedExceptionMethodTelemetry> ExceptionStore { get; } = new Store<RecordedExceptionMethodTelemetry>();
 
-        public Task<BundleMethodTelemetry> GetTelemetryDataAsync(string documentationCommentId)
+        public Task<MethodPerformanceData> GetTelemetryDataAsync(string documentationCommentId)
         {
-            return _telemetryData.TryGetValue(documentationCommentId, out var methodTelemetry) ? Task.FromResult(methodTelemetry) : Task.FromResult((BundleMethodTelemetry)null);
+            return _telemetryData.TryGetValue(documentationCommentId, out var methodTelemetry) ? Task.FromResult(methodTelemetry) : Task.FromResult((MethodPerformanceData)null);
         }
 
 
@@ -110,9 +110,9 @@ namespace InSituVisualization.TelemetryCollector
                 }
                 else
                 {
-                    var bundle = new BundleMethodTelemetry(currentMethodTelemetry.DocumentationCommentId);
-                    bundle.Durations.Add(currentMethodTelemetry);
-                    _telemetryData.TryAdd(currentMethodTelemetry.DocumentationCommentId, bundle);
+                    var data = new MethodPerformanceData();
+                    data.Durations.Add(currentMethodTelemetry);
+                    _telemetryData.TryAdd(currentMethodTelemetry.DocumentationCommentId, data);
                 }
             }
             foreach (var currentMethodTelemetry in ExceptionStore.CurrentMethodTelemetries.Values)
@@ -127,9 +127,9 @@ namespace InSituVisualization.TelemetryCollector
                 }
                 else
                 {
-                    var bundle = new BundleMethodTelemetry(currentMethodTelemetry.DocumentationCommentId);
-                    bundle.Exceptions.Add(currentMethodTelemetry);
-                    _telemetryData.TryAdd(currentMethodTelemetry.DocumentationCommentId, bundle);
+                    var data = new MethodPerformanceData();
+                    data.Exceptions.Add(currentMethodTelemetry);
+                    _telemetryData.TryAdd(currentMethodTelemetry.DocumentationCommentId, data);
                 }
             }
         }
