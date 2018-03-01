@@ -29,12 +29,7 @@ namespace InSituVisualization.TelemetryCollector
 
         public Task<BundleMethodTelemetry> GetTelemetryDataAsync(string documentationCommentId)
         {
-            // if no information given for this method it does not exist in dict
-            if (!_telemetryData.TryGetValue(documentationCommentId, out var methodTelemetry))
-            {
-                return null;
-            }
-            return Task.FromResult(methodTelemetry);
+            return _telemetryData.TryGetValue(documentationCommentId, out var methodTelemetry) ? Task.FromResult(methodTelemetry) : Task.FromResult((BundleMethodTelemetry)null);
         }
 
 
