@@ -5,6 +5,6 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
 {
     public interface IDataCollector
     {
-        Task<IList<CollectedDataEntity>> GetNewTelemetriesTaskAsync();
+        Task<IList<CollectedDataEntity>> GetTelemetryAsync();
     }
 }

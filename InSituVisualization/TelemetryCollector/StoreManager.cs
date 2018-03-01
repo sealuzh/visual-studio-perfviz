@@ -73,7 +73,7 @@ namespace InSituVisualization.TelemetryCollector
         {
             foreach (var dataCollector in _dataCollectionServiceProvider.GetDataCollectionServices())
             {
-                var newRestData = await dataCollector.GetNewTelemetriesTaskAsync();
+                var newRestData = await dataCollector.GetTelemetryAsync();
                 foreach (var dataEntity in newRestData)
                 {
                     switch (dataEntity.DependencyData.Type)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -13,11 +14,11 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
     /// </summary>
     internal class InsightsRestApiDataCollector : IDataCollector
     {
-        private const string Url = "https://api.applicationinsights.io/v1/apps/{0}/{1}/{2}?{3}";
-
         private const string QueryType = "events";
         private const string QueryPath = "dependencies";
         private const string ParameterString = "timespan=P30D&$orderby=timestamp%20desc";
+
+        private readonly Uri _baseUri = new Uri("https://api.applicationinsights.io/v1/apps/");
 
         private readonly string _appId;
         private readonly string _apiKey;
@@ -30,33 +31,47 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
             _maxPullingAmount = maxPullingAmount;
         }
 
-        public async Task<IList<CollectedDataEntity>> GetNewTelemetriesTaskAsync()
+        public async Task<IList<CollectedDataEntity>> GetTelemetryAsync()
         {
-            //check whether necessary variables are given - if not abort
-            if (string.IsNullOrWhiteSpace(_apiKey) || string.IsNullOrWhiteSpace(_appId))
-            {
-                return null;
-            }
+            var parameters = ParameterString + $"&$top={_maxPullingAmount}";
+            return await GetTelemetryInternalAsync(parameters);
+        }
 
-            var telemetryJson = await GetTelemetryAsync(_appId, _apiKey, QueryType, QueryPath, ParameterString + "&$top=" + _maxPullingAmount);
+        public async Task<IList<CollectedDataEntity>> GetTelemetryAsync(string documentationCommentId)
+        {
+            var filter = $"$filter=dependency/name eq '{WebUtility.HtmlEncode(documentationCommentId)}'";
+            var parameters = ParameterString + $"&$top={_maxPullingAmount}&{filter}";
+            return await GetTelemetryInternalAsync(parameters);
+        }
+
+        private async Task<IList<CollectedDataEntity>> GetTelemetryInternalAsync(string parameters)
+        {
+            var telemetryJson = await GetStringAsync(parameters);
             dynamic telemetryData = JsonConvert.DeserializeObject(telemetryJson);
 
             var performanceInfoList = new List<CollectedDataEntity>();
             foreach (var obj in telemetryData.value.Children())
             {
-                var performanceInfo = new CollectedDataEntity(obj);
-                performanceInfoList.Add(performanceInfo);
-                
+                performanceInfoList.Add(new CollectedDataEntity(obj));
+
             }
             return performanceInfoList;
         }
 
-        private static async Task<string> GetTelemetryAsync(string appid, string apikey, string queryType, string queryPath, string parameterString)
+        private async Task<string> GetStringAsync(string parameterString)
         {
-            var client = new HttpClient();
+            if (string.IsNullOrWhiteSpace(_apiKey) || string.IsNullOrWhiteSpace(_appId))
+            {
+                throw new InvalidOperationException("No AppID or ApiKey specified");
+            }
+
+            var client = new HttpClient
+            {
+                BaseAddress = _baseUri
+            };
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Add("x-api-key", apikey);
-            var req = string.Format(Url, appid, queryType, queryPath, parameterString);
+            client.DefaultRequestHeaders.Add("x-api-key", _apiKey);
+            var req = $"{_appId}/{QueryType}/{QueryPath}?{parameterString}";
             var response = await client.GetAsync(req);
             return response.IsSuccessStatusCode ? await response.Content.ReadAsStringAsync() : throw new InvalidOperationException(response.ReasonPhrase);
         }
