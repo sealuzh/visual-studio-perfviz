@@ -72,7 +72,7 @@ namespace InSituVisualization
 
                 var telemetryDataMapper = IocHelper.Container.Resolve<ITelemetryDataMapper>();
 
-                var performanceSyntaxWalker = new AsyncSyntaxWalker(
+                var performanceSyntaxWalker = new AsyncSyntaxWalker(Document,
                     semanticModel,
                     telemetryDataMapper, _methodAdornerLayer);
                 await performanceSyntaxWalker.VisitAsync(syntaxTree, _originalTree);

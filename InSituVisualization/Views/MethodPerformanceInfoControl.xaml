@@ -18,7 +18,7 @@
                 Width ="60" 
                 Height="17"
                 Command="{Binding Path=OpenDetailViewCommand}"
-                Content="{Binding Path=MethodPerformanceInfo.MeanExecutionTime.TotalMilliseconds}"
+                Content="{Binding Path=MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime.TotalMilliseconds}"
                 ContentStringFormat="{}{0} ms "
                 VerticalContentAlignment="Top"
                 HorizontalContentAlignment="Right"
@@ -35,7 +35,7 @@
                 </Style>
             </Button.Style>
         </Button>
-
+        <TextBlock Foreground="Red" Visibility="{Binding Path=MethodPerformanceInfo.HasChanged, Converter={StaticResource BoolToVis}}">?</TextBlock>
     </StackPanel>
 
 

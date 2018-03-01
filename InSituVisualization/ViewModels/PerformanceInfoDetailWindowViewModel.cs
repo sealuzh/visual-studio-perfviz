@@ -9,14 +9,8 @@ namespace InSituVisualization.ViewModels
         public MethodPerformanceInfo MethodPerformanceInfo
         {
             get => _methodPerformanceInfo;
-            set
-            {
-                SetProperty(ref _methodPerformanceInfo, value);
-                OnPropertyChanged(nameof(MemberName));
-            }
+            set => SetProperty(ref _methodPerformanceInfo, value);
         }
-
-        public string MemberName => MethodPerformanceInfo?.MethodName;
 
         public void ShowMethodPerformance(MethodPerformanceInfo methodPerformanceInfo)
         {

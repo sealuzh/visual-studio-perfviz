@@ -18,9 +18,9 @@ namespace InSituVisualization.Model
 
         public TimeSpan SumOfMethodInvocations
         {
-            get { return InvocationPerformanceInfos.Sum(p => p.MeanExecutionTime); }
+            get { return InvocationPerformanceInfos.Sum(p => p.MethodPerformanceData.MeanExecutionTime); }
         }
 
-        public int AverageLoopIterations => SumOfMethodInvocations.Milliseconds == 0 ? 0 : MethodPerformanceInfo.MeanExecutionTime.Milliseconds / SumOfMethodInvocations.Milliseconds;
+        public int AverageLoopIterations => SumOfMethodInvocations.Milliseconds == 0 ? 0 : MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime.Milliseconds / SumOfMethodInvocations.Milliseconds;
     }
 }

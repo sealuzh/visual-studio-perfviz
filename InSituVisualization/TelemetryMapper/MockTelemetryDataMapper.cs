@@ -22,8 +22,7 @@ namespace InSituVisualization.TelemetryMapper
 
             public MockMethodPerformanceInfo(IMethodSymbol methodSymbol, MethodPerformanceData data) : base( methodSymbol, data)
             {
-                NumberOfCalls = Random.Next();
-                MeanExecutionTime = TimeSpan.FromMilliseconds(Random.Next(100));
+                MethodPerformanceData.MeanExecutionTime = TimeSpan.FromMilliseconds(Random.Next(100));
             }
         }
 

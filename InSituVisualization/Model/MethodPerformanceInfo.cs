@@ -1,58 +1,44 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 using InSituVisualization.Utils;
 using Microsoft.CodeAnalysis;
 
 namespace InSituVisualization.Model
 {
+    //ReSharper disable UnusedMember.Global
     public class MethodPerformanceInfo : PerformanceInfo
     {
-        private int _numberOfCalls;
-        private TimeSpan? _meanExecutionTime;
-        private int? _memberCount;
         private bool _hasChanged;
-
 
         private readonly ObservableCollection<MethodPerformanceInfo> _callerPerformanceInfo = new SetCollection<MethodPerformanceInfo>();
         private readonly ObservableCollection<MethodPerformanceInfo> _calleePerformanceInfo = new SetCollection<MethodPerformanceInfo>();
 
-        private readonly ObservableCollection<LoopPerformanceInfo> _loopPerformanceInfo = new SetCollection<LoopPerformanceInfo>();
-
         public MethodPerformanceInfo(IMethodSymbol methodSymbol, MethodPerformanceData methodPerformanceData)
         {
-            MethodPerformanceData = methodPerformanceData ?? throw new ArgumentNullException(nameof(methodPerformanceData));
             MethodSymbol = methodSymbol ?? throw new ArgumentNullException(nameof(methodSymbol));
+            MethodPerformanceData = methodPerformanceData ?? throw new ArgumentNullException(nameof(methodPerformanceData));
         }
 
         public IMethodSymbol MethodSymbol { get; }
 
         public MethodPerformanceData MethodPerformanceData { get; }
 
-        public string MethodName => MethodSymbol.MetadataName;
+        /// <summary>
+        /// Caller and Callee building the Tree
+        /// </summary>
+        public ReadOnlyObservableCollection<MethodPerformanceInfo> CallerPerformanceInfo => new ReadOnlyObservableCollection<MethodPerformanceInfo>(_callerPerformanceInfo);
+        /// <summary>
+        /// Caller and Callee building the Tree
+        /// </summary>
+        public ReadOnlyObservableCollection<MethodPerformanceInfo> CalleePerformanceInfo => new ReadOnlyObservableCollection<MethodPerformanceInfo>(_calleePerformanceInfo);
 
-        public string ContainingType => MethodSymbol.ContainingType?.Name;
+        public ObservableCollection<LoopPerformanceInfo> LoopPerformanceInfo { get; } = new SetCollection<LoopPerformanceInfo>();
 
-        public ObservableCollection<MethodPerformanceInfo> CallerPerformanceInfo => _callerPerformanceInfo;
-        public ObservableCollection<MethodPerformanceInfo> CalleePerformanceInfo => _calleePerformanceInfo;
-        public ObservableCollection<LoopPerformanceInfo> LoopPerformanceInfo => _loopPerformanceInfo;
 
-        public int NumberOfCalls
+        public void AddCalleePerformanceInfo(MethodPerformanceInfo calleePerformanceInfo)
         {
-            get => _numberOfCalls;
-            set => SetProperty(ref _numberOfCalls, value);
-        }
-
-        public TimeSpan MeanExecutionTime
-        {
-            get => _meanExecutionTime ?? GetAverageDuration();
-            set => SetProperty(ref _meanExecutionTime, value);
-        }
-
-        public int MemberCount
-        {
-            get => _memberCount ?? MethodPerformanceData.Durations.Count;
-            set => SetProperty(ref _memberCount, value);
+            _calleePerformanceInfo.Add(calleePerformanceInfo);
+            calleePerformanceInfo._callerPerformanceInfo.Add(this);
         }
 
         /// <summary>
@@ -65,20 +51,13 @@ namespace InSituVisualization.Model
             {
                 SetProperty(ref _hasChanged, value);
                 // Propagating Changes up the Tree
-                foreach (var caller in CallerPerformanceInfo)
+                foreach (var caller in _callerPerformanceInfo)
                 {
-                    caller.HasChanged = true;
+                    caller.HasChanged = value;
                 }
             }
         }
 
-        private TimeSpan GetAverageDuration()
-        {
-            if (MethodPerformanceData.Durations.Count <= 0)
-            {
-                return TimeSpan.Zero;
-            }
-            return TimeSpan.FromMilliseconds(MethodPerformanceData.Durations.Select(telemetry => telemetry.Duration).Average());
-        }
     }
+    //ReSharper restore UnusedMember.Global
 }

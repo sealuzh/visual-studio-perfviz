@@ -28,27 +28,27 @@ namespace InSituVisualization.ViewModels
             get
             {
                 // TODO RR:
-                if (MethodPerformanceInfo.MeanExecutionTime < TimeSpan.FromMilliseconds(20))
+                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(20))
                 {
                     return Colors.GreenYellow;
                 }
-                if (MethodPerformanceInfo.MeanExecutionTime < TimeSpan.FromMilliseconds(30))
+                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(30))
                 {
                     return Colors.ForestGreen;
                 }
-                if (MethodPerformanceInfo.MeanExecutionTime < TimeSpan.FromMilliseconds(60))
+                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(60))
                 {
                     return Colors.DarkGreen;
                 }
-                if (MethodPerformanceInfo.MeanExecutionTime < TimeSpan.FromMilliseconds(70))
+                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(70))
                 {
                     return Colors.Orange;
                 }
-                if (MethodPerformanceInfo.MeanExecutionTime < TimeSpan.FromMilliseconds(80))
+                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(80))
                 {
                     return Colors.DarkOrange;
                 }
-                if (MethodPerformanceInfo.MeanExecutionTime < TimeSpan.FromMilliseconds(80))
+                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(80))
                 {
                     return Colors.OrangeRed;
                 }

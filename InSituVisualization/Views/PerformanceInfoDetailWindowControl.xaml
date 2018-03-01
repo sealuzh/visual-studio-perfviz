@@ -7,7 +7,7 @@
              Foreground="{DynamicResource VsBrush.WindowText}"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
-             Name="PerformanceInfoWindow">
+             Name="PerformanceInfoDetailWindow">
 
     <UserControl.Resources>
         <Style TargetType="Label">
@@ -35,20 +35,23 @@
             <Label FontWeight="Bold">Method</Label>
             <Label FontWeight="Bold">Type</Label>
             <Label FontWeight="Bold">Has Changed</Label>
-            <Label FontWeight="Bold">MemberTime</Label>
+            <Label FontWeight="Bold">Total Time</Label>
             <Label FontWeight="Bold">Mean Time</Label>
             <Label FontWeight="Bold">Number of Calls</Label>
         </StackPanel>
-        <StackPanel Grid.Column="1" Grid.Row="0">
-            <Label Content="{Binding MemberName}" />
-            <Label Content="{Binding MethodPerformanceInfo.ContainingType}" />
-            <CheckBox Content="{Binding MethodPerformanceInfo.HasChanged}" IsHitTestVisible="False" />
+        <StackPanel Grid.Column="1" Grid.Row="0" IsHitTestVisible="False" >
+            <Label Content="{Binding MethodPerformanceInfo.MethodSymbol.Name}" />
+            <Label Content="{Binding MethodPerformanceInfo.MethodSymbol.ContainingType.Name}" />
+            <Label Content="{Binding MethodPerformanceInfo.HasChanged}" />
             <WrapPanel>
-                <Label Content="{Binding MethodPerformanceInfo.TotalExecutionTime}" ContentStringFormat="{}{0:hh}:{0:mm}:{0:ss}" />
-                <Label Content="{Binding MethodPerformanceInfo.MemberTime}" ContentStringFormat="{} ({0:P2})" />
+                <Label Content="{Binding MethodPerformanceInfo.MethodPerformanceData.TotalExecutionTime.TotalMilliseconds}" ContentStringFormat="{}{0} ms" />
+                <Label Content="{Binding MethodPerformanceInfo.MethodPerformanceData.Durations.Count}" ContentStringFormat="{}({0})"/>
             </WrapPanel>
-            <Label Content="{Binding MethodPerformanceInfo.MeanExecutionTime}" ContentStringFormat="{}{0:hh}:{0:mm}:{0:ss}" />
-            <Label Content="{Binding MethodPerformanceInfo.NumberOfCalls}" />
+            <WrapPanel>
+                <Label Content="{Binding MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime.TotalMilliseconds}" ContentStringFormat="{}{0} ms" />
+                <Label Content="{Binding MethodPerformanceInfo.MethodPerformanceData.Durations.Count}" ContentStringFormat="{}({0})"/>
+            </WrapPanel>
+            <Label Content="{Binding MethodPerformanceInfo.CallerPerformanceInfo.Count}"  />
         </StackPanel>
         <Separator Grid.Column ="0" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Top" Foreground="{DynamicResource VsBrush.WindowText}"/>
 
@@ -58,7 +61,7 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <WrapPanel>
-                            <Label Content="{Binding MethodName}"/>
+                            <Label Content="{Binding MethodSymbol.MetadataName}"/>
                             <Label Content="{Binding MemberTime}" ContentStringFormat="{} ({0:P2})" />
                         </WrapPanel>
                     </DataTemplate>
@@ -72,7 +75,7 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <WrapPanel>
-                            <Label Content="{Binding MethodName}"/>
+                            <Label Content="{Binding MethodSymbol.MetadataName}"/>
                             <Label Content="{Binding MemberTime}" ContentStringFormat="{} ({0:P2})" />
                         </WrapPanel>
                     </DataTemplate>

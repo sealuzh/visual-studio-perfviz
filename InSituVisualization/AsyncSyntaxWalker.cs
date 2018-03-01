@@ -8,18 +8,21 @@ using InSituVisualization.TelemetryMapper;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.Text;
 
 namespace InSituVisualization
 {
     internal class AsyncSyntaxWalker
     {
+        private readonly Document _document;
         private readonly SemanticModel _semanticModel;
         private readonly ITelemetryDataMapper _telemetryDataMapper;
         private readonly MethodAdornmentLayer _methodAdornmentLayer;
 
-        public AsyncSyntaxWalker(SemanticModel semanticModel, ITelemetryDataMapper telemetryDataMapper, MethodAdornmentLayer methodAdornmentLayer)
+        public AsyncSyntaxWalker(Document document, SemanticModel semanticModel, ITelemetryDataMapper telemetryDataMapper, MethodAdornmentLayer methodAdornmentLayer)
         {
+            _document = document ?? throw new ArgumentNullException(nameof(document));
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
             _telemetryDataMapper = telemetryDataMapper ?? throw new ArgumentNullException(nameof(telemetryDataMapper));
             _methodAdornmentLayer = methodAdornmentLayer ?? throw new ArgumentNullException(nameof(methodAdornmentLayer)); ;
@@ -74,10 +77,10 @@ namespace InSituVisualization
             var invocationExpressionSyntaxs = methodDeclarationSyntax.DescendantNodes(node => true).OfType<InvocationExpressionSyntax>();
             foreach (var invocationExpressionSyntax in invocationExpressionSyntaxs)
             {
-                var invocationPerformanceInfo = await VisitInvocationAsync(invocationExpressionSyntax, methodPerformanceInfo);
+                var invocationPerformanceInfo = await VisitInvocationAsync(invocationExpressionSyntax);
                 if (invocationPerformanceInfo != null)
                 {
-                    methodPerformanceInfo.CalleePerformanceInfo.Add(invocationPerformanceInfo);
+                    methodPerformanceInfo.AddCalleePerformanceInfo(invocationPerformanceInfo);
                 }
             }
 
@@ -93,11 +96,14 @@ namespace InSituVisualization
                 }
             }
 
+            // TODO RR: all References:
+            //var referencesToMethod = await SymbolFinder.FindReferencesAsync(methodSymbol, _document.Project.Solution);
+
             _methodAdornmentLayer.DrawMethodPerformanceInfo(methodDeclarationSyntax, methodPerformanceInfo);
             return methodPerformanceInfo;
         }
 
-        private async Task<MethodPerformanceInfo> VisitInvocationAsync(InvocationExpressionSyntax invocationExpressionSyntax, MethodPerformanceInfo methodPerformanceInfo)
+        private async Task<MethodPerformanceInfo> VisitInvocationAsync(InvocationExpressionSyntax invocationExpressionSyntax)
         {
             var invokedMethodSymbol = _semanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol as IMethodSymbol;
             // Only Drawing invocationSymbols that refer to the current assembly. Not drawing Information about other assemblies...
@@ -110,8 +116,6 @@ namespace InSituVisualization
             {
                 return null;
             }
-            // Setting Caller and CalleeInformation
-            invocationPerformanceInfo.CallerPerformanceInfo.Add(methodPerformanceInfo);
             _methodAdornmentLayer.DrawMethodInvocationPerformanceInfo(invocationExpressionSyntax, invocationPerformanceInfo);
             return invocationPerformanceInfo;
         }
