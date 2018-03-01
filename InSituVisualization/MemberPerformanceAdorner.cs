@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using DryIoc;
 using InSituVisualization.TelemetryCollector;
 using InSituVisualization.TelemetryMapper;
@@ -41,6 +42,10 @@ namespace InSituVisualization
             _textView = textView ?? throw new ArgumentNullException(nameof(textView));
             _textView.LayoutChanged += OnLayoutChanged;
             _methodAdornerLayer = new MethodAdornmentLayer(textView);
+
+            // TODO RR: THIS IS A MAYOR WORKAROUND TO FIX THE DEFERRED DLL LOADING PROBLEM:
+            var telemetryProvider = IocHelper.Container.Resolve<ITelemetryProvider>();
+            (telemetryProvider as StoreManager)?.StartBackgroundWorker(CancellationToken.None);
         }
 
 
@@ -55,20 +60,9 @@ namespace InSituVisualization
         /// <param name="e">The event arguments.</param>
         private async void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
-            if (Document == null)
+            var syntaxTree = await GetValidSyntaxTreeAsync();
+            if (syntaxTree == null)
             {
-                return;
-            }
-
-            var syntaxTree = await Document.GetSyntaxTreeAsync().ConfigureAwait(false);
-            if (_originalTree == null)
-            {
-                _originalTree = syntaxTree;
-            }
-            var diagnostics = syntaxTree.GetDiagnostics();
-            if (diagnostics.Any())
-            {
-                // there are errors in the code -> do not perform operations
                 return;
             }
 
@@ -82,26 +76,36 @@ namespace InSituVisualization
 
                 var semanticModel = await Document.GetSemanticModelAsync();
 
-
-                // TODO RR: THIS IS A MAYOR WORKAROUND TO FIX THE DEFERRED DLL LOADING PROBLEM:
-                // SOME DDLS, SUCH AS NEWTONSOFT.JSON ARE NOT LOADABLE IN THE FIRST SECONDS...
-                var telemetryProvider = IocHelper.Container.Resolve<ITelemetryProvider>();
-                await (telemetryProvider as StoreManager)?.StartBackgroundWorkerAsync(CancellationToken.None);
-
-
                 var telemetryDataMapper = IocHelper.Container.Resolve<ITelemetryDataMapper>();
 
-                var performanceSyntaxWalker = new PerformanceSyntaxWalker(
+                var performanceSyntaxWalker = new AsyncSyntaxWalker(
                     semanticModel, treeChanges,
                     telemetryDataMapper, _methodAdornerLayer);
-
-                var root = await Document.GetSyntaxRootAsync();
-                performanceSyntaxWalker.Visit(root);
+                await performanceSyntaxWalker.VisitAsync(syntaxTree);
             }
             catch (Exception exception)
             {
                 ActivityLog.LogWarning(GetType().FullName,exception.Message);
             }
+        }
+
+        private async Task<SyntaxTree> GetValidSyntaxTreeAsync()
+        {
+            if (Document == null)
+            {
+                return null;
+            }
+            var syntaxTree = await Document.GetSyntaxTreeAsync().ConfigureAwait(false);
+            if (syntaxTree.GetDiagnostics().Any())
+            {
+                // there are errors in the code -> do not perform operations
+                return null;
+            }
+            if (_originalTree == null)
+            {
+                _originalTree = syntaxTree;
+            }
+            return syntaxTree;
         }
     }
 }

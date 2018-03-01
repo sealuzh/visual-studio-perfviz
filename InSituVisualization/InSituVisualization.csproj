@@ -62,7 +62,8 @@
     <Compile Include="DryIoc\ImTools.cs" />
     <Compile Include="Model\LoopPerformanceInfo.cs" />
     <Compile Include="Model\PerformanceInfo.cs" />
-    <Compile Include="PerformanceSyntaxWalker.cs" />
+    <None Include="PerformanceSyntaxWalker.cs" />
+    <Compile Include="ManualSyntaxWalker.cs" />
     <Compile Include="TelemetryCollector\DataCollection\CollectedDataEntity.cs" />
     <Compile Include="TelemetryCollector\Filter\Filter.cs" />
     <Compile Include="TelemetryCollector\DataCollection\DataCollectionServiceProvider.cs" />

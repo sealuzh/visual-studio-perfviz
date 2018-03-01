@@ -1,10 +1,11 @@
-﻿using InSituVisualization.Model;
+﻿using System.Threading.Tasks;
+using InSituVisualization.Model;
 using Microsoft.CodeAnalysis;
 
 namespace InSituVisualization.TelemetryMapper
 {
     internal interface ITelemetryDataMapper
     {
-        MethodPerformanceInfo GetMethodPerformanceInfo(IMethodSymbol methodSymbol);
+        Task<MethodPerformanceInfo> GetMethodPerformanceInfoAsync(IMethodSymbol methodSymbol);
     }
 }

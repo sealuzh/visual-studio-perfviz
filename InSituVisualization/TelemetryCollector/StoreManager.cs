@@ -34,7 +34,18 @@ namespace InSituVisualization.TelemetryCollector
 
         public IDictionary<string, BundleMethodTelemetry> TelemetryData => _telemetryData;
 
-        public async Task StartBackgroundWorkerAsync(CancellationToken cancellationToken)
+        public Task<BundleMethodTelemetry> GetTelemetryDataAsync(string documentationCommentId)
+        {
+            // if no information given for this method it does not exist in dict
+            if (!TelemetryData.TryGetValue(documentationCommentId, out var methodTelemetry))
+            {
+                return null;
+            }
+            return Task.FromResult(methodTelemetry);
+        }
+
+
+        public void StartBackgroundWorker(CancellationToken cancellationToken)
         {
             if (_task != null)
             {

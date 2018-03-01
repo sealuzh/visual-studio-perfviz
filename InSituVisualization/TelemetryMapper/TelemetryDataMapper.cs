@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using InSituVisualization.Model;
 using InSituVisualization.TelemetryCollector;
 using Microsoft.CodeAnalysis;
@@ -16,36 +17,23 @@ namespace InSituVisualization.TelemetryMapper
             _telemetryProvider = telemetryProvider ?? throw new ArgumentNullException(nameof(telemetryProvider));
         }
 
-        public MethodPerformanceInfo GetMethodPerformanceInfo(IMethodSymbol methodSymbol)
+        public async Task<MethodPerformanceInfo> GetMethodPerformanceInfoAsync(IMethodSymbol methodSymbol)
         {
             var documentationCommentId = methodSymbol.GetDocumentationCommentId();
 
             // TODO RR: Use SyntaxAnnotation https://joshvarty.wordpress.com/2015/09/18/learn-roslyn-now-part-13-keeping-track-of-syntax-nodes-with-syntax-annotations/
             // TODO RR: Do one Dictionary per Class/File
-            try
+            var methodTelemetry = await _telemetryProvider.GetTelemetryDataAsync(documentationCommentId);
+            if (methodTelemetry == null)
             {
-                if (_telemetryProvider.TelemetryData == null)
-                {
-                    return null;
-                }
-                // if no information given for this method it does not exist in dict
-                if (!_telemetryProvider.TelemetryData.TryGetValue(documentationCommentId, out var methodTelemetry))
-                {
-                    return null;
-                }
-                var performanceInfo = new MethodPerformanceInfo(methodSymbol)
-                {
-                    MeanExecutionTime = methodTelemetry.GetAverageDuration(),
-                    //TODO RR: integrate MemberCount in interface.
-                    MemberCount = methodTelemetry.Durations.Count
-                };
-                return performanceInfo;
-            }
-            catch (Exception e)
-            {
-                // TODO RR: Check CatchAll
                 return null;
             }
+            return new MethodPerformanceInfo(methodSymbol)
+            {
+                MeanExecutionTime = methodTelemetry.GetAverageDuration(),
+                //TODO RR: integrate MemberCount in interface.
+                MemberCount = methodTelemetry.Durations.Count
+            };
         }
     }
 

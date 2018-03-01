@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Threading.Tasks;
 using InSituVisualization.Model;
 
 namespace InSituVisualization.TelemetryCollector
 {
     internal interface ITelemetryProvider
     {
-        IDictionary<string, BundleMethodTelemetry> TelemetryData { get; }
+        Task<BundleMethodTelemetry> GetTelemetryDataAsync(string documentationCommentId);
     }
 }
