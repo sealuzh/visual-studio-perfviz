@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using InSituVisualization.Model;
 using InSituVisualization.TelemetryCollector.DataCollection;
-using InSituVisualization.TelemetryCollector.Persistance;
 using InSituVisualization.TelemetryCollector.Store;
 
 namespace InSituVisualization.TelemetryCollector
@@ -16,28 +13,24 @@ namespace InSituVisualization.TelemetryCollector
     internal class StoreManager : ITelemetryProvider
     {
         private readonly DataCollectionServiceProvider _dataCollectionServiceProvider;
-        private readonly IPersistentStorage _persistentStorage;
 
         private readonly TimeSpan _taskDelay = TimeSpan.FromMinutes(1);
 
         private Task _task;
-        private ConcurrentDictionary<string, BundleMethodTelemetry> _telemetryData = new ConcurrentDictionary<string, BundleMethodTelemetry>();
+        private readonly ConcurrentDictionary<string, BundleMethodTelemetry> _telemetryData = new ConcurrentDictionary<string, BundleMethodTelemetry>();
 
-        public StoreManager(DataCollectionServiceProvider dataCollectionServiceProvider, IPersistentStorage persistentStorage)
+        public StoreManager(DataCollectionServiceProvider dataCollectionServiceProvider)
         {
             _dataCollectionServiceProvider = dataCollectionServiceProvider;
-            _persistentStorage = persistentStorage;
         }
 
         private Store<RecordedDurationMethodTelemetry> TelemetryStore { get; } = new Store<RecordedDurationMethodTelemetry>();
         private Store<RecordedExceptionMethodTelemetry> ExceptionStore { get; } = new Store<RecordedExceptionMethodTelemetry>();
 
-        public IDictionary<string, BundleMethodTelemetry> TelemetryData => _telemetryData;
-
         public Task<BundleMethodTelemetry> GetTelemetryDataAsync(string documentationCommentId)
         {
             // if no information given for this method it does not exist in dict
-            if (!TelemetryData.TryGetValue(documentationCommentId, out var methodTelemetry))
+            if (!_telemetryData.TryGetValue(documentationCommentId, out var methodTelemetry))
             {
                 return null;
             }
@@ -52,8 +45,6 @@ namespace InSituVisualization.TelemetryCollector
                 return;
             }
 
-            // TODO RR: ENABLE PERSISTANCE
-            // _telemetryData = await _persistentStorage.GetDataAsync<BundleMethodTelemetry>();
             UpdateTelemetryData();
 
             // not awaiting new Task
@@ -107,8 +98,6 @@ namespace InSituVisualization.TelemetryCollector
                 }
             }
             UpdateTelemetryData();
-            // TODO RR: Now only the filtered data is stored ... fix
-            // await _persistentStorage.StoreDataAsync(_telemetryData);
         }
 
         private void UpdateTelemetryData()
