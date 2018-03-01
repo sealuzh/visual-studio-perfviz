@@ -41,7 +41,8 @@ namespace InSituVisualization.TelemetryCollector
                 return;
             }
 
-            _telemetryData = await _persistentStorage.GetDataAsync<BundleMethodTelemetry>();
+            // TODO RR: ENABLE PERSISTANCE
+            // _telemetryData = await _persistentStorage.GetDataAsync<BundleMethodTelemetry>();
             UpdateTelemetryData();
 
             // not awaiting new Task
@@ -96,7 +97,7 @@ namespace InSituVisualization.TelemetryCollector
             }
             UpdateTelemetryData();
             // TODO RR: Now only the filtered data is stored ... fix
-            await _persistentStorage.StoreDataAsync(_telemetryData);
+            // await _persistentStorage.StoreDataAsync(_telemetryData);
         }
 
         private void UpdateTelemetryData()

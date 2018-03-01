@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 
 namespace InSituVisualization.Model
@@ -13,8 +13,8 @@ namespace InSituVisualization.Model
         {
         }
 
-        public IList<RecordedDurationMethodTelemetry> Durations { get; } = new List<RecordedDurationMethodTelemetry>();
-        public IList<RecordedExceptionMethodTelemetry> Exceptions { get; } = new List<RecordedExceptionMethodTelemetry>();
+        public ConcurrentBag<RecordedDurationMethodTelemetry> Durations { get; } = new ConcurrentBag<RecordedDurationMethodTelemetry>();
+        public ConcurrentBag<RecordedExceptionMethodTelemetry> Exceptions { get; } = new ConcurrentBag<RecordedExceptionMethodTelemetry>();
 
         public TimeSpan GetAverageDuration()
         {

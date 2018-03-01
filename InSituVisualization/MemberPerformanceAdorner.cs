@@ -9,6 +9,7 @@ using InSituVisualization.TelemetryCollector;
 using InSituVisualization.TelemetryMapper;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -97,14 +98,9 @@ namespace InSituVisualization
                 var root = await Document.GetSyntaxRootAsync();
                 performanceSyntaxWalker.Visit(root);
             }
-            catch (FileNotFoundException exception)
-            {
-                // This is a quasi expected exception
-                // in the first seconds the dlls cannot be loaded and throw this exception
-            }
             catch (Exception exception)
             {
-                Debug.WriteLine(exception);
+                ActivityLog.LogWarning(GetType().FullName,exception.Message);
             }
         }
     }
