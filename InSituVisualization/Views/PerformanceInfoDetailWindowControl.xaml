@@ -12,6 +12,7 @@
     <UserControl.Resources>
         <Style TargetType="Label">
             <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Padding" Value="2" />
             <Setter Property="Foreground" Value="{DynamicResource VsBrush.WindowText}" />
         </Style>
         <Style TargetType="ListView">
