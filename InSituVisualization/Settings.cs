@@ -12,7 +12,7 @@ namespace InSituVisualization
 
         private ShellSettingsManager ShellSettingsManager { get; } = new ShellSettingsManager(ServiceProvider.GlobalProvider);
 
-        public WritableSettingsStore PerfVizSettingsStore
+        private WritableSettingsStore PerfVizSettingsStore
         {
             get
             {

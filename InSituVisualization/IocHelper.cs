@@ -31,7 +31,7 @@ namespace InSituVisualization
             Container.Register<ITelemetryDataMapper, MockTelemetryDataMapper>(Reuse.Singleton);
 #else
             Container.Register<DataCollectionServiceProvider>(Reuse.Singleton);
-            Container.Register<ITelemetryProvider, StoreManager>(Reuse.Singleton);
+            Container.Register<ITelemetryProvider, TelemetryProvider>(Reuse.Singleton);
             Container.Register<ITelemetryDataMapper, TelemetryDataMapper>(Reuse.Singleton);
 #endif
         }

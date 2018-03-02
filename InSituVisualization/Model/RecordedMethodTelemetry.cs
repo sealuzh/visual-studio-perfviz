@@ -25,5 +25,15 @@ namespace InSituVisualization.Model
         public DateTime Timestamp { get; }
         public string Name { get; }
 
+        public override bool Equals(object obj)
+        {
+            return obj is RecordedMethodTelemetry recordedMethodTelemetry && Id.Equals(recordedMethodTelemetry.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
     }
 }

@@ -22,25 +22,25 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
 
         private readonly string _appId;
         private readonly string _apiKey;
-        private readonly int _maxPullingAmount;
+        private readonly int _top;
 
-        public InsightsRestApiDataCollector(string appId, string apiKey, int maxPullingAmount)
+        public InsightsRestApiDataCollector(string appId, string apiKey, int top)
         {
             _appId = appId;
             _apiKey = apiKey;
-            _maxPullingAmount = maxPullingAmount;
+            _top = top;
         }
 
         public async Task<IList<CollectedDataEntity>> GetTelemetryAsync()
         {
-            var parameters = ParameterString + $"&$top={_maxPullingAmount}";
+            var parameters = ParameterString + $"&$top={_top}";
             return await GetTelemetryInternalAsync(parameters);
         }
 
         public async Task<IList<CollectedDataEntity>> GetTelemetryAsync(string documentationCommentId)
         {
             var filter = $"$filter=dependency/name eq '{WebUtility.HtmlEncode(documentationCommentId)}'";
-            var parameters = ParameterString + $"&$top={_maxPullingAmount}&{filter}";
+            var parameters = ParameterString + $"&$top={_top}&{filter}";
             return await GetTelemetryInternalAsync(parameters);
         }
 
