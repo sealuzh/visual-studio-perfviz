@@ -22,7 +22,7 @@ namespace InSituVisualization.TelemetryCollector
             {
                 while (true)
                 {
-                    await UpdateStoresAsync();
+                    await UpdateTelemetryData();
                     await Task.Delay(TaskDelay);
                 }
                 // ReSharper disable once FunctionNeverReturns
@@ -30,14 +30,15 @@ namespace InSituVisualization.TelemetryCollector
         }
 
         private HashSet<string> AcknowledgedTelemetryIds { get; } = new HashSet<string>();
-        private ConcurrentDictionary<string, MethodPerformanceData> TelemetryData { get; } = new ConcurrentDictionary<string, MethodPerformanceData>();
+
+        private ConcurrentDictionary<string, MethodPerformanceData> TelemetryByDocumentationCommentId { get; } = new ConcurrentDictionary<string, MethodPerformanceData>();
 
         public Task<MethodPerformanceData> GetTelemetryDataAsync(string documentationCommentId)
         {
-            return TelemetryData.TryGetValue(documentationCommentId, out var methodTelemetry) ? Task.FromResult(methodTelemetry) : Task.FromResult((MethodPerformanceData)null);
+            return TelemetryByDocumentationCommentId.TryGetValue(documentationCommentId, out var methodTelemetry) ? Task.FromResult(methodTelemetry) : Task.FromResult((MethodPerformanceData)null);
         }
 
-        private async Task UpdateStoresAsync()
+        private async Task UpdateTelemetryData()
         {
             foreach (var dataCollector in _dataCollectionServiceProvider.GetDataCollectionServices())
             {
@@ -50,11 +51,11 @@ namespace InSituVisualization.TelemetryCollector
                         continue;
                     }
 
-                    TelemetryData.TryGetValue(dataEntity.DependencyData.Name, out var performanceData);
+                    TelemetryByDocumentationCommentId.TryGetValue(dataEntity.DependencyData.Name, out var performanceData);
                     if (performanceData == null)
                     {
                         performanceData = new MethodPerformanceData();
-                        TelemetryData.TryAdd(dataEntity.DependencyData.Name, performanceData);
+                        TelemetryByDocumentationCommentId.TryAdd(dataEntity.DependencyData.Name, performanceData);
                     }
 
                     switch (dataEntity.DependencyData.Type)

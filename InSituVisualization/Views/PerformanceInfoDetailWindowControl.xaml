@@ -14,7 +14,7 @@
             <Setter Property="HorizontalAlignment" Value="Left" />
             <Setter Property="Foreground" Value="{DynamicResource VsBrush.WindowText}" />
         </Style>
-        <Style TargetType="ListBox">
+        <Style TargetType="ListView">
             <Setter Property="Foreground" Value="{DynamicResource VsBrush.WindowText}" />
             <Setter Property="Background" Value="{DynamicResource VsBrush.Window}" />
         </Style>
@@ -30,14 +30,14 @@
             <RowDefinition Height="2*" />
             <RowDefinition Height="3*" />
         </Grid.RowDefinitions>
-
+        
         <StackPanel Grid.Column="0" Grid.Row="0" >
-            <Label FontWeight="Bold">Method</Label>
-            <Label FontWeight="Bold">Type</Label>
-            <Label FontWeight="Bold">Has Changed</Label>
-            <Label FontWeight="Bold">Total Time</Label>
-            <Label FontWeight="Bold">Mean Time</Label>
-            <Label FontWeight="Bold">Number of Calls</Label>
+            <Label>Method</Label>
+            <Label>Type</Label>
+            <Label>Has Changed</Label>
+            <Label>Total Time</Label>
+            <Label>Mean Time</Label>
+            <Label>Number of Exceptions</Label>
         </StackPanel>
         <StackPanel Grid.Column="1" Grid.Row="0" IsHitTestVisible="False" >
             <Label Content="{Binding MethodPerformanceInfo.MethodSymbol.Name}" />
@@ -51,36 +51,36 @@
                 <Label Content="{Binding MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime.TotalMilliseconds}" ContentStringFormat="{}{0} ms" />
                 <Label Content="{Binding MethodPerformanceInfo.MethodPerformanceData.Durations.Count}" ContentStringFormat="{}({0})"/>
             </WrapPanel>
-            <Label Content="{Binding MethodPerformanceInfo.CallerPerformanceInfo.Count}"  />
+            <Label Content="{Binding MethodPerformanceInfo.MethodPerformanceData.Exceptions.Count}"  />
         </StackPanel>
         <Separator Grid.Column ="0" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Top" Foreground="{DynamicResource VsBrush.WindowText}"/>
 
         <StackPanel Grid.Column="0" Grid.Row="1">
-            <Label  FontWeight="Bold">Callers</Label>
-            <ListBox ItemsSource="{Binding MethodPerformanceInfo.CallerPerformanceInfo}" >
-                <ListBox.ItemTemplate>
+            <Label>Callers</Label>
+            <ListView ItemsSource="{Binding MethodPerformanceInfo.CallerPerformanceInfo}" >
+                <ListView.ItemTemplate>
                     <DataTemplate>
                         <WrapPanel>
                             <Label Content="{Binding MethodSymbol.MetadataName}"/>
                             <Label Content="{Binding MethodPerformanceData.MeanExecutionTime.TotalMilliseconds}" ContentStringFormat="{} ({0} ms)" />
                         </WrapPanel>
                     </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                </ListView.ItemTemplate>
+            </ListView>
         </StackPanel>
 
         <StackPanel Grid.Column="1" Grid.Row="1">
-            <Label FontWeight="Bold">Callees</Label>
-            <ListBox ItemsSource="{Binding MethodPerformanceInfo.CalleePerformanceInfo}">
-                <ListBox.ItemTemplate>
+            <Label>Callees</Label>
+            <ListView ItemsSource="{Binding MethodPerformanceInfo.CalleePerformanceInfo}" >
+                <ListView.ItemTemplate>
                     <DataTemplate>
                         <WrapPanel>
                             <Label Content="{Binding MethodSymbol.MetadataName}"/>
                             <Label Content="{Binding MethodPerformanceData.MeanExecutionTime.TotalMilliseconds}" ContentStringFormat="{} ({0} ms)" />
                         </WrapPanel>
                     </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                </ListView.ItemTemplate>
+            </ListView>
         </StackPanel>
 
     </Grid>
