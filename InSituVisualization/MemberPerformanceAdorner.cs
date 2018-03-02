@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using DryIoc;
-using InSituVisualization.TelemetryCollector;
 using InSituVisualization.TelemetryMapper;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
@@ -29,9 +24,7 @@ namespace InSituVisualization
         private readonly MethodAdornmentLayer _methodAdornerLayer;
         private SyntaxTree _originalTree;
 
-        private SnapshotPoint CaretPosition => _textView.Caret.Position.BufferPosition;
-
-        private Document Document => CaretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
+        private Document Document => _textView.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MemberPerformanceAdorner"/> class.
