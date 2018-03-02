@@ -12,11 +12,13 @@ namespace InSituVisualization.Model
 
         private readonly ObservableCollection<MethodPerformanceInfo> _callerPerformanceInfo = new SetCollection<MethodPerformanceInfo>();
         private readonly ObservableCollection<MethodPerformanceInfo> _calleePerformanceInfo = new SetCollection<MethodPerformanceInfo>();
+        private TimeSpan _predictedMeanExecutionTime;
 
         public MethodPerformanceInfo(IMethodSymbol methodSymbol, MethodPerformanceData methodPerformanceData)
         {
             MethodSymbol = methodSymbol ?? throw new ArgumentNullException(nameof(methodSymbol));
             MethodPerformanceData = methodPerformanceData ?? throw new ArgumentNullException(nameof(methodPerformanceData));
+            _predictedMeanExecutionTime = MethodPerformanceData.MeanExecutionTime;
         }
 
         public IMethodSymbol MethodSymbol { get; }
@@ -33,6 +35,37 @@ namespace InSituVisualization.Model
         public ReadOnlyObservableCollection<MethodPerformanceInfo> CalleePerformanceInfo => new ReadOnlyObservableCollection<MethodPerformanceInfo>(_calleePerformanceInfo);
 
         public ObservableCollection<LoopPerformanceInfo> LoopPerformanceInfo { get; } = new SetCollection<LoopPerformanceInfo>();
+
+        public TimeSpan MeanExecutionTime
+        {
+            get
+            {
+                if (!HasChanged)
+                {
+                    return MethodPerformanceData.MeanExecutionTime;
+                }
+                return PredictedMeanExecutionTime;
+            }
+        }
+
+
+        public TimeSpan PredictedMeanExecutionTime
+        {
+            get => _predictedMeanExecutionTime;
+            set
+            {
+                var oldValue = _predictedMeanExecutionTime;
+                SetProperty(ref _predictedMeanExecutionTime, value);
+
+                // Propagating Changes up the Tree
+                foreach (var caller in _callerPerformanceInfo)
+                {
+                    caller.PredictedMeanExecutionTime = caller.PredictedMeanExecutionTime - oldValue + value;
+                }
+
+                OnPropertyChanged(nameof(MeanExecutionTime));
+            }
+        }
 
 
         public void AddCalleePerformanceInfo(MethodPerformanceInfo calleePerformanceInfo)

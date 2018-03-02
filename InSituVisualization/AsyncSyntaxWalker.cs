@@ -48,10 +48,18 @@ namespace InSituVisualization
             var methods = root.DescendantNodes().OfType<MethodDeclarationSyntax>();
             foreach (var methodDeclarationSyntax in methods)
             {
-                var methodPerformanceInfo = await VisitMethodDeclarationAsync(methodDeclarationSyntax);
-                if (methodPerformanceInfo != null)
+                try
                 {
-                    methodPerformanceInfo.HasChanged = HasTextChangesInNode(treeChanges, methodDeclarationSyntax);
+                    var methodPerformanceInfo = await VisitMethodDeclarationAsync(methodDeclarationSyntax);
+                    if (methodPerformanceInfo != null)
+                    {
+                        methodPerformanceInfo.HasChanged = HasTextChangesInNode(treeChanges, methodDeclarationSyntax);
+                    }
+                }
+                catch (ArgumentException e)
+                {
+                    // syntaxNode is not within tree anymore ...
+                    continue;
                 }
             }
         }

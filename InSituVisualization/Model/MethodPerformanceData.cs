@@ -16,28 +16,28 @@ namespace InSituVisualization.Model
         private TimeSpan? _totalExecutionTime;
 
         // TODO RR: Update to Observable Collections
-        public ConcurrentBag<RecordedDurationMethodTelemetry> Durations { get; } = new ConcurrentBag<RecordedDurationMethodTelemetry>();
+        public ConcurrentBag<RecordedDurationMethodTelemetry> ExecutionTimes { get; } = new ConcurrentBag<RecordedDurationMethodTelemetry>();
         public ConcurrentBag<RecordedExceptionMethodTelemetry> Exceptions { get; } = new ConcurrentBag<RecordedExceptionMethodTelemetry>();
 
         public TimeSpan MeanExecutionTime
         {
-            get => _meanExecutionTime ?? GetAverageDuration();
+            get => _meanExecutionTime ?? GetAverageExecutionTime();
             set => SetProperty(ref _meanExecutionTime, value);
         }
 
         public TimeSpan TotalExecutionTime
         {
-            get => _totalExecutionTime ?? Durations.Sum(p => TimeSpan.FromMilliseconds(p.Duration));
+            get => _totalExecutionTime ?? ExecutionTimes.Sum(p => TimeSpan.FromMilliseconds(p.Duration));
             set => SetProperty(ref _totalExecutionTime, value);
         }
 
-        private TimeSpan GetAverageDuration()
+        private TimeSpan GetAverageExecutionTime()
         {
-            if (Durations.Count <= 0)
+            if (ExecutionTimes.Count <= 0)
             {
                 return TimeSpan.Zero;
             }
-            return TimeSpan.FromMilliseconds(Durations.Select(telemetry => telemetry.Duration).Average());
+            return TimeSpan.FromMilliseconds(ExecutionTimes.Select(telemetry => telemetry.Duration).Average());
         }
 
     }

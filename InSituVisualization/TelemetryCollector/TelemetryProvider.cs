@@ -61,7 +61,7 @@ namespace InSituVisualization.TelemetryCollector
                     switch (dataEntity.DependencyData.Type)
                     {
                         case "telemetry":
-                            performanceData.Durations.Add(RecordedDurationMethodTelemetry.FromDataEntity(dataEntity));
+                            performanceData.ExecutionTimes.Add(RecordedDurationMethodTelemetry.FromDataEntity(dataEntity));
                             break;
                         case "exception":
                             performanceData.Exceptions.Add(RecordedExceptionMethodTelemetry.FromDataEntity(dataEntity));

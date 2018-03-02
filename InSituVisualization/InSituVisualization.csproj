@@ -73,6 +73,7 @@
     <Compile Include="TelemetryCollector\TelemetryProvider.cs" />
     <Compile Include="Utils\StatisticExtensions.cs" />
     <Compile Include="Utils\SyntaxNodeExtensions.cs" />
+    <Compile Include="Utils\TimeSpanExensions.cs" />
     <Compile Include="ViewModels\IPerformanceInfoDetailWindow.cs" />
     <Compile Include="ViewModels\LoopPerformanceInfoControlViewModel.cs" />
     <Compile Include="Views\LoopPerformanceInfoControl.xaml.cs">
