@@ -70,7 +70,7 @@
     <Compile Include="Model\RecordedMethodTelemetry.cs" />
     <Compile Include="Model\RecordedExceptionMethodTelemetry.cs" />
     <Compile Include="TelemetryCollector\Persistance\IPersistentStorage.cs" />
-    <Compile Include="TelemetryCollector\StoreManager.cs" />
+    <Compile Include="TelemetryCollector\TelemetryProvider.cs" />
     <Compile Include="Utils\StatisticExtensions.cs" />
     <Compile Include="Utils\SyntaxNodeExtensions.cs" />
     <Compile Include="ViewModels\IPerformanceInfoDetailWindow.cs" />

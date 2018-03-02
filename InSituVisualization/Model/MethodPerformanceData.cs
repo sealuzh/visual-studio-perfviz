@@ -15,6 +15,7 @@ namespace InSituVisualization.Model
         private TimeSpan? _meanExecutionTime;
         private TimeSpan? _totalExecutionTime;
 
+        // TODO RR: Update to Observable Collections
         public ConcurrentBag<RecordedDurationMethodTelemetry> Durations { get; } = new ConcurrentBag<RecordedDurationMethodTelemetry>();
         public ConcurrentBag<RecordedExceptionMethodTelemetry> Exceptions { get; } = new ConcurrentBag<RecordedExceptionMethodTelemetry>();
 

@@ -62,7 +62,7 @@
                     <DataTemplate>
                         <WrapPanel>
                             <Label Content="{Binding MethodSymbol.MetadataName}"/>
-                            <Label Content="{Binding MemberTime}" ContentStringFormat="{} ({0:P2})" />
+                            <Label Content="{Binding MethodPerformanceData.MeanExecutionTime.TotalMilliseconds}" ContentStringFormat="{} ({0} ms)" />
                         </WrapPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -76,7 +76,7 @@
                     <DataTemplate>
                         <WrapPanel>
                             <Label Content="{Binding MethodSymbol.MetadataName}"/>
-                            <Label Content="{Binding MemberTime}" ContentStringFormat="{} ({0:P2})" />
+                            <Label Content="{Binding MethodPerformanceData.MeanExecutionTime.TotalMilliseconds}" ContentStringFormat="{} ({0} ms)" />
                         </WrapPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

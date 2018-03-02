@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using InSituVisualization.Model;
 using InSituVisualization.TelemetryCollector.DataCollection;
@@ -18,7 +16,17 @@ namespace InSituVisualization.TelemetryCollector
         public TelemetryProvider(DataCollectionServiceProvider dataCollectionServiceProvider)
         {
             _dataCollectionServiceProvider = dataCollectionServiceProvider;
-            StartBackgroundTask(CancellationToken.None);
+
+            // Starting background thread
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    await UpdateStoresAsync();
+                    await Task.Delay(TaskDelay);
+                }
+                // ReSharper disable once FunctionNeverReturns
+            });
         }
 
         private HashSet<string> AcknowledgedTelemetryIds { get; } = new HashSet<string>();
@@ -27,30 +35,6 @@ namespace InSituVisualization.TelemetryCollector
         public Task<MethodPerformanceData> GetTelemetryDataAsync(string documentationCommentId)
         {
             return TelemetryData.TryGetValue(documentationCommentId, out var methodTelemetry) ? Task.FromResult(methodTelemetry) : Task.FromResult((MethodPerformanceData)null);
-        }
-
-        private void StartBackgroundTask(CancellationToken cancellationToken)
-        {
-            // not awaiting new Task
-            Task.Run(async () =>
-            {
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                    try
-                    {
-                        await UpdateStoresAsync();
-                    }
-                    catch (Exception e)
-                    {
-                        // TODO JO: needed? better catching expected exceptions and letting unexpected ones crash the program... fail fast and hard...
-                        Debug.WriteLine(e);
-                    }
-                    finally
-                    {
-                        await Task.Delay(TaskDelay, cancellationToken);
-                    }
-                }
-            }, cancellationToken);
         }
 
         private async Task UpdateStoresAsync()
@@ -76,12 +60,10 @@ namespace InSituVisualization.TelemetryCollector
                     switch (dataEntity.DependencyData.Type)
                     {
                         case "telemetry":
-                            var telemetry = RecordedDurationMethodTelemetry.FromDataEntity(dataEntity);
-                            performanceData.Durations.Add(telemetry);
+                            performanceData.Durations.Add(RecordedDurationMethodTelemetry.FromDataEntity(dataEntity));
                             break;
                         case "exception":
-                            var exception = RecordedExceptionMethodTelemetry.FromDataEntity(dataEntity);
-                            performanceData.Exceptions.Add(exception);
+                            performanceData.Exceptions.Add(RecordedExceptionMethodTelemetry.FromDataEntity(dataEntity));
                             break;
                     }
                 }
