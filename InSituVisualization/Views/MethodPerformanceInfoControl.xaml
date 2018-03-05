@@ -10,6 +10,7 @@
 
     <UserControl.Resources>
         <converters:ColorToSolidColorBrushValueConverter x:Key="ColorToSolidColorBrush" />
+        <converters:TimeSpanToStringConverter x:Key="TimeSpanToString" />
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </UserControl.Resources>
 
@@ -18,8 +19,7 @@
                 Width ="60" 
                 Height="17"
                 Command="{Binding Path=OpenDetailViewCommand}"
-                Content="{Binding Path=MethodPerformanceInfo.MeanExecutionTime.TotalMilliseconds}"
-                ContentStringFormat="{}{0} ms "
+                Content="{Binding Path=MethodPerformanceInfo.ExecutionTime, Converter={StaticResource TimeSpanToString}}"
                 VerticalContentAlignment="Top"
                 HorizontalContentAlignment="Right"
                 Padding="0"

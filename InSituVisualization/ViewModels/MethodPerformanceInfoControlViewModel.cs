@@ -61,7 +61,7 @@ namespace InSituVisualization.ViewModels
         public void OnOpenDetailViewCommand()
         {
             var settings = IocHelper.Container.Resolve<Settings>();
-            settings.PerformanceInfoDetailWindow.ShowMethodPerformance(MethodPerformanceInfo);
+            settings.SetDetailWindowContent(MethodPerformanceInfo);
         }
 
     }

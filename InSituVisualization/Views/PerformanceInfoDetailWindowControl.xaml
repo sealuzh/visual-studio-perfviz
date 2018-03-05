@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:converters="clr-namespace:InSituVisualization.Converters"
              Background="{DynamicResource VsBrush.Window}"
              Foreground="{DynamicResource VsBrush.WindowText}"
              mc:Ignorable="d"
@@ -19,8 +20,8 @@
             <Setter Property="Foreground" Value="{DynamicResource VsBrush.WindowText}" />
             <Setter Property="Background" Value="{DynamicResource VsBrush.Window}" />
         </Style>
+        <converters:TimeSpanToStringConverter x:Key="TimeSpanToString" />
     </UserControl.Resources>
-
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -36,34 +37,36 @@
             <Label>Method</Label>
             <Label>Type</Label>
             <Label>Has Changed</Label>
-            <Label>Total Time</Label>
             <Label>Mean Time</Label>
+            <Label>Mean Time Prediction</Label>
+            <Label>Total Time</Label>
             <Label>Number of Exceptions</Label>
         </StackPanel>
         <StackPanel Grid.Column="1" Grid.Row="0" IsHitTestVisible="False" >
-            <Label Content="{Binding MethodPerformanceInfo.MethodSymbol.Name}" />
-            <Label Content="{Binding MethodPerformanceInfo.MethodSymbol.ContainingType.Name}" />
-            <Label Content="{Binding MethodPerformanceInfo.HasChanged}" />
+            <Label Content="{Binding PerformanceInfo.MethodSymbol.Name}" />
+            <Label Content="{Binding PerformanceInfo.MethodSymbol.ContainingType.Name}" />
+            <Label Content="{Binding PerformanceInfo.HasChanged}" />
             <WrapPanel>
-                <Label Content="{Binding MethodPerformanceInfo.MethodPerformanceData.TotalExecutionTime.TotalMilliseconds}" ContentStringFormat="{}{0} ms" />
-                <Label Content="{Binding MethodPerformanceInfo.MethodPerformanceData.Durations.Count}" ContentStringFormat="{}({0})"/>
+                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.MeanExecutionTime, Converter={StaticResource TimeSpanToString}}" />
+                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.ExecutionTimes.Count}" ContentStringFormat="{}({0})"/>
             </WrapPanel>
+            <Label Content="{Binding PerformanceInfo.ExecutionTime, Converter={StaticResource TimeSpanToString}}" />
             <WrapPanel>
-                <Label Content="{Binding MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime.TotalMilliseconds}" ContentStringFormat="{}{0} ms" />
-                <Label Content="{Binding MethodPerformanceInfo.MethodPerformanceData.Durations.Count}" ContentStringFormat="{}({0})"/>
+                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.TotalExecutionTime, Converter={StaticResource TimeSpanToString}}" />
+                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.ExecutionTimes.Count}" ContentStringFormat="{}({0})"/>
             </WrapPanel>
-            <Label Content="{Binding MethodPerformanceInfo.MethodPerformanceData.Exceptions.Count}"  />
+            <Label Content="{Binding PerformanceInfo.MethodPerformanceData.Exceptions.Count}"  />
         </StackPanel>
         <Separator Grid.Column ="0" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Top" Foreground="{DynamicResource VsBrush.WindowText}"/>
 
         <StackPanel Grid.Column="0" Grid.Row="1">
             <Label>Callers</Label>
-            <ListView ItemsSource="{Binding MethodPerformanceInfo.CallerPerformanceInfo}" >
+            <ListView ItemsSource="{Binding PerformanceInfo.CallerPerformanceInfo}" >
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <WrapPanel>
                             <Label Content="{Binding MethodSymbol.MetadataName}"/>
-                            <Label Content="{Binding MethodPerformanceData.MeanExecutionTime.TotalMilliseconds}" ContentStringFormat="{} ({0} ms)" />
+                            <Label Content="{Binding MethodPerformanceData.ExecutionTime, Converter={StaticResource TimeSpanToString}}" />
                         </WrapPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -72,12 +75,12 @@
 
         <StackPanel Grid.Column="1" Grid.Row="1">
             <Label>Callees</Label>
-            <ListView ItemsSource="{Binding MethodPerformanceInfo.CalleePerformanceInfo}" >
+            <ListView ItemsSource="{Binding PerformanceInfo.CalleePerformanceInfo}" >
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <WrapPanel>
                             <Label Content="{Binding MethodSymbol.MetadataName}"/>
-                            <Label Content="{Binding MethodPerformanceData.MeanExecutionTime.TotalMilliseconds}" ContentStringFormat="{} ({0} ms)" />
+                            <Label Content="{Binding MethodPerformanceData.ExecutionTime, Converter={StaticResource TimeSpanToString}}" />
                         </WrapPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>

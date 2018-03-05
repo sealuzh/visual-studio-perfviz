@@ -12,13 +12,13 @@ namespace InSituVisualization.Model
 
         private readonly ObservableCollection<MethodPerformanceInfo> _callerPerformanceInfo = new SetCollection<MethodPerformanceInfo>();
         private readonly ObservableCollection<MethodPerformanceInfo> _calleePerformanceInfo = new SetCollection<MethodPerformanceInfo>();
-        private TimeSpan _predictedMeanExecutionTime;
+        private TimeSpan _predictedExecutionTime;
 
         public MethodPerformanceInfo(IMethodSymbol methodSymbol, MethodPerformanceData methodPerformanceData)
         {
             MethodSymbol = methodSymbol ?? throw new ArgumentNullException(nameof(methodSymbol));
             MethodPerformanceData = methodPerformanceData ?? throw new ArgumentNullException(nameof(methodPerformanceData));
-            _predictedMeanExecutionTime = MethodPerformanceData.MeanExecutionTime;
+            _predictedExecutionTime = MethodPerformanceData.MeanExecutionTime;
         }
 
         public IMethodSymbol MethodSymbol { get; }
@@ -36,34 +36,24 @@ namespace InSituVisualization.Model
 
         public ObservableCollection<LoopPerformanceInfo> LoopPerformanceInfo { get; } = new SetCollection<LoopPerformanceInfo>();
 
-        public TimeSpan MeanExecutionTime
-        {
-            get
-            {
-                if (!HasChanged)
-                {
-                    return MethodPerformanceData.MeanExecutionTime;
-                }
-                return PredictedMeanExecutionTime;
-            }
-        }
+        public TimeSpan ExecutionTime => HasChanged ? PredictedExecutionTime : MethodPerformanceData.MeanExecutionTime;
 
 
-        public TimeSpan PredictedMeanExecutionTime
+        public TimeSpan PredictedExecutionTime
         {
-            get => _predictedMeanExecutionTime;
+            get => _predictedExecutionTime;
             set
             {
-                var oldValue = _predictedMeanExecutionTime;
-                SetProperty(ref _predictedMeanExecutionTime, value);
+                var oldValue = _predictedExecutionTime;
+                SetProperty(ref _predictedExecutionTime, value);
 
                 // Propagating Changes up the Tree
                 foreach (var caller in _callerPerformanceInfo)
                 {
-                    caller.PredictedMeanExecutionTime = caller.PredictedMeanExecutionTime - oldValue + value;
+                    caller.PredictedExecutionTime = caller.PredictedExecutionTime - oldValue + value;
                 }
 
-                OnPropertyChanged(nameof(MeanExecutionTime));
+                OnPropertyChanged(nameof(ExecutionTime));
             }
         }
 

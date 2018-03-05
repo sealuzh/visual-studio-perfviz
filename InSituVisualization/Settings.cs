@@ -1,4 +1,7 @@
-﻿using InSituVisualization.ViewModels;
+﻿using System.Windows.Controls;
+using InSituVisualization.Model;
+using InSituVisualization.ViewModels;
+using InSituVisualization.Views;
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Settings;
@@ -43,7 +46,12 @@ namespace InSituVisualization
             set => PerfVizSettingsStore.SetInt32(SettingsCategory, "MaxPullingAmount", value);
         }
 
-        public IPerformanceInfoDetailWindow PerformanceInfoDetailWindow { get; } = new PerformanceInfoDetailWindowViewModel();
+        public DetailWindowViewModel DetailWindowViewModel { get; set; } = new DetailWindowViewModel();
+
+        public void SetDetailWindowContent(PerformanceInfo performanceInfo)
+        {
+            DetailWindowViewModel.PerformanceInfo = performanceInfo;
+        }
 
     }
 }

@@ -75,8 +75,10 @@
     <Compile Include="Utils\StatisticExtensions.cs" />
     <Compile Include="Utils\SyntaxNodeExtensions.cs" />
     <Compile Include="Utils\TimeSpanExensions.cs" />
-    <Compile Include="ViewModels\IPerformanceInfoDetailWindow.cs" />
     <Compile Include="ViewModels\LoopPerformanceInfoControlViewModel.cs" />
+    <Compile Include="Views\LoopInfoDetailWindowControl.xaml.cs">
+      <DependentUpon>LoopInfoDetailWindowControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\LoopPerformanceInfoControl.xaml.cs">
       <DependentUpon>LoopPerformanceInfoControl.xaml</DependentUpon>
     </Compile>
@@ -129,7 +131,7 @@
     <Compile Include="Pack\PerformanceInfoDetailWindowPackage.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="ViewModels\PerformanceInfoDetailWindowViewModel.cs" />
+    <Compile Include="ViewModels\DetailWindowViewModel.cs" />
     <Compile Include="Views\MethodPerformanceInfoControl.xaml.cs">
       <DependentUpon>MethodPerformanceInfoControl.xaml</DependentUpon>
     </Compile>
@@ -455,6 +457,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\LoopInfoDetailWindowControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\LoopPerformanceInfoControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -15,28 +15,15 @@
     </UserControl.Resources>
 
     <StackPanel Orientation="Horizontal" Opacity="0.6">
-        <Button Background="Transparent"
+        <Label Background="Transparent"
                 Foreground="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}"
                 Width ="30" 
                 Height="17"
-                Command="{Binding Path=OpenDetailViewCommand}"
-                Content="{Binding Path=AverageLoopIterations}"
-                VerticalContentAlignment="Top"
-                HorizontalContentAlignment="Right"
+                Content="{Binding Path=LoopIterations}"
                 Padding="0"
                 BorderThickness="0">
-            <Button.Style>
-                <Style>
-                    <Style.Triggers>
-                        <Trigger Property="Button.IsMouseOver" Value="True">
-                            <Setter Property="Button.Opacity" Value="0.9" />
-                            <Setter Property="Button.Cursor" Value="Hand" />
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </Button.Style>
-        </Button>
-        <Slider Width ="100" Maximum="100" Value="{Binding Path=AverageLoopIterations}" />
+        </Label>
+        <Slider Width ="100" Maximum="{Binding Path=MaxLoopIterations}" Value="{Binding Path=LoopIterations}" />
     </StackPanel>
 
 </UserControl>

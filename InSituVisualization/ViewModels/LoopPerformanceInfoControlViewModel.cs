@@ -1,45 +1,56 @@
-﻿using System.Windows.Input;
-using DryIoc;
+﻿using System;
 using InSituVisualization.Model;
-using InSituVisualization.Utils;
 
 namespace InSituVisualization.ViewModels
 {
     internal class LoopPerformanceInfoControlViewModel : ViewModelBase
     {
-        private int _averageLoopIterations;
+        private const int DefaultMaxLoopIterations = 100;
+        private int _loopIterations;
 
         public LoopPerformanceInfoControlViewModel(LoopPerformanceInfo loopPerformanceInfo)
         {
             LoopPerformanceInfo = loopPerformanceInfo;
-            OpenDetailViewCommand = new RelayCommand<object>(obj => OnOpenDetailViewCommand());
-            _averageLoopIterations = LoopPerformanceInfo.MeanNumberOfLoopIterations;
+            // initializing LoopIterations to Average
+            _loopIterations = LoopPerformanceInfo.AverageLoopIterations;
         }
 
         public LoopPerformanceInfo LoopPerformanceInfo { get; }
 
-        public int AverageLoopIterations
+        /// <summary>
+        /// Number of Iterations in the loop
+        /// </summary>
+        public int LoopIterations
         {
-            get => _averageLoopIterations;
+            get => _loopIterations;
             set
             {
-                var oldAverage = _averageLoopIterations;
-                SetProperty(ref _averageLoopIterations, value);
-                LoopPerformanceInfo.MethodPerformanceInfo.PredictedMeanExecutionTime =
-                    LoopPerformanceInfo.MethodPerformanceInfo.PredictedMeanExecutionTime -
-                    (LoopPerformanceInfo.SumOfMethodInvocations.Multiply(oldAverage)) +
-                     (LoopPerformanceInfo.SumOfMethodInvocations.Multiply(value));
+                var oldExecutionTime = ExecutionTime;
+                if (!SetProperty(ref _loopIterations, value))
+                {
+                    return;
+                }
+                // Updating Predicted Method Time
+                LoopPerformanceInfo.MethodPerformanceInfo.PredictedExecutionTime += ExecutionTime - oldExecutionTime;
                 LoopPerformanceInfo.MethodPerformanceInfo.HasChanged = true;
             }
         }
 
-        public ICommand OpenDetailViewCommand { get; }
-
-        public void OnOpenDetailViewCommand()
+        /// <summary>
+        /// The Maximum number of iterations to make available via slider
+        /// </summary>
+        public int MaxLoopIterations
         {
-            var settings = IocHelper.Container.Resolve<Settings>();
-            settings.PerformanceInfoDetailWindow.ShowLoopPerformance(LoopPerformanceInfo);
+            get
+            {
+                if (LoopPerformanceInfo.AverageLoopIterations == 0)
+                {
+                    return DefaultMaxLoopIterations;
+                }
+                return LoopPerformanceInfo.AverageLoopIterations * 100;
+            }
         }
 
+        public TimeSpan ExecutionTime => LoopPerformanceInfo.GetExecutionTime(LoopIterations);
     }
 }
