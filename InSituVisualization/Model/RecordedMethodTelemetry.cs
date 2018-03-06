@@ -7,12 +7,12 @@ namespace InSituVisualization.Model
     /// </summary>
     public class RecordedMethodTelemetry
     {
-        public RecordedMethodTelemetry(string documentationCommentId, string id, DateTime timestamp, string name)
+        public RecordedMethodTelemetry(string documentationCommentId, string id, DateTime timestamp, IClientData clientData)
         {
-            DocumentationCommentId = documentationCommentId;
+            DocumentationCommentId = documentationCommentId ?? throw new ArgumentNullException(nameof(documentationCommentId));
             Id = id;
             Timestamp = timestamp;
-            Name = name;
+            ClientData = clientData;
         }
 
         /// <summary>
@@ -23,7 +23,8 @@ namespace InSituVisualization.Model
 
         public string Id { get; }
         public DateTime Timestamp { get; }
-        public string Name { get; }
+        public IClientData ClientData { get; }
+
 
         public override bool Equals(object obj)
         {

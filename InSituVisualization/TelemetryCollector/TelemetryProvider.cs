@@ -38,29 +38,29 @@ namespace InSituVisualization.TelemetryCollector
 
             foreach (var dataCollector in _dataCollectionServiceProvider.GetDataCollectionServices())
             {
-                var newRestData = await dataCollector.GetTelemetryAsync();
-                foreach (var dataEntity in newRestData)
+                var recordedMethodTelemetries = await dataCollector.GetTelemetryAsync();
+                foreach (var methodTelemetry in recordedMethodTelemetries)
                 {
-                    if (!AcknowledgedTelemetryIds.Add(dataEntity.Id) || string.IsNullOrWhiteSpace(dataEntity.DependencyData.Name))
+                    if (!AcknowledgedTelemetryIds.Add(methodTelemetry.Id) || string.IsNullOrWhiteSpace(methodTelemetry.DocumentationCommentId))
                     {
                         // Telemetry is already known or no documentationCommentId
                         continue;
                     }
 
-                    TelemetryByDocumentationCommentId.TryGetValue(dataEntity.DependencyData.Name, out var performanceData);
+                    TelemetryByDocumentationCommentId.TryGetValue(methodTelemetry.DocumentationCommentId, out var performanceData);
                     if (performanceData == null)
                     {
                         performanceData = new MethodPerformanceData();
-                        TelemetryByDocumentationCommentId.Add(dataEntity.DependencyData.Name, performanceData);
+                        TelemetryByDocumentationCommentId.Add(methodTelemetry.DocumentationCommentId, performanceData);
                     }
 
-                    switch (dataEntity.DependencyData.Type)
+                    switch (methodTelemetry)
                     {
-                        case "telemetry":
-                            performanceData.ExecutionTimes.Add(RecordedDurationMethodTelemetry.FromDataEntity(dataEntity));
+                        case RecordedExecutionTimeMethodTelemetry recordedDurationMethodTelemetry:
+                            performanceData.ExecutionTimes.Add(recordedDurationMethodTelemetry);
                             break;
-                        case "exception":
-                            performanceData.Exceptions.Add(RecordedExceptionMethodTelemetry.FromDataEntity(dataEntity));
+                        case RecordedExceptionMethodTelemetry exceptionTelemetry:
+                            performanceData.Exceptions.Add(exceptionTelemetry);
                             break;
                     }
                 }

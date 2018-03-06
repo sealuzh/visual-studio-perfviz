@@ -21,6 +21,9 @@ namespace InSituVisualization
         public static void Register()
         {
             Container.Register<Settings>(Reuse.Singleton);
+            Container.Register<InsightsRestApiClient>();
+            Container.Register<InsightsRestApiDataMapper>(Reuse.Singleton);
+            Container.Register<IDataCollector, InsightsRestApiCollector>();
             Container.Register<CustomSpanProvider>(Reuse.Singleton);
             Container.Register<MemberPerformanceAdorner>(Reuse.Singleton);
 #if TestMapping

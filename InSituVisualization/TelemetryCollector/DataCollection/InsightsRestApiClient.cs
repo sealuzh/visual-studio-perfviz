@@ -12,7 +12,7 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
     /// See Azure Application Insights REST API
     /// https://dev.applicationinsights.io/apiexplorer/events
     /// </summary>
-    internal class InsightsRestApiDataCollector : IDataCollector
+    internal class InsightsRestApiClient
     {
         private const string QueryType = "events";
         private const string QueryPath = "dependencies";
@@ -24,38 +24,30 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
         private readonly string _apiKey;
         private readonly int _top;
 
-        public InsightsRestApiDataCollector(string appId, string apiKey, int top)
+        public InsightsRestApiClient(Settings settings)
         {
-            _appId = appId;
-            _apiKey = apiKey;
-            _top = top;
+            _appId = settings.AppId;
+            _apiKey = settings.ApiKey;
+            _top = settings.MaxPullingAmount;
         }
 
-        public async Task<IList<CollectedDataEntity>> GetTelemetryAsync()
+        public async Task<InsightsRestApiResponse> GetTelemetryAsync()
         {
             var parameters = ParameterString + $"&$top={_top}";
             return await GetTelemetryInternalAsync(parameters);
         }
 
-        public async Task<IList<CollectedDataEntity>> GetTelemetryAsync(string documentationCommentId)
+        public async Task<InsightsRestApiResponse> GetTelemetryAsync(string documentationCommentId)
         {
             var filter = $"$filter=dependency/name eq '{WebUtility.HtmlEncode(documentationCommentId)}'";
             var parameters = ParameterString + $"&$top={_top}&{filter}";
             return await GetTelemetryInternalAsync(parameters);
         }
 
-        private async Task<IList<CollectedDataEntity>> GetTelemetryInternalAsync(string parameters)
+        private async Task<InsightsRestApiResponse> GetTelemetryInternalAsync(string parameters)
         {
             var telemetryJson = await GetStringAsync(parameters);
-            dynamic telemetryData = JsonConvert.DeserializeObject(telemetryJson);
-
-            var performanceInfoList = new List<CollectedDataEntity>();
-            foreach (var obj in telemetryData.value.Children())
-            {
-                performanceInfoList.Add(new CollectedDataEntity(obj));
-
-            }
-            return performanceInfoList;
+            return JsonConvert.DeserializeObject<InsightsRestApiResponse>(telemetryJson);
         }
 
         private async Task<string> GetStringAsync(string parameterString)

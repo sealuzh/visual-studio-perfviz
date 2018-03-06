@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Windows.Data;
 using InSituVisualization.Utils;
 
 namespace InSituVisualization.Model
@@ -15,7 +17,20 @@ namespace InSituVisualization.Model
         private TimeSpan? _meanExecutionTime;
         private TimeSpan? _totalExecutionTime;
 
-        public ObservableCollection<RecordedDurationMethodTelemetry> ExecutionTimes { get; } = new ObservableCollection<RecordedDurationMethodTelemetry>();
+        public MethodPerformanceData()
+        {
+            FilteredExecutionTimes = CollectionViewSource.GetDefaultView(ExecutionTimes);
+            FilteredExecutionTimes.Filter += p => FilterExecutionTimes((RecordedExecutionTimeMethodTelemetry)p);
+            ExecutionTimes.CollectionChanged += (s, e) => FilteredExecutionTimes.Refresh();
+        }
+
+        private bool FilterExecutionTimes(RecordedExecutionTimeMethodTelemetry recordedExecutionTimeMethodTelemetry)
+        {
+            return true;
+        }
+
+        public ObservableCollection<RecordedExecutionTimeMethodTelemetry> ExecutionTimes { get; } = new ObservableCollection<RecordedExecutionTimeMethodTelemetry>();
+        public ICollectionView FilteredExecutionTimes { get; }
         public ObservableCollection<RecordedExceptionMethodTelemetry> Exceptions { get; } = new ObservableCollection<RecordedExceptionMethodTelemetry>();
 
         public TimeSpan MeanExecutionTime
