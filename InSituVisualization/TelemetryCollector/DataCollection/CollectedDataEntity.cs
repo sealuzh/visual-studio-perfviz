@@ -51,36 +51,4 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
         public string Name { get; }
 
     }
-
-    public class ClientData
-    {
-        public ClientData(dynamic inputTelemetryData)
-        {
-            Model = (string)inputTelemetryData.client.model;
-            Os = (string)inputTelemetryData.client.os;
-            Type = (string)inputTelemetryData.client.type;
-            Browser = (string)inputTelemetryData.client.browser;
-            Ip = (string)inputTelemetryData.client.ip;
-            City = (string)inputTelemetryData.client.city;
-            StateOrProvince = (string)inputTelemetryData.client.stateOrProvince;
-            CountryOrRegion = (string)inputTelemetryData.client.countryOrRegion;
-        }
-
-        //Unknown
-        public string Model { get; }
-        //OS running on calling system
-        public string Os { get; }
-        //PC / Mac
-        public string Type { get; }
-        //Name of browser
-        public string Browser { get; }
-        //IP Adress
-        public string Ip { get; }
-        //City Name
-        public string City { get; }
-        //Region city is in
-        public string StateOrProvince { get; }
-        //Country of state
-        public string CountryOrRegion { get; }
-    }
 }

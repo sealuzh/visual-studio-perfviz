@@ -65,12 +65,12 @@
     <Compile Include="Model\PerformanceInfo.cs" />
     <None Include="PerformanceSyntaxWalker.cs" />
     <Compile Include="AsyncSyntaxWalker.cs" />
+    <Compile Include="TelemetryCollector\DataCollection\ClientData.cs" />
     <Compile Include="TelemetryCollector\DataCollection\CollectedDataEntity.cs" />
     <Compile Include="TelemetryCollector\Filter\Filter.cs" />
     <Compile Include="TelemetryCollector\DataCollection\DataCollectionServiceProvider.cs" />
     <Compile Include="Model\RecordedMethodTelemetry.cs" />
     <Compile Include="Model\RecordedExceptionMethodTelemetry.cs" />
-    <Compile Include="TelemetryCollector\Persistance\IPersistentStorage.cs" />
     <Compile Include="TelemetryCollector\TelemetryProvider.cs" />
     <Compile Include="Utils\StatisticExtensions.cs" />
     <Compile Include="Utils\SyntaxNodeExtensions.cs" />
@@ -119,7 +119,6 @@
     <Compile Include="TelemetryCollector\DataCollection\InsightsRestApiDataCollector.cs" />
     <Compile Include="TelemetryCollector\Filter\Property\StringFilterProperty.cs" />
     <Compile Include="TelemetryCollector\Filter\FilterController.cs" />
-    <Compile Include="TelemetryCollector\Persistance\FilePersistentStorage.cs" />
     <Compile Include="TelemetryMapper\TelemetryDataMapper.cs" />
     <Compile Include="ViewModels\MethodInvocationPerformanceInfoControlViewModel.cs" />
     <Compile Include="Views\MethodInvocationPerformanceInfoControl.xaml.cs">
