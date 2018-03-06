@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using System.Linq;
 using InSituVisualization.Utils;
 
@@ -15,9 +15,8 @@ namespace InSituVisualization.Model
         private TimeSpan? _meanExecutionTime;
         private TimeSpan? _totalExecutionTime;
 
-        // TODO RR: Update to Observable Collections
-        public ConcurrentBag<RecordedDurationMethodTelemetry> ExecutionTimes { get; } = new ConcurrentBag<RecordedDurationMethodTelemetry>();
-        public ConcurrentBag<RecordedExceptionMethodTelemetry> Exceptions { get; } = new ConcurrentBag<RecordedExceptionMethodTelemetry>();
+        public ObservableCollection<RecordedDurationMethodTelemetry> ExecutionTimes { get; } = new ObservableCollection<RecordedDurationMethodTelemetry>();
+        public ObservableCollection<RecordedExceptionMethodTelemetry> Exceptions { get; } = new ObservableCollection<RecordedExceptionMethodTelemetry>();
 
         public TimeSpan MeanExecutionTime
         {

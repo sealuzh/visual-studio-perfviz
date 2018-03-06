@@ -21,20 +21,21 @@ namespace InSituVisualization.TelemetryCollector
         }
 
         private HashSet<string> AcknowledgedTelemetryIds { get; } = new HashSet<string>();
-
         private ConcurrentDictionary<string, MethodPerformanceData> TelemetryByDocumentationCommentId { get; } = new ConcurrentDictionary<string, MethodPerformanceData>();
 
         public async Task<MethodPerformanceData> GetTelemetryDataAsync(string documentationCommentId)
         {
-            if (_lastUpdate + ThrottleTimeSpan < DateTime.Now)
-            {
-                await UpdateTelemetryDataAsync();
-            }
+            await UpdateTelemetryDataAsync();
             return TelemetryByDocumentationCommentId.TryGetValue(documentationCommentId, out var methodTelemetry) ? methodTelemetry : null;
         }
 
         private async Task UpdateTelemetryDataAsync()
         {
+            if (_lastUpdate + ThrottleTimeSpan > DateTime.Now)
+            {
+                return;
+            }
+            _lastUpdate = DateTime.Now;
             foreach (var dataCollector in _dataCollectionServiceProvider.GetDataCollectionServices())
             {
                 var newRestData = await dataCollector.GetTelemetryAsync();
@@ -64,7 +65,6 @@ namespace InSituVisualization.TelemetryCollector
                     }
                 }
             }
-            _lastUpdate = DateTime.Now;
         }
 
 
