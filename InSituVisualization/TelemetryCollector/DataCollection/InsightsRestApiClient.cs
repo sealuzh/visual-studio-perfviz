@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -12,6 +11,7 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
     /// See Azure Application Insights REST API
     /// https://dev.applicationinsights.io/apiexplorer/events
     /// </summary>
+    // ReSharper disable once ClassNeverInstantiated.Global, Justification: IoC
     internal class InsightsRestApiClient
     {
         private const string QueryType = "events";

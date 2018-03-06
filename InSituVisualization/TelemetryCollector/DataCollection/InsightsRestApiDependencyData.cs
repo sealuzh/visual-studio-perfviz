@@ -35,7 +35,7 @@ namespace InSituVisualization.TelemetryCollector.DataCollection
         /// Returned result code of the function (should always be 0)
         /// </summary>
         [JsonProperty(PropertyName = "resultCode")]
-        public int ResultCode { get; set; }
+        public string ResultCode { get; set; }
 
         /// <summary>
         /// Exception / Telemetry
