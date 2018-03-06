@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using InSituVisualization.Model;
 
-namespace InSituVisualization.TelemetryCollector.DataCollection
+namespace InSituVisualization.TelemetryCollector
 {
-    public interface IDataCollector
+    public interface ITelemetryCollector
     {
         Task<IList<RecordedMethodTelemetry>> GetTelemetryAsync();
     }

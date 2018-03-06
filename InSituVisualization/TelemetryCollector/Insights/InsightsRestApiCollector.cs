@@ -2,10 +2,10 @@
 using System.Threading.Tasks;
 using InSituVisualization.Model;
 
-namespace InSituVisualization.TelemetryCollector.DataCollection
+namespace InSituVisualization.TelemetryCollector.Insights
 {
     // ReSharper disable once ClassNeverInstantiated.Global, Justification: IoC
-    internal class InsightsRestApiCollector : IDataCollector
+    internal class InsightsRestApiCollector : ITelemetryCollector
     {
         private readonly InsightsRestApiClient _client;
         private readonly InsightsRestApiDataMapper _mapper;

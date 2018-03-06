@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using InSituVisualization.Model;
-using InSituVisualization.TelemetryCollector.DataCollection;
 
 namespace InSituVisualization.TelemetryCollector
 {
@@ -10,13 +9,13 @@ namespace InSituVisualization.TelemetryCollector
     internal class TelemetryProvider : ITelemetryProvider
     {
         private static readonly TimeSpan ThrottleTimeSpan = TimeSpan.FromMinutes(1);
-        private readonly DataCollectionServiceProvider _dataCollectionServiceProvider;
+        private readonly TelemetryCollectorRegistry _telemetryCollectorRegistry;
 
         private DateTime _lastUpdate = default(DateTime);
 
-        public TelemetryProvider(DataCollectionServiceProvider dataCollectionServiceProvider)
+        public TelemetryProvider(TelemetryCollectorRegistry telemetryCollectorRegistry)
         {
-            _dataCollectionServiceProvider = dataCollectionServiceProvider;
+            _telemetryCollectorRegistry = telemetryCollectorRegistry;
         }
 
         private HashSet<string> AcknowledgedTelemetryIds { get; } = new HashSet<string>();
@@ -36,9 +35,9 @@ namespace InSituVisualization.TelemetryCollector
             }
             _lastUpdate = DateTime.Now;
 
-            foreach (var dataCollector in _dataCollectionServiceProvider.GetDataCollectionServices())
+            foreach (var telemetryCollector in _telemetryCollectorRegistry.TelemetryCollectors)
             {
-                var recordedMethodTelemetries = await dataCollector.GetTelemetryAsync();
+                var recordedMethodTelemetries = await telemetryCollector.GetTelemetryAsync();
                 foreach (var methodTelemetry in recordedMethodTelemetries)
                 {
                     if (!AcknowledgedTelemetryIds.Add(methodTelemetry.Id) || string.IsNullOrWhiteSpace(methodTelemetry.DocumentationCommentId))

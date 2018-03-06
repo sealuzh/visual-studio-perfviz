@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using InSituVisualization.TelemetryCollector.DataCollection;
+using InSituVisualization.TelemetryCollector.Insights;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 

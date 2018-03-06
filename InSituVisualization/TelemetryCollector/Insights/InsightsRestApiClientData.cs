@@ -1,7 +1,7 @@
 ﻿using InSituVisualization.Model;
 using Newtonsoft.Json;
 
-namespace InSituVisualization.TelemetryCollector.DataCollection
+namespace InSituVisualization.TelemetryCollector.Insights
 {
     public class InsightsRestApiClientData : IClientData
     {

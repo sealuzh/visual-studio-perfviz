@@ -5,7 +5,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace InSituVisualization.TelemetryCollector.DataCollection
+namespace InSituVisualization.TelemetryCollector.Insights
 {
     /// <summary>
     /// See Azure Application Insights REST API
