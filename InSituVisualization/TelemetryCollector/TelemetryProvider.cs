@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using InSituVisualization.Model;
@@ -21,7 +20,7 @@ namespace InSituVisualization.TelemetryCollector
         }
 
         private HashSet<string> AcknowledgedTelemetryIds { get; } = new HashSet<string>();
-        private ConcurrentDictionary<string, MethodPerformanceData> TelemetryByDocumentationCommentId { get; } = new ConcurrentDictionary<string, MethodPerformanceData>();
+        private Dictionary<string, MethodPerformanceData> TelemetryByDocumentationCommentId { get; } = new Dictionary<string, MethodPerformanceData>();
 
         public async Task<MethodPerformanceData> GetTelemetryDataAsync(string documentationCommentId)
         {
@@ -36,6 +35,7 @@ namespace InSituVisualization.TelemetryCollector
                 return;
             }
             _lastUpdate = DateTime.Now;
+
             foreach (var dataCollector in _dataCollectionServiceProvider.GetDataCollectionServices())
             {
                 var newRestData = await dataCollector.GetTelemetryAsync();
@@ -51,7 +51,7 @@ namespace InSituVisualization.TelemetryCollector
                     if (performanceData == null)
                     {
                         performanceData = new MethodPerformanceData();
-                        TelemetryByDocumentationCommentId.TryAdd(dataEntity.DependencyData.Name, performanceData);
+                        TelemetryByDocumentationCommentId.Add(dataEntity.DependencyData.Name, performanceData);
                     }
 
                     switch (dataEntity.DependencyData.Type)
