@@ -10,35 +10,30 @@ namespace InSituVisualization.TelemetryCollector
     // ReSharper disable once ClassNeverInstantiated.Global Justification: IOC
     internal class TelemetryProvider : ITelemetryProvider
     {
-        private static readonly TimeSpan TaskDelay = TimeSpan.FromMinutes(1);
+        private static readonly TimeSpan ThrottleTimeSpan = TimeSpan.FromMinutes(1);
         private readonly DataCollectionServiceProvider _dataCollectionServiceProvider;
+
+        private DateTime _lastUpdate = default(DateTime);
 
         public TelemetryProvider(DataCollectionServiceProvider dataCollectionServiceProvider)
         {
             _dataCollectionServiceProvider = dataCollectionServiceProvider;
-
-            // Starting background thread
-            Task.Run(async () =>
-            {
-                while (true)
-                {
-                    await UpdateTelemetryData();
-                    await Task.Delay(TaskDelay);
-                }
-                // ReSharper disable once FunctionNeverReturns
-            });
         }
 
         private HashSet<string> AcknowledgedTelemetryIds { get; } = new HashSet<string>();
 
         private ConcurrentDictionary<string, MethodPerformanceData> TelemetryByDocumentationCommentId { get; } = new ConcurrentDictionary<string, MethodPerformanceData>();
 
-        public Task<MethodPerformanceData> GetTelemetryDataAsync(string documentationCommentId)
+        public async Task<MethodPerformanceData> GetTelemetryDataAsync(string documentationCommentId)
         {
-            return TelemetryByDocumentationCommentId.TryGetValue(documentationCommentId, out var methodTelemetry) ? Task.FromResult(methodTelemetry) : Task.FromResult((MethodPerformanceData)null);
+            if (_lastUpdate + ThrottleTimeSpan < DateTime.Now)
+            {
+                await UpdateTelemetryDataAsync();
+            }
+            return TelemetryByDocumentationCommentId.TryGetValue(documentationCommentId, out var methodTelemetry) ? methodTelemetry : null;
         }
 
-        private async Task UpdateTelemetryData()
+        private async Task UpdateTelemetryDataAsync()
         {
             foreach (var dataCollector in _dataCollectionServiceProvider.GetDataCollectionServices())
             {
@@ -69,6 +64,7 @@ namespace InSituVisualization.TelemetryCollector
                     }
                 }
             }
+            _lastUpdate = DateTime.Now;
         }
 
 
