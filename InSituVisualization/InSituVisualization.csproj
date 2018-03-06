@@ -74,7 +74,7 @@
     <Compile Include="TelemetryCollector\Insights\InsightsRestApiSessionData.cs" />
     <Compile Include="TelemetryCollector\Insights\InsightsRestApiUserData.cs" />
     <Compile Include="TelemetryCollector\Filter\Filter.cs" />
-    <Compile Include="TelemetryCollector\DataCollectionServiceProvider.cs" />
+    <Compile Include="TelemetryCollector\TelemetryCollectorRegistry.cs" />
     <Compile Include="Model\RecordedMethodTelemetry.cs" />
     <Compile Include="Model\RecordedExceptionMethodTelemetry.cs" />
     <Compile Include="TelemetryCollector\Insights\InsightsRestApiResponse.cs" />
