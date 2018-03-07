@@ -26,28 +26,19 @@ namespace InSituVisualization.TelemetryCollector.Filter
                     case FilterKind.IsEqual:
                         if (!memberPropertyValue.Equals(FilterString))
                         {
-                            if (!outDictionary.TryAdd(kvpMember.Key, kvpMember.Value))
-                            {
-                                Console.WriteLine("Could not add element " + kvpMember.Key);
-                            }
+                            outDictionary.TryAdd(kvpMember.Key, kvpMember.Value);
                         }
                         break;
                     case FilterKind.IsGreaterEqualThen:
                         if (!(memberPropertyValue <= FilterString))
                         {
-                            if (!outDictionary.TryAdd(kvpMember.Key, kvpMember.Value))
-                            {
-                                Console.WriteLine("Could not add element " + kvpMember.Key);
-                            }
+                            outDictionary.TryAdd(kvpMember.Key, kvpMember.Value);
                         }
                         break;
                     case FilterKind.IsSmallerEqualThen:
                         if (!(memberPropertyValue >= FilterString))
                         {
-                            if (!outDictionary.TryAdd(kvpMember.Key, kvpMember.Value))
-                            {
-                                Console.WriteLine("Could not add element " + kvpMember.Key);
-                            }
+                            outDictionary.TryAdd(kvpMember.Key, kvpMember.Value);
                         }
                         break;
                     default:
