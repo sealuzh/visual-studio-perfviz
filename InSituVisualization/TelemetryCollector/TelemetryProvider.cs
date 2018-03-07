@@ -65,21 +65,5 @@ namespace InSituVisualization.TelemetryCollector
                 }
             }
         }
-
-
-
-        // TODO RR: Filters
-        //private readonly FilterController<T> _filterController = new FilterController<T>();
-
-        //public void AddDebugFilters()
-        //{
-        //    _filterController.AddFilter(
-        //        _filterController.GetFilterProperties()[3],
-        //        FilterKind.IsGreaterEqualThen, new DateTime(2018, 1, 15, 12, 45, 00));
-        //}
-        //        public ConcurrentDictionary<string, T> CurrentMethodTelemetries => _filterController.ApplyFilters(AllMethodTelemetries);
-
-
-
     }
 }

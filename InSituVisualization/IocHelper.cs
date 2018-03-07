@@ -1,5 +1,6 @@
 ﻿//#define TestMapping
 using DryIoc;
+using InSituVisualization.Filter;
 using InSituVisualization.TelemetryCollector;
 using InSituVisualization.TelemetryCollector.Insights;
 using InSituVisualization.TelemetryMapper;
@@ -21,6 +22,7 @@ namespace InSituVisualization
         public static void Register()
         {
             Container.Register<Settings>(Reuse.Singleton);
+            Container.Register<FilterController>(Reuse.Singleton);
             Container.Register<InsightsRestApiClient>();
             Container.Register<InsightsRestApiDataMapper>(Reuse.Singleton);
             Container.Register<ITelemetryCollector, InsightsRestApiCollector>();
