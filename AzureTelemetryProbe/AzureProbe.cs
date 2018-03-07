@@ -66,7 +66,6 @@ namespace AzureTelemetryProbe
 
             _telemetryClient.TrackDependency("exception", "-target-", documentationCommentId, "-data-", DateTime.UtcNow, TimeSpan.Zero, "0", true);
             _telemetryClient.Flush();
-            Console.WriteLine("Just sent data.");
 
             //var telemetry = new EventTelemetry("Exception")
             //{
