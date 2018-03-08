@@ -7,7 +7,7 @@ using InSituVisualization.Model;
 namespace InSituVisualization.Filter
 {
     // ReSharper disable once ClassNeverInstantiated.Global, Justification: IoC
-    public class FilterController
+    public class FilterController : IFilterController
     {
         public event EventHandler FiltersChanged;
 

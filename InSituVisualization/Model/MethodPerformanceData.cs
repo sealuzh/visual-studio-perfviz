@@ -14,9 +14,9 @@ namespace InSituVisualization.Model
     /// </summary>
     public class MethodPerformanceData : ModelBase, IMethodPerformanceData
     {
-        private readonly FilterController _filterController;
+        private readonly IFilterController _filterController;
 
-        public MethodPerformanceData(FilterController filterController)
+        public MethodPerformanceData(IFilterController filterController)
         {
             _filterController = filterController;
             ExecutionTimes.CollectionChanged += (s, e) => OnFilterRenew();

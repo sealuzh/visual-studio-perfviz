@@ -1,4 +1,8 @@
-﻿//#define TestMapping
+﻿#if DEBUG
+ #define TestFilter
+#endif
+
+//#define TestMapping
 using DryIoc;
 using InSituVisualization.Filter;
 using InSituVisualization.Model;
@@ -23,7 +27,10 @@ namespace InSituVisualization
         public static void Register()
         {
             Container.Register<Settings>(Reuse.Singleton);
-            Container.Register<FilterController>(Reuse.Singleton);
+            Container.Register<IFilterController, FilterController>(Reuse.Singleton);
+#if TestFilter
+            Container.Register<IFilterController, MockFilterController>(Reuse.Singleton, setup: Setup.Decorator);
+#endif
             Container.Register<IMethodPerformanceData, MethodPerformanceData>();
             Container.Register<InsightsRestApiClient>();
             Container.Register<InsightsRestApiDataMapper>(Reuse.Singleton);
