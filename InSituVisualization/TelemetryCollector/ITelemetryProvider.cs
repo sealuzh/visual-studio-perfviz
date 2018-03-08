@@ -5,6 +5,6 @@ namespace InSituVisualization.TelemetryCollector
 {
     internal interface ITelemetryProvider
     {
-        Task<MethodPerformanceData> GetTelemetryDataAsync(string documentationCommentId);
+        Task<IMethodPerformanceData> GetTelemetryDataAsync(string documentationCommentId);
     }
 }

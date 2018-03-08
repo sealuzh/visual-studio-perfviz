@@ -62,6 +62,7 @@
     <Compile Include="DryIoc\FastExpressionCompiler.cs" />
     <Compile Include="DryIoc\ImTools.cs" />
     <Compile Include="Filter\ComparableFilter.cs" />
+    <Compile Include="Model\IMethodPerformanceData.cs" />
     <Compile Include="Model\LoopPerformanceInfo.cs" />
     <Compile Include="Model\PerformanceInfo.cs" />
     <None Include="PerformanceSyntaxWalker.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Filter\Filter.cs" />
     <Compile Include="Filter\FilterKind.cs" />
     <Compile Include="Filter\IFilter.cs" />
+    <Compile Include="Properties\Annotations1.cs" />
     <Compile Include="TelemetryCollector\Insights\InsightsRestApiCollector.cs" />
     <Compile Include="TelemetryCollector\Insights\InsightsRestApiDependencyData.cs" />
     <Compile Include="TelemetryCollector\Insights\InsightsRestApiClientData.cs" />

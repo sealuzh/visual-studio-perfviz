@@ -16,20 +16,20 @@ namespace InSituVisualization.Filter
             _string = @string;
         }
 
-        public override IEnumerable<RecordedMethodTelemetry> ApplyFilter(IEnumerable<RecordedMethodTelemetry> list)
+        public override IList<T> ApplyFilter<T>(IList<T> list)
         {
             switch (FilterKind)
             {
                 case FilterKind.None:
                     break;
                 case FilterKind.IsEqual:
-                    return list.Where(telemetry => _getStringFunc(telemetry) == _string);
+                    return list.Where(telemetry => _getStringFunc(telemetry) == _string).ToList();
                 case FilterKind.IsGreaterEqualThen:
                     break;
                 case FilterKind.IsSmallerEqualThen:
                     break;
                 case FilterKind.Contains:
-                    return list.Where(telemetry => _getStringFunc(telemetry).Contains(_string));
+                    return list.Where(telemetry => _getStringFunc(telemetry).Contains(_string)).ToList();
                 default:
                     throw new ArgumentOutOfRangeException();
             }

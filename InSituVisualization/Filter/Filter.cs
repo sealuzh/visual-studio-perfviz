@@ -12,6 +12,6 @@ namespace InSituVisualization.Filter
 
         protected FilterKind FilterKind { get; }
 
-        public abstract IEnumerable<RecordedMethodTelemetry> ApplyFilter(IEnumerable<RecordedMethodTelemetry> list);
+        public abstract IList<T> ApplyFilter<T>(IList<T> list) where T : RecordedMethodTelemetry;
     }
 }

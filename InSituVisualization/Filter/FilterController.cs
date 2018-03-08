@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
 using InSituVisualization.Model;
 
 namespace InSituVisualization.Filter
 {
     // ReSharper disable once ClassNeverInstantiated.Global, Justification: IoC
-    internal class FilterController
+    public class FilterController
     {
         public event EventHandler FiltersChanged;
 
@@ -22,14 +21,13 @@ namespace InSituVisualization.Filter
         public IList<IFilter> Filters => _filters;
 
         //Applies the filters currently stored in _activeFilters.
-        public IEnumerable<RecordedMethodTelemetry> ApplyFilters(IEnumerable<RecordedMethodTelemetry> list)
+        public IList<T> ApplyFilters<T>(IList<T> list) where T: RecordedMethodTelemetry
         {
-            if (Filters.Count <= 0)
+            if (!Filters.Any())
             {
                 return list;
             }
-            IEnumerable<RecordedMethodTelemetry> result = new List<RecordedMethodTelemetry>(list);
-            return Filters.Aggregate(result, (methodTelemetries, filter) => filter.ApplyFilter(methodTelemetries));
+            return Filters.Aggregate(list, (methodTelemetries, filter) => filter.ApplyFilter(methodTelemetries));
         }
     }
 }

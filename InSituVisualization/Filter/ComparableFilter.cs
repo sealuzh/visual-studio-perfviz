@@ -5,29 +5,34 @@ using InSituVisualization.Model;
 
 namespace InSituVisualization.Filter
 {
-    internal class ComparableFilter<T> : Filter where T : IComparable<T>
+    /// <summary>
+    /// Filter for any Comparable Type
+    /// TProperty is the type of the property to compare.
+    /// for example Int, DateTime etc.
+    /// </summary>
+    internal class ComparableFilter<TProperty> : Filter where TProperty : IComparable<TProperty>
     {
-        private readonly Func<RecordedMethodTelemetry, T> _getIntFunc;
-        private readonly T _comparable;
+        private readonly Func<RecordedMethodTelemetry, TProperty> _getIntFunc;
+        private readonly TProperty _comparable;
 
-        public ComparableFilter(FilterKind filterKind, Func<RecordedMethodTelemetry, T> getComparableFunc, T comparable) : base(filterKind)
+        public ComparableFilter(FilterKind filterKind, Func<RecordedMethodTelemetry, TProperty> getComparableFunc, TProperty comparable) : base(filterKind)
         {
             _getIntFunc = getComparableFunc ?? throw new ArgumentNullException(nameof(getComparableFunc));
             _comparable = comparable;
         }
 
-        public override IEnumerable<RecordedMethodTelemetry> ApplyFilter(IEnumerable<RecordedMethodTelemetry> list)
+        public override IList<T> ApplyFilter<T>(IList<T> list)
         {
             switch (FilterKind)
             {
                 case FilterKind.None:
                     break;
                 case FilterKind.IsEqual:
-                    return list.Where(telemetry => _getIntFunc(telemetry).CompareTo(_comparable) == 0);
+                    return list.Where(telemetry => _getIntFunc(telemetry).CompareTo(_comparable) == 0).ToList();
                 case FilterKind.IsGreaterEqualThen:
-                    return list.Where(telemetry => _getIntFunc(telemetry).CompareTo(_comparable) >= 0);
+                    return list.Where(telemetry => _getIntFunc(telemetry).CompareTo(_comparable) >= 0).ToList();
                 case FilterKind.IsSmallerEqualThen:
-                    return list.Where(telemetry => _getIntFunc(telemetry).CompareTo(_comparable) <= 0);
+                    return list.Where(telemetry => _getIntFunc(telemetry).CompareTo(_comparable) <= 0).ToList();
                 case FilterKind.Contains:
                     break;
                 default:

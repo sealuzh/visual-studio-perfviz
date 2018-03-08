@@ -48,12 +48,20 @@
             <Label Content="{Binding PerformanceInfo.HasChanged}" />
             <WrapPanel>
                 <Label Content="{Binding PerformanceInfo.MethodPerformanceData.MeanExecutionTime, Converter={StaticResource TimeSpanToString}}" />
-                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.ExecutionTimes.Count}" ContentStringFormat="{}({0})"/>
+                <Label>(</Label>
+                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.FilteredExecutionTimes.Count}"/>
+                <Label>/</Label>
+                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.ExecutionTimes.Count}"/>
+                <Label>)</Label>
             </WrapPanel>
             <Label Content="{Binding PerformanceInfo.ExecutionTime, Converter={StaticResource TimeSpanToString}}" />
             <WrapPanel>
                 <Label Content="{Binding PerformanceInfo.MethodPerformanceData.TotalExecutionTime, Converter={StaticResource TimeSpanToString}}" />
-                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.ExecutionTimes.Count}" ContentStringFormat="{}({0})"/>
+                <Label>(</Label>
+                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.FilteredExecutionTimes.Count}"/>
+                <Label>/</Label>
+                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.ExecutionTimes.Count}"/>
+                <Label>)</Label>
             </WrapPanel>
             <Label Content="{Binding PerformanceInfo.MethodPerformanceData.Exceptions.Count}"  />
         </StackPanel>

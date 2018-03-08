@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Windows.Data;
+using InSituVisualization.Filter;
 using InSituVisualization.Utils;
 
 namespace InSituVisualization.Model
@@ -12,47 +12,41 @@ namespace InSituVisualization.Model
     /// This includes Telemetry
     /// This includes Predictions
     /// </summary>
-    public class MethodPerformanceData : ModelBase
+    public class MethodPerformanceData : ModelBase, IMethodPerformanceData
     {
-        private TimeSpan? _meanExecutionTime;
-        private TimeSpan? _totalExecutionTime;
+        private readonly FilterController _filterController;
 
-        public MethodPerformanceData()
+        public MethodPerformanceData(FilterController filterController)
         {
-            FilteredExecutionTimes = CollectionViewSource.GetDefaultView(ExecutionTimes);
-            FilteredExecutionTimes.Filter += p => FilterExecutionTimes((RecordedExecutionTimeMethodTelemetry)p);
-            ExecutionTimes.CollectionChanged += (s, e) => FilteredExecutionTimes.Refresh();
+            _filterController = filterController;
+            ExecutionTimes.CollectionChanged += (s, e) => OnFilterRenew();
+            filterController.FiltersChanged += (s, e) => OnFilterRenew();
         }
 
-        private bool FilterExecutionTimes(RecordedExecutionTimeMethodTelemetry recordedExecutionTimeMethodTelemetry)
+        private void OnFilterRenew()
         {
-            return true;
+            OnPropertyChanged(nameof(FilteredExecutionTimes));
+            OnPropertyChanged(nameof(MeanExecutionTime));
+            OnPropertyChanged(nameof(TotalExecutionTime));
         }
 
         public ObservableCollection<RecordedExecutionTimeMethodTelemetry> ExecutionTimes { get; } = new ObservableCollection<RecordedExecutionTimeMethodTelemetry>();
-        public ICollectionView FilteredExecutionTimes { get; }
+        public IList<RecordedExecutionTimeMethodTelemetry> FilteredExecutionTimes => _filterController.ApplyFilters(ExecutionTimes);
+
         public ObservableCollection<RecordedExceptionMethodTelemetry> Exceptions { get; } = new ObservableCollection<RecordedExceptionMethodTelemetry>();
 
         public TimeSpan MeanExecutionTime
         {
-            get => _meanExecutionTime ?? GetAverageExecutionTime();
-            set => SetProperty(ref _meanExecutionTime, value);
-        }
-
-        public TimeSpan TotalExecutionTime
-        {
-            get => _totalExecutionTime ?? ExecutionTimes.Sum(p => TimeSpan.FromMilliseconds(p.Duration));
-            set => SetProperty(ref _totalExecutionTime, value);
-        }
-
-        private TimeSpan GetAverageExecutionTime()
-        {
-            if (ExecutionTimes.Count <= 0)
+            get
             {
-                return TimeSpan.Zero;
+                if (!FilteredExecutionTimes.Any())
+                {
+                    return TimeSpan.Zero;
+                }
+                return TimeSpan.FromMilliseconds(ExecutionTimes.Select(telemetry => telemetry.Duration).Average());
             }
-            return TimeSpan.FromMilliseconds(ExecutionTimes.Select(telemetry => telemetry.Duration).Average());
         }
 
+        public TimeSpan TotalExecutionTime => FilteredExecutionTimes.Sum(p => TimeSpan.FromMilliseconds(p.Duration));
     }
 }

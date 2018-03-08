@@ -3,8 +3,8 @@ using InSituVisualization.Model;
 
 namespace InSituVisualization.Filter
 {
-    internal interface IFilter
+    public interface IFilter
     {
-        IEnumerable<RecordedMethodTelemetry> ApplyFilter(IEnumerable<RecordedMethodTelemetry> list);
+        IList<T> ApplyFilter<T>(IList<T> list) where T : RecordedMethodTelemetry;
     }
 }

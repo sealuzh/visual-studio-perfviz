@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DryIoc;
 using InSituVisualization.Model;
 
 namespace InSituVisualization.TelemetryCollector
@@ -19,9 +20,9 @@ namespace InSituVisualization.TelemetryCollector
         }
 
         private HashSet<string> AcknowledgedTelemetryIds { get; } = new HashSet<string>();
-        private Dictionary<string, MethodPerformanceData> TelemetryByDocumentationCommentId { get; } = new Dictionary<string, MethodPerformanceData>();
+        private Dictionary<string, IMethodPerformanceData> TelemetryByDocumentationCommentId { get; } = new Dictionary<string, IMethodPerformanceData>();
 
-        public async Task<MethodPerformanceData> GetTelemetryDataAsync(string documentationCommentId)
+        public async Task<IMethodPerformanceData> GetTelemetryDataAsync(string documentationCommentId)
         {
             await UpdateTelemetryDataAsync();
             return TelemetryByDocumentationCommentId.TryGetValue(documentationCommentId, out var methodTelemetry) ? methodTelemetry : null;
@@ -49,7 +50,7 @@ namespace InSituVisualization.TelemetryCollector
                     TelemetryByDocumentationCommentId.TryGetValue(methodTelemetry.DocumentationCommentId, out var performanceData);
                     if (performanceData == null)
                     {
-                        performanceData = new MethodPerformanceData();
+                        performanceData = IocHelper.Container.Resolve<IMethodPerformanceData>();
                         TelemetryByDocumentationCommentId.Add(methodTelemetry.DocumentationCommentId, performanceData);
                     }
 
