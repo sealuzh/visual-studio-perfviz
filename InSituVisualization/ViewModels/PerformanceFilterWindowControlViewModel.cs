@@ -6,14 +6,14 @@ using InSituVisualization.Filter;
 
 namespace InSituVisualization.ViewModels
 {
-    public class PerformanceFilterControlViewModel : ViewModelBase
+    public class PerformanceFilterWindowControlViewModel : ViewModelBase
     {
         private readonly IFilterController _filterController;
         private int _selectedFilterControlIndex;
 
         public ObservableCollection<FilterControlViewModel> EnabledFilters { get; } = new ObservableCollection<FilterControlViewModel> { new FilterControlViewModel() };
 
-        public PerformanceFilterControlViewModel([NotNull] IFilterController filterController)
+        public PerformanceFilterWindowControlViewModel([NotNull] IFilterController filterController)
         {
             _filterController = filterController ?? throw new ArgumentNullException(nameof(filterController));
             ApplyFiltersCommand = new RelayCommand<object>(obj => OnApplyFiltersCommand());
@@ -27,15 +27,16 @@ namespace InSituVisualization.ViewModels
         private void OnRemoveFilterCommand()
         {
             var selected = SelectedFilterControlIndex;
-            if (EnabledFilters.Count > 1)
+            EnabledFilters.RemoveAt(selected);
+            if (EnabledFilters.Count <= 0)
             {
-                EnabledFilters.RemoveAt(selected);
+                EnabledFilters.Add(new FilterControlViewModel());
             }
         }
 
         private void OnAddFilterCommand()
         {
-            EnabledFilters.Insert(SelectedFilterControlIndex, new FilterControlViewModel());
+            EnabledFilters.Insert(SelectedFilterControlIndex+1, new FilterControlViewModel());
         }
 
         public ICommand ApplyFiltersCommand { get; }
@@ -52,7 +53,17 @@ namespace InSituVisualization.ViewModels
 
         private void OnApplyFiltersCommand()
         {
-            // TODO RR:
+            // TODO RR Rework:
+
+            _filterController.Filters.Clear();
+            foreach (var filterControlViewModel in EnabledFilters)
+            {
+                var filter = filterControlViewModel.GetFilter();
+                if (filter != null)
+                {
+                    _filterController.Filters.Add(filter);
+                }
+            }
         }
     }
 }

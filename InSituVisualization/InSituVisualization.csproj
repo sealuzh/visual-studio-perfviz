@@ -92,7 +92,7 @@
     <Compile Include="Utils\TimeSpanExensions.cs" />
     <Compile Include="ViewModels\FilterControlViewModel.cs" />
     <Compile Include="ViewModels\LoopPerformanceInfoControlViewModel.cs" />
-    <Compile Include="ViewModels\PerformanceFilterControlViewModel.cs" />
+    <Compile Include="ViewModels\PerformanceFilterWindowControlViewModel.cs" />
     <Compile Include="Views\FilterControl.xaml.cs">
       <DependentUpon>FilterControl.xaml</DependentUpon>
     </Compile>

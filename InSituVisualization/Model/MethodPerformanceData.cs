@@ -44,10 +44,11 @@ namespace InSituVisualization.Model
                 {
                     return TimeSpan.Zero;
                 }
-                return TimeSpan.FromMilliseconds(ExecutionTimes.Select(telemetry => telemetry.Duration).Average());
+                var averageticks = ExecutionTimes.Select(telemetry => telemetry.Duration.Ticks).Average();
+                return TimeSpan.FromTicks(Convert.ToInt64(averageticks));
             }
         }
 
-        public TimeSpan TotalExecutionTime => FilteredExecutionTimes.Sum(p => TimeSpan.FromMilliseconds(p.Duration));
+        public TimeSpan TotalExecutionTime => FilteredExecutionTimes.Sum(p => p.Duration);
     }
 }

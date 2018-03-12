@@ -30,7 +30,7 @@ namespace InSituVisualization.Views
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
             // the object returned by the Content property.
-            this.Content = new PerformanceFilterWindowControl { DataContext = new PerformanceFilterControlViewModel(IocHelper.Container.Resolve<IFilterController>()) };
+            this.Content = new PerformanceFilterWindowControl { DataContext = new PerformanceFilterWindowControlViewModel(IocHelper.Container.Resolve<IFilterController>()) };
         }
     }
 }

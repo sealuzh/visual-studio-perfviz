@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using InSituVisualization.Model;
 
 namespace InSituVisualization.TelemetryCollector.Insights
@@ -23,7 +24,7 @@ namespace InSituVisualization.TelemetryCollector.Insights
                             insightsRestApiResponseValue.Dependency.Name,
                             insightsRestApiResponseValue.Id,
                             insightsRestApiResponseValue.Timestamp,
-                            insightsRestApiResponseValue.Dependency.Duration,
+                            TimeSpan.FromMilliseconds(insightsRestApiResponseValue.Dependency.Duration),
                             insightsRestApiResponseValue.Client));
                         break;
                     case "exception":

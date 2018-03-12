@@ -1,8 +1,6 @@
-﻿#if DEBUG
- #define TestFilter
-#endif
+﻿//#define TestMapping
+//#define TestFilter
 
-//#define TestMapping
 using DryIoc;
 using InSituVisualization.Filter;
 using InSituVisualization.Model;
