@@ -15,7 +15,7 @@ namespace InSituVisualization.Filter
         private readonly Func<RecordedMethodTelemetry, TProperty> _getIntFunc;
         private readonly TProperty _comparable;
 
-        public ComparableFilter(FilterKind filterKind, Func<RecordedMethodTelemetry, TProperty> getComparableFunc, TProperty comparable) : base(filterKind)
+        public ComparableFilter(Func<RecordedMethodTelemetry, TProperty> getComparableFunc, TProperty comparable)
         {
             _getIntFunc = getComparableFunc ?? throw new ArgumentNullException(nameof(getComparableFunc));
             _comparable = comparable;

@@ -5,12 +5,7 @@ namespace InSituVisualization.Filter
 {
     internal abstract class Filter : IFilter
     {
-        protected Filter(FilterKind filterKind)
-        {
-            FilterKind = filterKind;
-        }
-
-        protected FilterKind FilterKind { get; }
+        public FilterKind FilterKind { get; set; } = FilterKind.None;
 
         public abstract IList<T> ApplyFilter<T>(IList<T> list) where T : RecordedMethodTelemetry;
     }

@@ -10,7 +10,7 @@ namespace InSituVisualization.Filter
         private readonly Func<RecordedMethodTelemetry, string> _getStringFunc;
         private readonly string _string;
 
-        public StringFilter(FilterKind filterKind, Func<RecordedMethodTelemetry, string> getStringFunc, string @string) : base(filterKind)
+        public StringFilter(Func<RecordedMethodTelemetry, string> getStringFunc, string @string)
         {
             _getStringFunc = getStringFunc ?? throw new ArgumentNullException(nameof(getStringFunc));
             _string = @string;

@@ -19,7 +19,7 @@ namespace InSituVisualization.Filter
             _filterController = filterController;
 
             // Adding Mock Filter
-            _filterController.Filters.Add(new ComparableFilter<DateTime>(FilterKind.IsGreaterEqualThen, telemetry => telemetry.Timestamp, new DateTime(2018, 2, 22, 17, 20, 40)));
+            _filterController.Filters.Add(new ComparableFilter<DateTime>(telemetry => telemetry.Timestamp, new DateTime(2018, 2, 22, 17, 20, 40)) { FilterKind = FilterKind.IsGreaterEqualThen });
 
             _filterController.FiltersChanged += FiltersChanged;
         }
