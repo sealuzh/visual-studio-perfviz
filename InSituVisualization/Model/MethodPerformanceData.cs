@@ -12,6 +12,7 @@ namespace InSituVisualization.Model
     /// This includes Telemetry
     /// This includes Predictions
     /// </summary>
+    // ReSharper disable once ClassNeverInstantiated.Global, Justification: IoC
     public class MethodPerformanceData : ModelBase, IMethodPerformanceData
     {
         private readonly IFilterController _filterController;

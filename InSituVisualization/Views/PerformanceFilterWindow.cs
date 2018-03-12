@@ -1,4 +1,7 @@
 ﻿using System.Runtime.InteropServices;
+using DryIoc;
+using InSituVisualization.Filter;
+using InSituVisualization.ViewModels;
 using Microsoft.VisualStudio.Shell;
 
 namespace InSituVisualization.Views
@@ -15,19 +18,19 @@ namespace InSituVisualization.Views
     /// </para>
     /// </remarks>
     [Guid("8f900c40-6134-4fd6-86f1-4b7a85142554")]
-    public class PerformanceInfoFilterWindow : ToolWindowPane
+    public class PerformanceFilterWindow : ToolWindowPane
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PerformanceInfoFilterWindow"/> class.
+        /// Initializes a new instance of the <see cref="PerformanceFilterWindow"/> class.
         /// </summary>
-        public PerformanceInfoFilterWindow() : base(null)
+        public PerformanceFilterWindow() : base(null)
         {
-            this.Caption = "PerformanceInfoFilterWindow";
+            this.Caption = "PerformanceFilterWindow";
 
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
             // the object returned by the Content property.
-            this.Content = new PerformanceInfoFilterWindowControl();
+            this.Content = new PerformanceFilterWindowControl { DataContext = new PerformanceFilterControlViewModel(IocHelper.Container.Resolve<IFilterController>()) };
         }
     }
 }

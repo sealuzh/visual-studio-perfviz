@@ -9,7 +9,8 @@ namespace InSituVisualization.Filter
     /// 
     /// Adding Mock Filter
     /// </summary>
-    class MockFilterController : IFilterController
+    // ReSharper disable once ClassNeverInstantiated.Global, Justification: IoC
+    internal class MockFilterController : IFilterController
     {
         private readonly IFilterController _filterController;
 

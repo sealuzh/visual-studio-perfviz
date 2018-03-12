@@ -90,17 +90,22 @@
     <Compile Include="Utils\StatisticExtensions.cs" />
     <Compile Include="Utils\SyntaxNodeExtensions.cs" />
     <Compile Include="Utils\TimeSpanExensions.cs" />
+    <Compile Include="ViewModels\FilterControlViewModel.cs" />
     <Compile Include="ViewModels\LoopPerformanceInfoControlViewModel.cs" />
+    <Compile Include="ViewModels\PerformanceFilterControlViewModel.cs" />
+    <Compile Include="Views\FilterControl.xaml.cs">
+      <DependentUpon>FilterControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\LoopInfoDetailWindowControl.xaml.cs">
       <DependentUpon>LoopInfoDetailWindowControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoopPerformanceInfoControl.xaml.cs">
       <DependentUpon>LoopPerformanceInfoControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PerformanceInfoFilterWindow.cs" />
+    <Compile Include="Views\PerformanceFilterWindow.cs" />
     <Compile Include="Commands\PerformanceInfoFilterWindowCommand.cs" />
-    <Compile Include="Views\PerformanceInfoFilterWindowControl.xaml.cs">
-      <DependentUpon>PerformanceInfoFilterWindowControl.xaml</DependentUpon>
+    <Compile Include="Views\PerformanceFilterWindowControl.xaml.cs">
+      <DependentUpon>PerformanceFilterWindowControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pack\PerformanceInfoFilterWindowPackage.cs" />
     <Compile Include="Utils\SetCollection.cs" />
@@ -463,6 +468,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\FilterControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\LoopInfoDetailWindowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -471,7 +480,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\PerformanceInfoFilterWindowControl.xaml">
+    <Page Include="Views\PerformanceFilterWindowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
