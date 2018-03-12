@@ -5,7 +5,7 @@ using InSituVisualization.Model;
 namespace InSituVisualization.TelemetryCollector.Insights
 {
     // ReSharper disable once ClassNeverInstantiated.Global Justification: IoC
-    internal class InsightsRestApiDataMapper
+    public class InsightsRestApiDataMapper
     {
         public IList<RecordedMethodTelemetry> GetMethodTelemetry(InsightsRestApiResponse insightsRestApiResponse)
         {

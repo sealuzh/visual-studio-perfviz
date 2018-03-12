@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DocumentationCommentIdDeriverTests.cs" />
+    <Compile Include="InsightsRestApiDataMapperTests.cs" />
     <Compile Include="InsightsRestApiDtoTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
