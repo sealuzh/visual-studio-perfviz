@@ -16,7 +16,10 @@ namespace ProbeInjector
         /// The Arguments
         /// 
         /// Example arguments:
-        /// -r "..\..\..\..\visual-studio-aspnet-test\visual-studio-aspnet-test\bin\visual-studio-aspnet-test.dll" -w"..\..\..\..\visual-studio-aspnet-test\visual-studio-aspnet-test\bin\visual-studio-aspnet-test2.dll" -p "..\..\..\AzureTelemetryProbe\bin\Debug\AzureTelemetryProbe.dll"
+        /// -r "..\..\..\..\eShopOnWeb\src\Web\bin\Any CPU\Release\netcoreapp2.0\Web.dll" -w "..\..\..\..\eShopOnWeb\src\Web\bin\Any CPU\Release\netcoreapp2.0\Web2.dll" -p "..\..\..\DiagnosticsTraceProbe\bin\Debug\netstandard2.0\DiagnosticsTraceProbe.dll"
+        /// -r "..\..\..\..\eShopOnWeb\src\Web\bin\Any CPU\Release\netcoreapp2.0\Web.dll" -w "..\..\..\..\eShopOnWeb\src\Web\bin\Any CPU\Release\netcoreapp2.0\Web2.dll" -p "..\..\..\AzureTelemetryProbe\bin\Debug\AzureTelemetryProbe.dll"
+        /// -r "..\..\..\..\eShopOnWeb\src\Web\bin\Release\netcoreapp2.0\Web.dll" -w "..\..\..\..\eShopOnWeb\src\Web\bin\Release\netcoreapp2.0\Web2.dll" -p "..\..\..\AzureTelemetryProbe\bin\Debug\AzureTelemetryProbe.dll"
+        /// -r "..\..\..\..\visual-studio-aspnet-test\visual-studio-aspnet-test\bin\visual-studio-aspnet-test.dll" -w "..\..\..\..\visual-studio-aspnet-test\visual-studio-aspnet-test\bin\visual-studio-aspnet-test2.dll" -p "..\..\..\AzureTelemetryProbe\bin\Debug\AzureTelemetryProbe.dll"
         /// -r "..\..\..\InjectionVictim\bin\Debug\InjectionVictim.exe" -w "..\..\..\InjectionVictim\bin\Debug\InjectionVictimNew.exe" -p "..\..\..\AzureTelemetryProbe\bin\Debug\AzureTelemetryProbe.dll"
         /// -r "..\..\..\InjectionVictim\bin\Debug\InjectionVictim.exe" -w "..\..\..\InjectionVictim\bin\Debug\InjectionVictimNew.exe" -p "..\..\..\DiagnosticsTraceProbe\bin\Debug\netstandard2.0\DiagnosticsTraceProbe.dll"
         /// </param>
