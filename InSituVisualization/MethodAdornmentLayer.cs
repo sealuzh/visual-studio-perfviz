@@ -39,9 +39,9 @@ namespace InSituVisualization
             }
 
             // TODO RR: Take care of the old PerfViz Control? dispose?
-            var control = new InSituMethodPerformanceInfoControl
+            var control = new InSituMethodControl
             {
-                DataContext = new InSituMethodPerformanceInfoControlViewModel(methodPerformanceInfo)
+                DataContext = new InSituMethodControlViewModel(methodPerformanceInfo)
             };
             DrawControl(node, control);
         }
@@ -54,18 +54,18 @@ namespace InSituVisualization
             }
 
             // TODO RR: Take care of the old PerfViz Control? dispose?
-            var control = new InSituMethodInvocationPerformanceInfoControl
+            var control = new InSituMethodInvocationControl
             {
-                DataContext = new InSituMethodInvocationPerformanceInfoControlViewModel(methodPerformanceInfo)
+                DataContext = new InSituMethodInvocationControlViewModel(methodPerformanceInfo)
             };
             DrawControl(node, control);
         }
 
         public void DrawLoopPerformanceInfo(SyntaxNode node, LoopPerformanceInfo loopPerformanceInfo)
         {
-            var control = new InSituLoopPerformanceInfoControl
+            var control = new InSituLoopControl
             {
-                DataContext = new InSituLoopPerformanceInfoControlViewModel(loopPerformanceInfo)
+                DataContext = new InSituLoopControlViewModel(loopPerformanceInfo)
             };
             DrawControl(node, control);
         }

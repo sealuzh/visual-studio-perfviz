@@ -129,10 +129,10 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="110" xml:space="preserve">
-    <value>PerformanceInfoDetailWindow Extension</value>
+    <value>DetailWindow Extension</value>
   </data>
   <data name="112" xml:space="preserve">
-    <value>PerformanceInfoDetailWindow Visual Studio Extension Detailed Info</value>
+    <value>DetailWindow Visual Studio Extension Detailed Info</value>
   </data>
   <data name="400" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\PerformanceInfoDetailWindowPackage.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -147,10 +147,10 @@
     <value>Resources\OptionsPackage.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="2110" xml:space="preserve">
-    <value>PerformanceFilterWindow Extension</value>
+    <value>FilterWindow Extension</value>
   </data>
   <data name="2112" xml:space="preserve">
-    <value>PerformanceFilterWindow Visual Stuido Extension Detailed Info</value>
+    <value>FilterWindow Visual Stuido Extension Detailed Info</value>
   </data>
   <data name="2400" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\PerformanceInfoFilterWindowPackage.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

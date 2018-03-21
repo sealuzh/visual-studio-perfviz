@@ -18,19 +18,19 @@ namespace InSituVisualization.Views
     /// </para>
     /// </remarks>
     [Guid("8f900c40-6134-4fd6-86f1-4b7a85142554")]
-    public class PerformanceFilterWindow : ToolWindowPane
+    public class FilterWindow : ToolWindowPane
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PerformanceFilterWindow"/> class.
+        /// Initializes a new instance of the <see cref="FilterWindow"/> class.
         /// </summary>
-        public PerformanceFilterWindow() : base(null)
+        public FilterWindow() : base(null)
         {
-            this.Caption = "PerformanceFilterWindow";
+            this.Caption = "Performance Filters";
 
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
             // the object returned by the Content property.
-            this.Content = new PerformanceFilterWindowControl { DataContext = new PerformanceFilterWindowControlViewModel(IocHelper.Container.Resolve<IFilterController>()) };
+            this.Content = new FilterWindowControl { DataContext = new FilterWindowControlViewModel(IocHelper.Container.Resolve<IFilterController>()) };
         }
     }
 }

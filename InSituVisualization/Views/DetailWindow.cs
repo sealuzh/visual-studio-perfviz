@@ -1,6 +1,5 @@
 ﻿using System.Runtime.InteropServices;
 using DryIoc;
-using InSituVisualization.ViewModels;
 using Microsoft.VisualStudio.Shell;
 
 namespace InSituVisualization.Views
@@ -17,12 +16,12 @@ namespace InSituVisualization.Views
     /// </para>
     /// </remarks>
     [Guid("209575cb-7e5f-4565-a3ad-c7c3d4fdcfe1")]
-    public sealed class PerformanceInfoDetailWindow : ToolWindowPane
+    public sealed class DetailWindow : ToolWindowPane
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PerformanceInfoDetailWindow"/> class.
+        /// Initializes a new instance of the <see cref="DetailWindow"/> class.
         /// </summary>
-        public PerformanceInfoDetailWindow() : base(null)
+        public DetailWindow() : base(null)
         {
             Caption = "Performance Details";
 
@@ -30,7 +29,7 @@ namespace InSituVisualization.Views
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
             // the object returned by the Content property.
             var settings = IocHelper.Container.Resolve<Settings>();
-            Content = new PerformanceInfoDetailWindowControl { DataContext = settings.DetailWindowViewModel };
+            Content = new PerformanceDetailWindowControl { DataContext = settings.DetailWindowViewModel };
         }
     }
 }

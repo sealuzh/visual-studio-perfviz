@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace InSituVisualization.Views
 {
     /// <summary>
-    /// Interaction logic for LoopInfoDetailWindowControl.xaml
+    /// Interaction logic for LoopDetailWindowControl.xaml
     /// </summary>
-    public partial class LoopInfoDetailWindowControl : UserControl
+    public partial class LoopDetailWindowControl : UserControl
     {
-        public LoopInfoDetailWindowControl()
+        public LoopDetailWindowControl()
         {
             InitializeComponent();
         }

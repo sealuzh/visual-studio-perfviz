@@ -6,14 +6,14 @@ using InSituVisualization.Filter;
 
 namespace InSituVisualization.ViewModels
 {
-    public class PerformanceFilterWindowControlViewModel : ViewModelBase
+    public class FilterWindowControlViewModel : ViewModelBase
     {
         private readonly IFilterController _filterController;
         private int _selectedFilterControlIndex;
 
         public ObservableCollection<FilterControlViewModel> EnabledFilters { get; } = new ObservableCollection<FilterControlViewModel> { new FilterControlViewModel() };
 
-        public PerformanceFilterWindowControlViewModel([NotNull] IFilterController filterController)
+        public FilterWindowControlViewModel([NotNull] IFilterController filterController)
         {
             _filterController = filterController ?? throw new ArgumentNullException(nameof(filterController));
             ApplyFiltersCommand = new RelayCommand<object>(obj => OnApplyFiltersCommand());

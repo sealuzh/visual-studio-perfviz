@@ -7,7 +7,7 @@
              xmlns:vs_shell="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
              xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
              xmlns:views="clr-namespace:InSituVisualization.Views"
-             x:Class="InSituVisualization.Views.PerformanceFilterWindowControl"
+             x:Class="InSituVisualization.Views.FilterWindowControl"
              Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
              mc:Ignorable="d"

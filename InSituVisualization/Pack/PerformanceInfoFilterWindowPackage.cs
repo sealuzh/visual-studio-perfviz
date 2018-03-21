@@ -26,7 +26,7 @@ namespace InSituVisualization.Pack
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#2110", "#2112", "1.0", IconResourceID = 2400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus1.ctmenu", 1)]
-    [ProvideToolWindow(typeof(PerformanceFilterWindow))]
+    [ProvideToolWindow(typeof(FilterWindow))]
     [Guid(PerformanceInfoFilterWindowPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     public sealed class PerformanceInfoFilterWindowPackage : Package
@@ -37,7 +37,7 @@ namespace InSituVisualization.Pack
         public const string PackageGuidString = "1ffb6ad3-984b-4249-86bd-df6fcb803bd6";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PerformanceFilterWindow"/> class.
+        /// Initializes a new instance of the <see cref="FilterWindow"/> class.
         /// </summary>
         public PerformanceInfoFilterWindowPackage()
         {

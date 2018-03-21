@@ -91,21 +91,21 @@
     <Compile Include="Utils\SyntaxNodeExtensions.cs" />
     <Compile Include="Utils\TimeSpanExensions.cs" />
     <Compile Include="ViewModels\FilterControlViewModel.cs" />
-    <Compile Include="ViewModels\InSituLoopPerformanceInfoControlViewModel.cs" />
-    <Compile Include="ViewModels\PerformanceFilterWindowControlViewModel.cs" />
+    <Compile Include="ViewModels\InSituLoopControlViewModel.cs" />
+    <Compile Include="ViewModels\FilterWindowControlViewModel.cs" />
     <Compile Include="Views\FilterControl.xaml.cs">
       <DependentUpon>FilterControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\LoopInfoDetailWindowControl.xaml.cs">
-      <DependentUpon>LoopInfoDetailWindowControl.xaml</DependentUpon>
+    <Compile Include="Views\LoopDetailWindowControl.xaml.cs">
+      <DependentUpon>LoopDetailWindowControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\InSituLoopPerformanceInfoControl.xaml.cs">
-      <DependentUpon>InSituLoopPerformanceInfoControl.xaml</DependentUpon>
+    <Compile Include="Views\InSituLoopControl.xaml.cs">
+      <DependentUpon>InSituLoopControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PerformanceFilterWindow.cs" />
+    <Compile Include="Views\FilterWindow.cs" />
     <Compile Include="Commands\PerformanceInfoFilterWindowCommand.cs" />
-    <Compile Include="Views\PerformanceFilterWindowControl.xaml.cs">
-      <DependentUpon>PerformanceFilterWindowControl.xaml</DependentUpon>
+    <Compile Include="Views\FilterWindowControl.xaml.cs">
+      <DependentUpon>FilterWindowControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pack\PerformanceInfoFilterWindowPackage.cs" />
     <Compile Include="Utils\SetCollection.cs" />
@@ -123,7 +123,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Model\MethodPerformanceInfo.cs" />
-    <Compile Include="Views\PerformanceInfoDetailWindow.cs" />
+    <Compile Include="Views\DetailWindow.cs" />
     <Compile Include="Commands\PerformanceInfoDetailWindowCommand.cs" />
     <Compile Include="TelemetryMapper\MockTelemetryDataMapper.cs" />
     <Compile Include="Model\MethodPerformanceData.cs" />
@@ -132,21 +132,21 @@
     <Compile Include="TelemetryCollector\Insights\InsightsRestApiClient.cs" />
     <Compile Include="Filter\FilterController.cs" />
     <Compile Include="TelemetryMapper\TelemetryDataMapper.cs" />
-    <Compile Include="ViewModels\InSituMethodInvocationPerformanceInfoControlViewModel.cs" />
-    <Compile Include="Views\InSituMethodInvocationPerformanceInfoControl.xaml.cs">
-      <DependentUpon>InSituMethodInvocationPerformanceInfoControl.xaml</DependentUpon>
+    <Compile Include="ViewModels\InSituMethodInvocationControlViewModel.cs" />
+    <Compile Include="Views\InSituMethodInvocationControl.xaml.cs">
+      <DependentUpon>InSituMethodInvocationControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PerformanceInfoDetailWindowControl.xaml.cs">
-      <DependentUpon>PerformanceInfoDetailWindowControl.xaml</DependentUpon>
+    <Compile Include="Views\PerformanceDetailWindowControl.xaml.cs">
+      <DependentUpon>PerformanceDetailWindowControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pack\PerformanceInfoDetailWindowPackage.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\DetailWindowViewModel.cs" />
-    <Compile Include="Views\InSituMethodPerformanceInfoControl.xaml.cs">
-      <DependentUpon>InSituMethodPerformanceInfoControl.xaml</DependentUpon>
+    <Compile Include="Views\InSituMethodControl.xaml.cs">
+      <DependentUpon>InSituMethodControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\InSituMethodPerformanceInfoControlViewModel.cs" />
+    <Compile Include="ViewModels\InSituMethodControlViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CustomSpanProvider.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
@@ -472,27 +472,27 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\LoopInfoDetailWindowControl.xaml">
+    <Page Include="Views\LoopDetailWindowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\InSituLoopPerformanceInfoControl.xaml">
+    <Page Include="Views\InSituLoopControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\PerformanceFilterWindowControl.xaml">
+    <Page Include="Views\FilterWindowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\InSituMethodInvocationPerformanceInfoControl.xaml">
+    <Page Include="Views\InSituMethodInvocationControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\PerformanceInfoDetailWindowControl.xaml">
+    <Page Include="Views\PerformanceDetailWindowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\InSituMethodPerformanceInfoControl.xaml">
+    <Page Include="Views\InSituMethodControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

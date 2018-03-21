@@ -6,9 +6,9 @@ using InSituVisualization.Model;
 
 namespace InSituVisualization.ViewModels
 {
-    public class InSituMethodInvocationPerformanceInfoControlViewModel : ViewModelBase
+    public class InSituMethodInvocationControlViewModel : ViewModelBase
     {
-        public InSituMethodInvocationPerformanceInfoControlViewModel(MethodPerformanceInfo methodPerformanceInfo)
+        public InSituMethodInvocationControlViewModel(MethodPerformanceInfo methodPerformanceInfo)
         {
             MethodPerformanceInfo = methodPerformanceInfo ?? throw new ArgumentNullException(nameof(methodPerformanceInfo));
             OpenDetailViewCommand = new RelayCommand<object>(obj => OnOpenDetailViewCommand());

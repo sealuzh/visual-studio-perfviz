@@ -26,7 +26,7 @@ namespace InSituVisualization.Pack
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [ProvideToolWindow(typeof(PerformanceInfoDetailWindow))]
+    [ProvideToolWindow(typeof(DetailWindow))]
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     public sealed class PerformanceInfoDetailWindowPackage : Package
@@ -37,7 +37,7 @@ namespace InSituVisualization.Pack
         public const string PackageGuidString = "ec8157c1-afd0-4750-8fa9-9a9d4ab3aecb";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PerformanceInfoDetailWindow"/> class.
+        /// Initializes a new instance of the <see cref="DetailWindow"/> class.
         /// </summary>
         public PerformanceInfoDetailWindowPackage()
         {
