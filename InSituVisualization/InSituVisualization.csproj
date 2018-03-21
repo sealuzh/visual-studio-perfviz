@@ -67,7 +67,6 @@
     <Compile Include="Model\IMethodPerformanceData.cs" />
     <Compile Include="Model\LoopPerformanceInfo.cs" />
     <Compile Include="Model\PerformanceInfo.cs" />
-    <None Include="PerformanceSyntaxWalker.cs" />
     <Compile Include="AsyncSyntaxWalker.cs" />
     <Compile Include="Filter\StringFilter.cs" />
     <Compile Include="Filter\Filter.cs" />
