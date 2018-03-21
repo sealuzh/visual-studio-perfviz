@@ -7,8 +7,7 @@
              Background="{DynamicResource VsBrush.Window}"
              Foreground="{DynamicResource VsBrush.WindowText}"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300"
-             Name="PerformanceInfoDetailWindow">
+             d:DesignHeight="300" d:DesignWidth="300" >
 
     <UserControl.Resources>
         <Style TargetType="Label">

@@ -22,7 +22,7 @@
 
   <!--The Commands section is where commands, menus, and menu groups are defined.
       This section uses a Guid to identify the package that provides the command defined inside it. -->
-  <Commands package="guidPerformanceInfoDetailWindowPackage">
+  <Commands package="guidFilterWindowPackage">
     <!-- Inside this section we have different sub-sections: one for the menus, another
     for the menu groups, one for the buttons (the actual commands), one for the combos
     and the last one for the bitmaps used. Each element is identified by a command id that
@@ -42,11 +42,11 @@
               <CommandFlag>DefaultInvisible</CommandFlag>
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
-      <Button guid="guidPerformanceInfoDetailWindowPackageCmdSet" id="PerformanceInfoDetailWindowCommandId" priority="0x0100" type="Button">
+      <Button guid="guidFilterWindowPackageCmdSet" id="FilterWindowCommandId" priority="0x0100" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
         <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
-          <ButtonText>PerformanceInfoDetailWindow</ButtonText>
+          <ButtonText>InSitu Performance Filters</ButtonText>
         </Strings>
       </Button>
     </Buttons>
@@ -58,20 +58,20 @@
             bitmap strip containing the bitmaps and then there are the numeric ids of the elements used
             inside a button definition. An important aspect of this declaration is that the element id
             must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
-      <Bitmap guid="guidImages" href="..\Resources\PerformanceInfoDetailWindowCommand.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough"/>
+      <Bitmap guid="guidImages" href="..\Resources\FilterWindowCommand.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough"/>
     </Bitmaps>
   </Commands>
 
   <Symbols>
     <!-- This is the package guid. -->
-    <GuidSymbol name="guidPerformanceInfoDetailWindowPackage" value="{ec8157c1-afd0-4750-8fa9-9a9d4ab3aecb}" />
+    <GuidSymbol name="guidFilterWindowPackage" value="{1ffb6ad3-984b-4249-86bd-df6fcb803bd6}" />
 
     <!-- This is the guid used to group the menu commands together -->
-    <GuidSymbol name="guidPerformanceInfoDetailWindowPackageCmdSet" value="{c8435881-01bc-478d-92e7-2fb0f5dcc92c}">
-      <IDSymbol name="PerformanceInfoDetailWindowCommandId" value="0x0100" />
+    <GuidSymbol name="guidFilterWindowPackageCmdSet" value="{0465af41-f723-47ce-97b4-9dd43141ee75}">
+      <IDSymbol name="FilterWindowCommandId" value="0x0100" />
     </GuidSymbol>
 
-    <GuidSymbol name="guidImages" value="{9ce5007c-8368-4c51-acd5-e550404231a4}" >
+    <GuidSymbol name="guidImages" value="{97fc5f9a-db25-4bd5-8a32-2a8501ca727a}" >
       <IDSymbol name="bmpPic1" value="1" />
       <IDSymbol name="bmpPic2" value="2" />
       <IDSymbol name="bmpPicSearch" value="3" />

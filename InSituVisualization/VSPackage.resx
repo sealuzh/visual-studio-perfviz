@@ -135,7 +135,7 @@
     <value>DetailWindow Visual Studio Extension Detailed Info</value>
   </data>
   <data name="400" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\PerformanceInfoDetailWindowPackage.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>Resources\DetailWindowPackage.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="1110" xml:space="preserve">
     <value>OptionsPackage Extension</value>
@@ -153,6 +153,6 @@
     <value>FilterWindow Visual Stuido Extension Detailed Info</value>
   </data>
   <data name="2400" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\PerformanceInfoFilterWindowPackage.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>Resources\FilterWindowPackage.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

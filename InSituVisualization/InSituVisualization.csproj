@@ -103,11 +103,11 @@
       <DependentUpon>InSituLoopControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\FilterWindow.cs" />
-    <Compile Include="Commands\PerformanceInfoFilterWindowCommand.cs" />
+    <Compile Include="Commands\FilterWindowCommand.cs" />
     <Compile Include="Views\FilterWindowControl.xaml.cs">
       <DependentUpon>FilterWindowControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pack\PerformanceInfoFilterWindowPackage.cs" />
+    <Compile Include="Pack\FilterWindowPackage.cs" />
     <Compile Include="Utils\SetCollection.cs" />
     <Compile Include="Utils\HsvColor.cs" />
     <Compile Include="IocHelper.cs" />
@@ -124,7 +124,7 @@
     </Compile>
     <Compile Include="Model\MethodPerformanceInfo.cs" />
     <Compile Include="Views\DetailWindow.cs" />
-    <Compile Include="Commands\PerformanceInfoDetailWindowCommand.cs" />
+    <Compile Include="Commands\DetailWindowCommand.cs" />
     <Compile Include="TelemetryMapper\MockTelemetryDataMapper.cs" />
     <Compile Include="Model\MethodPerformanceData.cs" />
     <Compile Include="Model\RecordedExecutionTimeMethodTelemetry.cs" />
@@ -139,7 +139,7 @@
     <Compile Include="Views\PerformanceDetailWindowControl.xaml.cs">
       <DependentUpon>PerformanceDetailWindowControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pack\PerformanceInfoDetailWindowPackage.cs" />
+    <Compile Include="Pack\DetailWindowPackage.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\DetailWindowViewModel.cs" />
@@ -163,10 +163,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <VSCTCompile Include="Pack\PerformanceInfoDetailWindowPackage.vsct">
+    <VSCTCompile Include="Pack\DetailWindowPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
-    <VSCTCompile Include="Pack\PerformanceInfoFilterWindowPackage.vsct">
+    <VSCTCompile Include="Pack\FilterWindowPackage.vsct">
       <ResourceName>Menus1.ctmenu</ResourceName>
     </VSCTCompile>
     <Content Include="..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll">
@@ -180,10 +180,10 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\OptionsPackage.ico" />
-    <Content Include="Resources\PerformanceInfoDetailWindowCommand.png" />
-    <Content Include="Resources\PerformanceInfoDetailWindowPackage.ico" />
-    <Content Include="Resources\PerformanceInfoFilterWindowCommand.png" />
-    <Content Include="Resources\PerformanceInfoFilterWindowPackage.ico" />
+    <Content Include="Resources\DetailWindowCommand.png" />
+    <Content Include="Resources\DetailWindowPackage.ico" />
+    <Content Include="Resources\FilterWindowCommand.png" />
+    <Content Include="Resources\FilterWindowPackage.ico" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

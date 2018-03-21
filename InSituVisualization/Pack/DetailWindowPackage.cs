@@ -29,17 +29,17 @@ namespace InSituVisualization.Pack
     [ProvideToolWindow(typeof(DetailWindow))]
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-    public sealed class PerformanceInfoDetailWindowPackage : Package
+    public sealed class DetailWindowPackage : Package
     {
         /// <summary>
-        /// PerformanceInfoDetailWindowPackage GUID string.
+        /// DetailWindowPackage GUID string.
         /// </summary>
         public const string PackageGuidString = "ec8157c1-afd0-4750-8fa9-9a9d4ab3aecb";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DetailWindow"/> class.
         /// </summary>
-        public PerformanceInfoDetailWindowPackage()
+        public DetailWindowPackage()
         {
             // Inside this method you can place any initialization code that does not require
             // any Visual Studio service because at this point the package object is created but
@@ -55,7 +55,7 @@ namespace InSituVisualization.Pack
         /// </summary>
         protected override void Initialize()
         {
-            PerformanceInfoDetailWindowCommand.Initialize(this);
+            DetailWindowCommand.Initialize(this);
             base.Initialize();
         }
 

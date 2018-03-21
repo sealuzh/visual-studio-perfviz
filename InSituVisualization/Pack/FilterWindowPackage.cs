@@ -27,19 +27,19 @@ namespace InSituVisualization.Pack
     [InstalledProductRegistration("#2110", "#2112", "1.0", IconResourceID = 2400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus1.ctmenu", 1)]
     [ProvideToolWindow(typeof(FilterWindow))]
-    [Guid(PerformanceInfoFilterWindowPackage.PackageGuidString)]
+    [Guid(FilterWindowPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-    public sealed class PerformanceInfoFilterWindowPackage : Package
+    public sealed class FilterWindowPackage : Package
     {
         /// <summary>
-        /// PerformanceInfoFilterWindowPackage GUID string.
+        /// FilterWindowPackage GUID string.
         /// </summary>
         public const string PackageGuidString = "1ffb6ad3-984b-4249-86bd-df6fcb803bd6";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FilterWindow"/> class.
         /// </summary>
-        public PerformanceInfoFilterWindowPackage()
+        public FilterWindowPackage()
         {
             // Inside this method you can place any initialization code that does not require
             // any Visual Studio service because at this point the package object is created but
@@ -55,7 +55,7 @@ namespace InSituVisualization.Pack
         /// </summary>
         protected override void Initialize()
         {
-            PerformanceInfoFilterWindowCommand.Initialize(this);
+            FilterWindowCommand.Initialize(this);
             base.Initialize();
         }
 

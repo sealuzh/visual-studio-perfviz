@@ -9,7 +9,7 @@ namespace InSituVisualization.Commands
     /// <summary>
     /// Command handler
     /// </summary>
-    internal sealed class PerformanceInfoFilterWindowCommand
+    internal sealed class FilterWindowCommand
     {
         /// <summary>
         /// Command ID.
@@ -27,11 +27,11 @@ namespace InSituVisualization.Commands
         private readonly Package _package;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PerformanceInfoFilterWindowCommand"/> class.
+        /// Initializes a new instance of the <see cref="FilterWindowCommand"/> class.
         /// Adds our command handlers for menu (commands must exist in the command table file)
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
-        private PerformanceInfoFilterWindowCommand(Package package)
+        private FilterWindowCommand(Package package)
         {
             _package = package ?? throw new ArgumentNullException(nameof(package));
 
@@ -48,7 +48,7 @@ namespace InSituVisualization.Commands
         /// <summary>
         /// Gets the instance of the command.
         /// </summary>
-        public static PerformanceInfoFilterWindowCommand Instance
+        public static FilterWindowCommand Instance
         {
             get;
             private set;
@@ -65,7 +65,7 @@ namespace InSituVisualization.Commands
         /// <param name="package">Owner package, not null.</param>
         public static void Initialize(Package package)
         {
-            Instance = new PerformanceInfoFilterWindowCommand(package);
+            Instance = new FilterWindowCommand(package);
         }
 
         /// <summary>
