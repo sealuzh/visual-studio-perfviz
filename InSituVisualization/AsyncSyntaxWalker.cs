@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Media;
 using InSituVisualization.Model;
 using InSituVisualization.TelemetryMapper;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.Text;
 
 namespace InSituVisualization
 {
+    /// <summary>
+    /// Class does not inherit from CSharpSyntaxWalker since it wasn't possible to walk the tree in an async way...
+    /// </summary>
     internal class AsyncSyntaxWalker
     {
         private readonly Document _document;

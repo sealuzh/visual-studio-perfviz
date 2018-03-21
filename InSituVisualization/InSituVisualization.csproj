@@ -178,11 +178,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\OptionsPackage.ico" />
-    <Content Include="Resources\DetailWindowCommand.png" />
-    <Content Include="Resources\DetailWindowPackage.ico" />
-    <Content Include="Resources\FilterWindowCommand.png" />
-    <Content Include="Resources\FilterWindowPackage.ico" />
+    <Content Include="Resources\Command.png" />
+    <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
