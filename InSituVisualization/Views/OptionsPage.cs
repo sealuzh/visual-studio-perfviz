@@ -15,11 +15,11 @@ namespace InSituVisualization.Views
     /// 
     /// The supported method of settings is the WritableSettingsStore. It’s very similar to application settings and easy enough to access via SVsServiceProvider
     /// </summary>
-    public class OptionsPageGrid : DialogPage
+    public class OptionsPage : DialogPage
     {
         private readonly Settings _settings;
 
-        public OptionsPageGrid()
+        public OptionsPage()
         {
             _settings = IocHelper.Container.Resolve<Settings>();
         }

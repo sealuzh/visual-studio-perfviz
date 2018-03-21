@@ -26,7 +26,7 @@ namespace InSituVisualization.Pack
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(PackageGuidString)]
-    [ProvideOptionPage(typeof(OptionsPageGrid), "Performance Visualization", "General", 0, 0, true)]
+    [ProvideOptionPage(typeof(OptionsPage), "InSitu Performance Visualization", "General", 0, 0, true)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     public sealed class OptionsPagePackage : Package
     {
@@ -34,44 +34,6 @@ namespace InSituVisualization.Pack
         /// OptionsPackage GUID string.
         /// </summary>
         public const string PackageGuidString = "ad5d4b1a-1254-42ae-b859-45924a851577";
-
-        ///// <summary>
-        ///// Initializes a new instance of the <see cref="OptionsPagePackage"/> class.
-        ///// </summary>
-        //public OptionsPagePackage()
-        //{
-        //    // Inside this method you can place any initialization code that does not require
-        //    // any Visual Studio service because at this point the package object is created but
-        //    // not sited yet inside Visual Studio environment. The place to do all the other
-        //    // initialization is the Initialize method.
-        //}
-
-        public string AppId
-        {
-            get
-            {
-                var page = (OptionsPageGrid)GetDialogPage(typeof(OptionsPageGrid));
-                return page.AppId;
-            }
-        }
-
-        public string ApiKey
-        {
-            get
-            {
-                var page = (OptionsPageGrid)GetDialogPage(typeof(OptionsPageGrid));
-                return page.ApiKey;
-            }
-        }
-
-        public int MaxPullingAmount
-        {
-            get
-            {
-                var page = (OptionsPageGrid) GetDialogPage(typeof(OptionsPageGrid));
-                return page.MaxPullingAmount;
-            }
-        }
 
         #region Package Members
 

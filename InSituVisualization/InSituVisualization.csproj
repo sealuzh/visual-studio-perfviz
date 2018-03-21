@@ -118,7 +118,7 @@
     <Compile Include="MethodAdornerTextViewCreationListener.cs" />
     <Compile Include="Model\ModelBase.cs" />
     <Compile Include="Pack\OptionsPagePackage.cs" />
-    <Compile Include="Views\OptionsPageGrid.cs">
+    <Compile Include="Views\OptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Model\MethodPerformanceInfo.cs" />
