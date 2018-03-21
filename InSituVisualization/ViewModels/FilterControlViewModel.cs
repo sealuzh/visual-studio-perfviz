@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using InSituVisualization.Filter;
 using InSituVisualization.Model;
@@ -7,15 +8,6 @@ namespace InSituVisualization.ViewModels
 {
     public class FilterControlViewModel : ViewModelBase
     {
-        public class FilterCriteriaWrapper
-        {
-            public string Name { get; set; }
-
-            public override string ToString()
-            {
-                return Name;
-            }
-        }
 
         public class FilterKindWrapper
         {
@@ -28,19 +20,17 @@ namespace InSituVisualization.ViewModels
             }
         }
 
-
-
         private string _filterText;
 
         // TODO RR Fix types ... remove wrapper
-        public static ObservableCollection<FilterCriteriaWrapper> AvailableFilterCriteria { get; } = new ObservableCollection<FilterCriteriaWrapper>
+        public static IReadOnlyList<string> AvailableFilterCriteria { get; } = new List<string>
         {
-            new FilterCriteriaWrapper{ Name = "Request Date"},
-            new FilterCriteriaWrapper{ Name = "Request City"},
-            new FilterCriteriaWrapper{ Name = "Duration (ms)"},
+            "Request Date",
+            "Request City",
+            "Duration (ms)",
         };
 
-        public static ObservableCollection<FilterKindWrapper> AvailableFilterKinds { get; } = new ObservableCollection<FilterKindWrapper>
+        public static IReadOnlyList<FilterKindWrapper> AvailableFilterKinds { get; } = new List<FilterKindWrapper>
         {
             new FilterKindWrapper{ Name = "=", FilterKind = FilterKind.IsEqual },
             new FilterKindWrapper{ Name = ">=", FilterKind = FilterKind.IsGreaterEqualThen },
@@ -53,7 +43,7 @@ namespace InSituVisualization.ViewModels
 
         public FilterKindWrapper SelectedFilterKind { get; set; }
 
-        public FilterCriteriaWrapper SelectedFilterCriteria { get; set; }
+        public string SelectedFilterCriteria { get; set; }
 
 
         public string FilterText
@@ -65,17 +55,17 @@ namespace InSituVisualization.ViewModels
         public IFilter GetFilter()
         {
             // TODO RR: Rework
-            switch (AvailableFilterCriteria.IndexOf(SelectedFilterCriteria))
+            switch (SelectedFilterCriteria)
             {
-                case 0:
+                case "Request Date":
                     if (DateTime.TryParse(FilterText, out var dateTime))
                     {
                         return new ComparableFilter<DateTime>(telemetry => telemetry.Timestamp, dateTime) { FilterKind = SelectedFilterKind.FilterKind };
                     }
                     break;
-                case 1:
+                case "Request City":
                     return new StringFilter(telemetry => telemetry.ClientData.City, FilterText) { FilterKind = SelectedFilterKind.FilterKind };
-                case 2:
+                case "Duration (ms)":
                     if (double.TryParse(FilterText, out var parsedInt))
                     {
                         // TODO RR Remove cast

@@ -191,8 +191,7 @@
 
         <ComboBox Grid.Column="0" Template="{DynamicResource ComboBoxControlTemplate}"
                   ItemsSource="{Binding Path=AvailableFilterCriteria}"    
-                  SelectedItem="{Binding Path=SelectedFilterCriteria}"  
-                  DisplayMemberPath="Name"/>
+                  SelectedItem="{Binding Path=SelectedFilterCriteria}" />
 
         <ComboBox Grid.Column="1" Template="{DynamicResource ComboBoxControlTemplate}" HorizontalAlignment="Right" Width="46"
                   ItemsSource="{Binding Path=AvailableFilterKinds}"    
