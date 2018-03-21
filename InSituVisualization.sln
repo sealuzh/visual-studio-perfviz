@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InSituVisualization", "InSituVisualization\InSituVisualization.csproj", "{EFA6A3EB-20CC-4834-A426-AF893887AED1}"
 EndProject
@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Probes", "Probes", "{F12BAF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiagnosticsTraceProbe", "DiagnosticsTraceProbe\DiagnosticsTraceProbe.csproj", "{4A4B0054-D6C5-43FB-945D-A4050004C6B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetStandardAzureTelemetryProbe", "DotNetStandardAzureTelemetryProbe\DotNetStandardAzureTelemetryProbe.csproj", "{3637AB79-B141-4484-AA40-774E3F929DA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetStandardAzureTelemetryProbe", "DotNetStandardAzureTelemetryProbe\DotNetStandardAzureTelemetryProbe.csproj", "{3637AB79-B141-4484-AA40-774E3F929DA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

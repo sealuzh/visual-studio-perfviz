@@ -99,8 +99,8 @@
     <Compile Include="Views\LoopInfoDetailWindowControl.xaml.cs">
       <DependentUpon>LoopInfoDetailWindowControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\LoopPerformanceInfoControl.xaml.cs">
-      <DependentUpon>LoopPerformanceInfoControl.xaml</DependentUpon>
+    <Compile Include="Views\InSituLoopPerformanceInfoControl.xaml.cs">
+      <DependentUpon>InSituLoopPerformanceInfoControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PerformanceFilterWindow.cs" />
     <Compile Include="Commands\PerformanceInfoFilterWindowCommand.cs" />
@@ -133,8 +133,8 @@
     <Compile Include="Filter\FilterController.cs" />
     <Compile Include="TelemetryMapper\TelemetryDataMapper.cs" />
     <Compile Include="ViewModels\MethodInvocationPerformanceInfoControlViewModel.cs" />
-    <Compile Include="Views\MethodInvocationPerformanceInfoControl.xaml.cs">
-      <DependentUpon>MethodInvocationPerformanceInfoControl.xaml</DependentUpon>
+    <Compile Include="Views\InSituMethodInvocationPerformanceInfoControl.xaml.cs">
+      <DependentUpon>InSituMethodInvocationPerformanceInfoControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PerformanceInfoDetailWindowControl.xaml.cs">
       <DependentUpon>PerformanceInfoDetailWindowControl.xaml</DependentUpon>
@@ -143,8 +143,8 @@
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\DetailWindowViewModel.cs" />
-    <Compile Include="Views\MethodPerformanceInfoControl.xaml.cs">
-      <DependentUpon>MethodPerformanceInfoControl.xaml</DependentUpon>
+    <Compile Include="Views\InSituMethodPerformanceInfoControl.xaml.cs">
+      <DependentUpon>InSituMethodPerformanceInfoControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\MethodPerformanceInfoControlViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -476,7 +476,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\LoopPerformanceInfoControl.xaml">
+    <Page Include="Views\InSituLoopPerformanceInfoControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -484,7 +484,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\MethodInvocationPerformanceInfoControl.xaml">
+    <Page Include="Views\InSituMethodInvocationPerformanceInfoControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -492,7 +492,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\MethodPerformanceInfoControl.xaml">
+    <Page Include="Views\InSituMethodPerformanceInfoControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

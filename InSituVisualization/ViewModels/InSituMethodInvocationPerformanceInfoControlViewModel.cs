@@ -6,9 +6,9 @@ using InSituVisualization.Model;
 
 namespace InSituVisualization.ViewModels
 {
-    public class MethodPerformanceInfoControlViewModel : ViewModelBase
+    public class InSituMethodInvocationPerformanceInfoControlViewModel : ViewModelBase
     {
-        public MethodPerformanceInfoControlViewModel(MethodPerformanceInfo methodPerformanceInfo)
+        public InSituMethodInvocationPerformanceInfoControlViewModel(MethodPerformanceInfo methodPerformanceInfo)
         {
             MethodPerformanceInfo = methodPerformanceInfo ?? throw new ArgumentNullException(nameof(methodPerformanceInfo));
             OpenDetailViewCommand = new RelayCommand<object>(obj => OnOpenDetailViewCommand());
@@ -17,6 +17,8 @@ namespace InSituVisualization.ViewModels
         public ICommand OpenDetailViewCommand { get; }
 
         public MethodPerformanceInfo MethodPerformanceInfo { get; }
+
+        private TimeSpan MeanExecutionTime => MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime;
 
         /// <summary>
         /// Using HSV Values to get a nice transition:
@@ -28,27 +30,27 @@ namespace InSituVisualization.ViewModels
             get
             {
                 // TODO RR:
-                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(20))
+                if (MeanExecutionTime < TimeSpan.FromMilliseconds(20))
                 {
                     return Colors.GreenYellow;
                 }
-                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(30))
+                if (MeanExecutionTime < TimeSpan.FromMilliseconds(30))
                 {
                     return Colors.ForestGreen;
                 }
-                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(60))
+                if (MeanExecutionTime < TimeSpan.FromMilliseconds(60))
                 {
                     return Colors.DarkGreen;
                 }
-                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(70))
+                if (MeanExecutionTime < TimeSpan.FromMilliseconds(70))
                 {
                     return Colors.Orange;
                 }
-                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(80))
+                if (MeanExecutionTime < TimeSpan.FromMilliseconds(80))
                 {
                     return Colors.DarkOrange;
                 }
-                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(80))
+                if (MeanExecutionTime < TimeSpan.FromMilliseconds(80))
                 {
                     return Colors.OrangeRed;
                 }

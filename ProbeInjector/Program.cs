@@ -16,6 +16,7 @@ namespace ProbeInjector
         /// The Arguments
         /// 
         /// Example arguments:
+        /// -r "..\..\..\..\eShopOnWeb\src\Web\bin\Any CPU\Release\netcoreapp2.0\Web.dll" -w "..\..\..\..\eShopOnWeb\src\Web\bin\Any CPU\Release\netcoreapp2.0\Web2.dll" -p "..\..\..\NetStandardAzureTelemetyProbe\bin\Release\netstandard2.0\NetStandardAzureTelemetyProbe.dll"
         /// -r "..\..\..\..\eShopOnWeb\src\Web\bin\Any CPU\Release\netcoreapp2.0\Web.dll" -w "..\..\..\..\eShopOnWeb\src\Web\bin\Any CPU\Release\netcoreapp2.0\Web2.dll" -p "..\..\..\DiagnosticsTraceProbe\bin\Debug\netstandard2.0\DiagnosticsTraceProbe.dll"
         /// -r "..\..\..\..\eShopOnWeb\src\Web\bin\Any CPU\Release\netcoreapp2.0\Web.dll" -w "..\..\..\..\eShopOnWeb\src\Web\bin\Any CPU\Release\netcoreapp2.0\Web2.dll" -p "..\..\..\AzureTelemetryProbe\bin\Debug\AzureTelemetryProbe.dll"
         /// -r "..\..\..\..\eShopOnWeb\src\Web\bin\Release\netcoreapp2.0\Web.dll" -w "..\..\..\..\eShopOnWeb\src\Web\bin\Release\netcoreapp2.0\Web2.dll" -p "..\..\..\AzureTelemetryProbe\bin\Debug\AzureTelemetryProbe.dll"

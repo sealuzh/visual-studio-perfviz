@@ -3,12 +3,12 @@ using InSituVisualization.Model;
 
 namespace InSituVisualization.ViewModels
 {
-    internal class LoopPerformanceInfoControlViewModel : ViewModelBase
+    internal class InSituLoopPerformanceInfoControlViewModel : ViewModelBase
     {
         private const int DefaultMaxLoopIterations = 100;
         private int _loopIterations;
 
-        public LoopPerformanceInfoControlViewModel(LoopPerformanceInfo loopPerformanceInfo)
+        public InSituLoopPerformanceInfoControlViewModel(LoopPerformanceInfo loopPerformanceInfo)
         {
             LoopPerformanceInfo = loopPerformanceInfo;
             // initializing LoopIterations to Average
