@@ -91,7 +91,7 @@
     <Compile Include="Utils\SyntaxNodeExtensions.cs" />
     <Compile Include="Utils\TimeSpanExensions.cs" />
     <Compile Include="ViewModels\FilterControlViewModel.cs" />
-    <Compile Include="ViewModels\LoopPerformanceInfoControlViewModel.cs" />
+    <Compile Include="ViewModels\InSituLoopPerformanceInfoControlViewModel.cs" />
     <Compile Include="ViewModels\PerformanceFilterWindowControlViewModel.cs" />
     <Compile Include="Views\FilterControl.xaml.cs">
       <DependentUpon>FilterControl.xaml</DependentUpon>
@@ -132,7 +132,7 @@
     <Compile Include="TelemetryCollector\Insights\InsightsRestApiClient.cs" />
     <Compile Include="Filter\FilterController.cs" />
     <Compile Include="TelemetryMapper\TelemetryDataMapper.cs" />
-    <Compile Include="ViewModels\MethodInvocationPerformanceInfoControlViewModel.cs" />
+    <Compile Include="ViewModels\InSituMethodInvocationPerformanceInfoControlViewModel.cs" />
     <Compile Include="Views\InSituMethodInvocationPerformanceInfoControl.xaml.cs">
       <DependentUpon>InSituMethodInvocationPerformanceInfoControl.xaml</DependentUpon>
     </Compile>
@@ -146,7 +146,7 @@
     <Compile Include="Views\InSituMethodPerformanceInfoControl.xaml.cs">
       <DependentUpon>InSituMethodPerformanceInfoControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\MethodPerformanceInfoControlViewModel.cs" />
+    <Compile Include="ViewModels\InSituMethodPerformanceInfoControlViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CustomSpanProvider.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
