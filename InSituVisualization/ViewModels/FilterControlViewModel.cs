@@ -50,9 +50,6 @@ namespace InSituVisualization.ViewModels
             new FilterKindWrapper{ Name = "Contains", FilterKind = FilterKind.Contains },
         };
 
-
-
-
         public FilterKindWrapper SelectedFilterKind { get; set; }
 
         public string SelectedFilterCriteria { get; set; }
