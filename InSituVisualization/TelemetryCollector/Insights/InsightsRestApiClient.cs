@@ -16,7 +16,7 @@ namespace InSituVisualization.TelemetryCollector.Insights
     {
         private const string QueryType = "events";
         private const string QueryPath = "dependencies";
-        private const string ParameterString = "timespan=P30D&$orderby=timestamp%20desc";
+        private const string ParameterString = "timespan=P60D&$orderby=timestamp%20desc";
 
         private readonly Uri _baseUri = new Uri("https://api.applicationinsights.io/v1/apps/");
 

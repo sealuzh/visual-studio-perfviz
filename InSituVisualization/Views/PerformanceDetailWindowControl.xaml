@@ -19,6 +19,17 @@
             <Setter Property="Foreground" Value="{DynamicResource VsBrush.WindowText}" />
             <Setter Property="Background" Value="{DynamicResource VsBrush.Window}" />
         </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="Foreground" Value="{DynamicResource VsBrush.WindowText}" />
+            <Setter Property="Background" Value="{DynamicResource VsBrush.Window}" />
+            <Setter Property="RowBackground" Value="{DynamicResource VsBrush.Window}" />
+        </Style>
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="{DynamicResource VsBrush.Window}" />
+        </Style>
+        <Style TargetType="DataGridRowHeader">
+            <Setter Property="Background" Value="{DynamicResource VsBrush.Window}" />
+        </Style>
         <converters:TimeSpanToStringConverter x:Key="TimeSpanToString" />
     </UserControl.Resources>
 
@@ -32,6 +43,50 @@
             <RowDefinition Height="3*" />
         </Grid.RowDefinitions>
 
+        <Popup IsOpen="{Binding ShowFilteredExecutionTimes}">
+            <StackPanel>
+                <ToggleButton HorizontalAlignment="Stretch" IsChecked="{Binding ShowFilteredExecutionTimes, Mode=TwoWay}" Foreground="White" Background="Transparent">
+                    <ToggleButton.Template>
+                        <ControlTemplate TargetType="{x:Type ToggleButton}">
+                            <ContentPresenter  HorizontalAlignment="Right" Content="X"/>
+                        </ControlTemplate>
+                    </ToggleButton.Template>
+                </ToggleButton>
+                <DataGrid ItemsSource="{Binding PerformanceInfo.MethodPerformanceData.FilteredExecutionTimes}" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
+                        <DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp}" />
+                        <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" />
+                        <DataGridTextColumn Header="Client Region" Binding="{Binding ClientData.CountryOrRegion}" />
+                        <DataGridTextColumn Header="Client City" Binding="{Binding ClientData.City}" />
+                        <DataGridTextColumn Header="Client Ip" Binding="{Binding ClientData.Ip}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+        </Popup>
+
+        <Popup IsOpen="{Binding ShowExecutionTimes}">
+            <StackPanel>
+                <ToggleButton HorizontalAlignment="Stretch" IsChecked="{Binding ShowExecutionTimes, Mode=TwoWay}" Foreground="White" Background="Transparent">
+                    <ToggleButton.Template>
+                        <ControlTemplate TargetType="{x:Type ToggleButton}">
+                            <ContentPresenter  HorizontalAlignment="Right" Content="X"/>
+                        </ControlTemplate>
+                    </ToggleButton.Template>
+                </ToggleButton>
+                <DataGrid ItemsSource="{Binding PerformanceInfo.MethodPerformanceData.ExecutionTimes}" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
+                        <DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp}" />
+                        <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" />
+                        <DataGridTextColumn Header="Client Region" Binding="{Binding ClientData.CountryOrRegion}" />
+                        <DataGridTextColumn Header="Client City" Binding="{Binding ClientData.City}" />
+                        <DataGridTextColumn Header="Client Ip" Binding="{Binding ClientData.Ip}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+        </Popup>
+
         <StackPanel Grid.Column="0" Grid.Row="0" >
             <Label>Method</Label>
             <Label>Type</Label>
@@ -41,27 +96,20 @@
             <Label>Total Time</Label>
             <Label>Number of Exceptions</Label>
         </StackPanel>
-        <StackPanel Grid.Column="1" Grid.Row="0" IsHitTestVisible="False" >
+        <StackPanel Grid.Column="1" Grid.Row="0" >
             <Label Content="{Binding PerformanceInfo.MethodSymbol.Name}" />
             <Label Content="{Binding PerformanceInfo.MethodSymbol.ContainingType.Name}" />
             <Label Content="{Binding PerformanceInfo.HasChanged}" />
             <WrapPanel>
                 <Label Content="{Binding PerformanceInfo.MethodPerformanceData.MeanExecutionTime, Converter={StaticResource TimeSpanToString}}" />
                 <Label>(</Label>
-                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.FilteredExecutionTimes.Count}"/>
+                <ToggleButton Content="{Binding PerformanceInfo.MethodPerformanceData.FilteredExecutionTimes.Count}" IsChecked="{Binding ShowFilteredExecutionTimes, Mode=TwoWay}" />
                 <Label>/</Label>
-                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.ExecutionTimes.Count}"/>
+                <ToggleButton Content="{Binding PerformanceInfo.MethodPerformanceData.ExecutionTimes.Count}" IsChecked="{Binding ShowExecutionTimes, Mode=TwoWay}" />
                 <Label>)</Label>
             </WrapPanel>
             <Label Content="{Binding PerformanceInfo.ExecutionTime, Converter={StaticResource TimeSpanToString}}" />
-            <WrapPanel>
-                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.TotalExecutionTime, Converter={StaticResource TimeSpanToString}}" />
-                <Label>(</Label>
-                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.FilteredExecutionTimes.Count}" />
-                <Label>/</Label>
-                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.ExecutionTimes.Count}"/>
-                <Label>)</Label>
-            </WrapPanel>
+            <Label Content="{Binding PerformanceInfo.MethodPerformanceData.TotalExecutionTime, Converter={StaticResource TimeSpanToString}}" />
             <Label Content="{Binding PerformanceInfo.MethodPerformanceData.Exceptions.Count}"  />
         </StackPanel>
         <Separator Grid.Column ="0" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Top" Foreground="{DynamicResource VsBrush.WindowText}"/>
@@ -73,7 +121,7 @@
                     <DataTemplate>
                         <WrapPanel>
                             <Label Content="{Binding MethodSymbol.MetadataName}"/>
-                            <Label Content="{Binding MethodPerformanceData.ExecutionTime, Converter={StaticResource TimeSpanToString}}" />
+                            <Label Content="{Binding MethodPerformanceData.MeanExecutionTime, Converter={StaticResource TimeSpanToString}}" />
                         </WrapPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -87,7 +135,7 @@
                     <DataTemplate>
                         <WrapPanel>
                             <Label Content="{Binding MethodSymbol.MetadataName}"/>
-                            <Label Content="{Binding MethodPerformanceData.ExecutionTime, Converter={StaticResource TimeSpanToString}}" />
+                            <Label Content="{Binding MethodPerformanceData.MeanExecutionTime, Converter={StaticResource TimeSpanToString}}" />
                         </WrapPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
