@@ -26,9 +26,9 @@ namespace InSituVisualization.TelemetryCollector.Insights
 
         public InsightsRestApiClient(Settings settings)
         {
-            _appId = settings.AppId;
-            _apiKey = settings.ApiKey;
-            _top = settings.MaxPullingAmount;
+            _appId = settings.Options.AppId;
+            _apiKey = settings.Options.ApiKey;
+            _top = settings.Options.MaxPullingAmount;
         }
 
         public async Task<InsightsRestApiResponse> GetTelemetryAsync()

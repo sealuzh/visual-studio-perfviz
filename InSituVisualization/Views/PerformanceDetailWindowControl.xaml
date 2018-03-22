@@ -31,7 +31,7 @@
             <RowDefinition Height="2*" />
             <RowDefinition Height="3*" />
         </Grid.RowDefinitions>
-        
+
         <StackPanel Grid.Column="0" Grid.Row="0" >
             <Label>Method</Label>
             <Label>Type</Label>
@@ -57,7 +57,7 @@
             <WrapPanel>
                 <Label Content="{Binding PerformanceInfo.MethodPerformanceData.TotalExecutionTime, Converter={StaticResource TimeSpanToString}}" />
                 <Label>(</Label>
-                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.FilteredExecutionTimes.Count}"/>
+                <Label Content="{Binding PerformanceInfo.MethodPerformanceData.FilteredExecutionTimes.Count}" />
                 <Label>/</Label>
                 <Label Content="{Binding PerformanceInfo.MethodPerformanceData.ExecutionTimes.Count}"/>
                 <Label>)</Label>

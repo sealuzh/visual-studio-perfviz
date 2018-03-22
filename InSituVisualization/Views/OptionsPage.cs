@@ -29,8 +29,8 @@ namespace InSituVisualization.Views
         [Description("Azure Application Insights REST API: Application ID")]
         public string AppId
         {
-            get => _settings.AppId;
-            set => _settings.AppId = value;
+            get => _settings.Options.AppId;
+            set => _settings.Options.AppId = value;
         }
 
         [Category("Credentials")]
@@ -38,8 +38,8 @@ namespace InSituVisualization.Views
         [Description("Azure Application Insights REST API: API Key")]
         public string ApiKey
         {
-            get => _settings.ApiKey;
-            set => _settings.ApiKey = value;
+            get => _settings.Options.ApiKey;
+            set => _settings.Options.ApiKey = value;
         }
 
         [Category("Settings")]
@@ -47,8 +47,8 @@ namespace InSituVisualization.Views
         [Description("Maximum amount of performance elements to be downloaded per request.")]
         public int MaxPullingAmount
         {
-            get => _settings.MaxPullingAmount;
-            set => _settings.MaxPullingAmount = value;
+            get => _settings.Options.MaxPullingAmount;
+            set => _settings.Options.MaxPullingAmount = value;
         }
     }
 }

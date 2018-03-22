@@ -11,8 +11,7 @@
              Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300"
-             x:Name="FilterWindow">
+             d:DesignHeight="300" d:DesignWidth="300">
     
     <UserControl.Resources>
         <Style TargetType="{x:Type Label}">
