@@ -11,7 +11,7 @@ It consists of 3 major parts:
 
 Perfviz is primarily designed for cloud applications on Microsoft Azure with Application Insights. The provided interfaces allow easy extension to work with any kind of online database or REST interface to query data. Effort has been put into designing a very responsive data store that can be filtered.
 
-Learn more in the [WIKI Here](/wiki/Home)
+Learn more in the [WIKI Here](../wiki/Home)
 
 # Requirements
 
