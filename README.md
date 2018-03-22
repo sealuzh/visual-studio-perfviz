@@ -11,7 +11,7 @@ It consists of 3 major parts:
 
 Perfviz is primarily designed for cloud applications on Microsoft Azure with Application Insights. The provided interfaces allow easy extension to work with any kind of online database or REST interface to query data. Effort has been put into designing a very responsive data store that can be filtered.
 
-Learn more in the wiki here: https://github.com/sealuzh/visual-studio-perfviz/wiki/Home
+Learn more in the [WIKI Here](/wiki/Home)
 
 # Requirements
 
@@ -19,6 +19,7 @@ Learn more in the wiki here: https://github.com/sealuzh/visual-studio-perfviz/wi
 
 # Open Points / Improvements
 
+* Switch from using IWpfTextViewCreationListener to Microsoft.VisualStudio.Text.Tagging as in the [VSSDK-Extensibility-Samples](https://github.com/Microsoft/VSSDK-Extensibility-Samples/tree/master/Intra-text_Adornment)
 * Currently, the data is pulled using the Azure External References API. This could be changed by using more appropriate method calls such as TrackEvent(), where for example exceptions could be handled with.
 * To be able to submit data when the injected application is running locally, the ApplicationInsights calls not only need a call as TrackDependency, but also the call Flush() that clears the in-memory buffer. This call is not needed when the instance is running in the cloud and slows down the application itself.
 * Currently, the solution lacks an user interace where filters can be added and removed.
