@@ -5,7 +5,7 @@ using InSituVisualization.Model;
 
 namespace InSituVisualization.Filter
 {
-    internal class StringFilter : Filter
+    public class StringFilter : Filter
     {
         private readonly Func<RecordedMethodTelemetry, string> _getStringFunc;
         private readonly string _string;

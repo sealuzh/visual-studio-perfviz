@@ -19,7 +19,7 @@ namespace UnitTests
 
 
         [TestMethod]
-        public void TestInsightsRestApiResponse()
+        public void InsightsRestApiResponseTest()
         {
             var telemetryData = JsonConvert.DeserializeObject<InsightsRestApiResponse>(_telemetryJson);
             Assert.AreEqual(500, telemetryData.Value.Count);
@@ -33,7 +33,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestInsightsRestApiDependencyData()
+        public void InsightsRestApiDependencyDataTest()
         {
             var telemetryData = JsonConvert.DeserializeObject<InsightsRestApiResponse>(_telemetryJson);
             var dependency = telemetryData.Value.First().Dependency;
@@ -48,7 +48,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestInsightsRestApiClientData()
+        public void InsightsRestApiClientDataTest()
         {
             var telemetryData = JsonConvert.DeserializeObject<InsightsRestApiResponse>(_telemetryJson);
             var client = telemetryData.Value.First().Client;

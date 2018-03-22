@@ -10,7 +10,7 @@ namespace InSituVisualization.Filter
     /// TProperty is the type of the property to compare.
     /// for example Int, DateTime etc.
     /// </summary>
-    internal class ComparableFilter<TProperty> : Filter where TProperty : IComparable<TProperty>
+    public class ComparableFilter<TProperty> : Filter where TProperty : IComparable<TProperty>
     {
         private readonly Func<RecordedMethodTelemetry, TProperty> _getIntFunc;
         private readonly TProperty _comparable;

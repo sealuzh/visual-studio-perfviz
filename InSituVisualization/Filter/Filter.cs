@@ -3,7 +3,7 @@ using InSituVisualization.Model;
 
 namespace InSituVisualization.Filter
 {
-    internal abstract class Filter : IFilter
+    public abstract class Filter : IFilter
     {
         public FilterKind FilterKind { get; set; } = FilterKind.None;
 

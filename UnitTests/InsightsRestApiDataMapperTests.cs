@@ -11,7 +11,7 @@ namespace UnitTests
     public class InsightsRestApiDataMapperTests
     {
         [TestMethod]
-        public void TestInsightsRestApiResponse()
+        public void InsightsRestApiResponseTest()
         {
             var insightsMapper = new InsightsRestApiDataMapper();
 

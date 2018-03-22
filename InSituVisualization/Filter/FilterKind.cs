@@ -1,6 +1,6 @@
 ﻿namespace InSituVisualization.Filter
 {
-    internal enum FilterKind
+    public enum FilterKind
     {
         None,
         IsEqual,

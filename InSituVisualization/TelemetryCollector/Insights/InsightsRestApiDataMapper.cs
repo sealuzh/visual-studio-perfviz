@@ -7,6 +7,7 @@ namespace InSituVisualization.TelemetryCollector.Insights
     // ReSharper disable once ClassNeverInstantiated.Global Justification: IoC
     public class InsightsRestApiDataMapper
     {
+        // ReSharper disable once MemberCanBeMadeStatic.Global
         public IList<RecordedMethodTelemetry> GetMethodTelemetry(InsightsRestApiResponse insightsRestApiResponse)
         {
             var list = new List<RecordedMethodTelemetry>();
