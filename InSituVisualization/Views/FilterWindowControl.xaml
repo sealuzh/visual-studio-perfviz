@@ -29,7 +29,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <ListBox ItemsSource="{Binding EnabledFilters}" SelectedItem="{Binding SelectedFilterControlViewModel}" Grid.Row="0" Grid.ColumnSpan="2">
+        <ListBox ItemsSource="{Binding EnabledFilters}" Grid.Row="0" Grid.ColumnSpan="2">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
@@ -44,8 +44,8 @@
                             <ColumnDefinition Width="15"/>
                         </Grid.ColumnDefinitions>
                         <views:FilterControl Grid.Column="0" />
-                        <Button Grid.Column="1" Command="{Binding Path=DataContext.AddFilterCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}">+</Button>
-                        <Button Grid.Column="2" Command="{Binding Path=DataContext.RemoveFilterCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}">-</Button>
+                        <Button Grid.Column="1" Command="{Binding Path=DataContext.AddFilterCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}" CommandParameter="{Binding }">+</Button>
+                        <Button Grid.Column="2" Command="{Binding Path=DataContext.RemoveFilterCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}" CommandParameter="{Binding }">-</Button>
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>

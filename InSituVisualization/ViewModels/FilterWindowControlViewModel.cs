@@ -9,7 +9,6 @@ namespace InSituVisualization.ViewModels
     public class FilterWindowControlViewModel : ViewModelBase
     {
         private readonly IFilterController _filterController;
-        private int _selectedFilterControlIndex;
 
         public ObservableCollection<FilterControlViewModel> EnabledFilters { get; } = new ObservableCollection<FilterControlViewModel> { new FilterControlViewModel() };
 
@@ -17,26 +16,25 @@ namespace InSituVisualization.ViewModels
         {
             _filterController = filterController ?? throw new ArgumentNullException(nameof(filterController));
             ApplyFiltersCommand = new RelayCommand<object>(obj => OnApplyFiltersCommand());
-            AddFilterCommand = new RelayCommand<object>(obj => OnAddFilterCommand());
-            RemoveFilterCommand = new RelayCommand<object>(obj => OnRemoveFilterCommand());
+            AddFilterCommand = new RelayCommand<FilterControlViewModel>(OnAddFilterCommand);
+            RemoveFilterCommand = new RelayCommand<FilterControlViewModel>(OnRemoveFilterCommand);
         }
 
         /// <summary>
         /// TODO RR: Insert and remove at clicked index...
         /// </summary>
-        private void OnRemoveFilterCommand()
+        private void OnRemoveFilterCommand(FilterControlViewModel filterControlViewModel)
         {
-            var selected = SelectedFilterControlIndex;
-            EnabledFilters.RemoveAt(selected);
+            EnabledFilters.Remove(filterControlViewModel);
             if (EnabledFilters.Count <= 0)
             {
                 EnabledFilters.Add(new FilterControlViewModel());
             }
         }
 
-        private void OnAddFilterCommand()
+        private void OnAddFilterCommand(FilterControlViewModel filterControlViewModel)
         {
-            EnabledFilters.Insert(SelectedFilterControlIndex+1, new FilterControlViewModel());
+            EnabledFilters.Insert(EnabledFilters.IndexOf(filterControlViewModel) + 1, new FilterControlViewModel());
         }
 
         public ICommand ApplyFiltersCommand { get; }
@@ -44,12 +42,6 @@ namespace InSituVisualization.ViewModels
         public ICommand AddFilterCommand { get; }
 
         public ICommand RemoveFilterCommand { get; }
-
-        public int SelectedFilterControlIndex
-        {
-            get => _selectedFilterControlIndex;
-            set => SetProperty(ref _selectedFilterControlIndex, value);
-        }
 
         private void OnApplyFiltersCommand()
         {
