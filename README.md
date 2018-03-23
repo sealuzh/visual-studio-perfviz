@@ -30,6 +30,20 @@ Probeinjector.exe -r "ApplicationToInstrument.dll" -w "Output.dll" -p "ProbeToIn
 ### 3. InSituVisualization
 The InSituVisualization is an **Extension for the Visual Studio IDE** and the main component of Perfviz. The Extension is responsible to get the collected performance data from the cloud and to map it onto code entities in the IDE. There are many different views available to support developers in the process of understanding performance problems. The origin of the available data is always trackable.
 
+#### In Situ Visualization
+![In Situ Visualization](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/InSituVisualization.PNG?raw=true)
+
+#### Predictions
+![Loop Predictions](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/LoopPrediction.PNG)
+
+#### Detailed Breakdown
+![Details](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/PerformanceDetails.PNG)
+
+![Recorded Telemetry](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/RecordedTelemetry.PNG)
+
+#### Filters
+![Filters](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/PerformanceFilters.PNG)
+
 Learn more in the [WIKI Here](../../wiki/Home)
 
 
