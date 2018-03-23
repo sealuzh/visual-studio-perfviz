@@ -28,20 +28,31 @@ Probeinjector.exe -r "ApplicationToInstrument.dll" -w "Output.dll" -p "ProbeToIn
 
 
 ### 3. InSituVisualization
-The InSituVisualization is an **Extension for the Visual Studio IDE** and the main component of Perfviz. The Extension is responsible to get the collected performance data from the cloud and to map it onto code entities in the IDE. There are many different views available to support developers in the process of understanding performance problems. The origin of the available data is always trackable.
+The InSituVisualization is an **extension for the Visual Studio IDE** and the main component of Perfviz. The Extension is responsible to get the collected performance data from the cloud and to map it onto code entities in the IDE. There are many different views available to support developers in the process of understanding performance problems. The origin of the available data is always trackable.
+
 
 #### In Situ Visualization
-![In Situ Visualization](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/InSituVisualization.PNG?raw=true)
+In Situ Visualizations are attached to Methods, MethodInvocations and Loops.
+
+![In Situ Visualization](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/InSituVisualization.PNG)
 
 #### Predictions
+Whenever changes are made to a method, a simple prediction of the new mean execution time is given. The prediction currently consists of a simple sum of the known execution times. For loops there is an additional slider displayed, which allows the adjustment of the estimated loop iterations. The newly predicted execution time of the method is propagated upwards in the abstract syntax tree, so that the predicted execution time of all callers is adjusted.
+
 ![Loop Predictions](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/LoopPrediction.PNG)
 
 #### Detailed Breakdown
+A detail window is available to show further information about a certain telemetry. It is available by clicking an In Situ Visualization.
+
 ![Details](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/PerformanceDetails.PNG)
+
+From the detail window further data analysis can be started and recorded telemetry data is available directly.
 
 ![Recorded Telemetry](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/RecordedTelemetry.PNG)
 
 #### Filters
+To support a developer in narrowing down a performance problem, a set of filters can be employed. All views of the extension are automatically adjusted to use the filtered set of data.
+
 ![Filters](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/PerformanceFilters.PNG)
 
 Learn more in the [WIKI Here](../../wiki/Home)
