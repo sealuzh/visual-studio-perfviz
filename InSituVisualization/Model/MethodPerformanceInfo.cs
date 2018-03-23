@@ -18,8 +18,8 @@ namespace InSituVisualization.Model
         {
             MethodSymbol = methodSymbol ?? throw new ArgumentNullException(nameof(methodSymbol));
             MethodPerformanceData = methodPerformanceData ?? throw new ArgumentNullException(nameof(methodPerformanceData));
-            _predictedExecutionTime = MethodPerformanceData.MeanExecutionTime;
             methodPerformanceData.PropertyChanged += (s, e) => OnMethodPerformanceDataChanged();
+            _calleePerformanceInfo.CollectionChanged += (s, e) => UpdatePredictedExecutionTime();
         }
 
         public IMethodSymbol MethodSymbol { get; }
@@ -46,12 +46,18 @@ namespace InSituVisualization.Model
             set
             {
                 var oldValue = _predictedExecutionTime;
+                var difference = oldValue + value;
                 SetProperty(ref _predictedExecutionTime, value);
 
                 // Propagating Changes up the Tree
                 foreach (var caller in _callerPerformanceInfo)
                 {
-                    caller.PredictedExecutionTime = caller.PredictedExecutionTime - oldValue + value;
+                    if (caller == this)
+                    {
+                        // do not update self... (otherwise it may result in a stackoverflow)
+                        continue;
+                    }
+                    caller.PredictedExecutionTime = caller.PredictedExecutionTime - difference;
                 }
 
                 OnPropertyChanged(nameof(ExecutionTime));
@@ -66,13 +72,31 @@ namespace InSituVisualization.Model
             get => _hasChanged;
             set
             {
-                SetProperty(ref _hasChanged, value);
+                if (!SetProperty(ref _hasChanged, value))
+                {
+                    return;
+                }
+
+                if (value)
+                {
+                    UpdatePredictedExecutionTime();
+                }
                 // Propagating Changes up the Tree
                 foreach (var caller in _callerPerformanceInfo)
                 {
                     caller.HasChanged = value;
                 }
+                OnPropertyChanged(nameof(ExecutionTime));
             }
+        }
+
+        /// <summary>
+        /// The Prediction is the sum of all callees (if not set differently)
+        /// </summary>
+        private void UpdatePredictedExecutionTime()
+        {
+            // TODO RR: Do not use Set, Use Loop Infos as well
+            PredictedExecutionTime = CalleePerformanceInfo.Sum(p => p.ExecutionTime);
         }
 
         public void AddCalleePerformanceInfo(MethodPerformanceInfo calleePerformanceInfo)
