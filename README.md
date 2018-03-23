@@ -30,14 +30,17 @@ Probeinjector.exe -r "ApplicationToInstrument.dll" -w "Output.dll" -p "ProbeToIn
 ### 3. InSituVisualization
 The InSituVisualization is an **extension for the Visual Studio IDE** and the main component of Perfviz. The Extension is responsible to get the collected performance data from the cloud and to map it onto code entities in the IDE. There are many different views available to support developers in the process of understanding performance problems. The origin of the available data is always trackable.
 
+This is achieved trough the use of the [The .NET Compiler Platform ("Roslyn")](https://github.com/dotnet/roslyn)
+
 
 #### In Situ Visualization
-In Situ Visualizations are attached to Methods, MethodInvocations and Loops.
+In situ visualizations are attached to methods, methodInvocations and loops. The displayed values are mean execution times. For faster recognition, there are color codes available which are displayed behind the actual mean execution time. The default setting is a Transition from Green (120° Hue) to Red (0° Hue) using the HSV Color Value. The user is able to define custom color codes individually for both, the method visualization as well as the visualization for the method invocation. A Conterter is available to set the color coding.
 
 ![In Situ Visualization](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/InSituVisualization.PNG)
 
 #### Predictions
-Whenever changes are made to a method, a simple prediction of the new mean execution time is given. The prediction currently consists of a simple sum of the known execution times. For loops there is an additional slider displayed, which allows the adjustment of the estimated loop iterations. The newly predicted execution time of the method is propagated upwards in the abstract syntax tree, so that the predicted execution time of all callers is adjusted.
+Whenever changes are made to a method, a simple prediction of the new mean execution time is given. The prediction currently consists of a simple sum of the known execution times. 
+For loops there is a prediction of the average loop times displayed, which is calculated trough division of the method execution time by the sum of the known execution times inside the loop. An additional slider allows the adjustment of the estimated loop iterations. The newly predicted execution time of the method is propagated upwards in the abstract syntax tree, so that the predicted execution time of all callers is adjusted.
 
 ![Loop Predictions](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/LoopPrediction.PNG)
 

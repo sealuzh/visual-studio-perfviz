@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using DryIoc;
+using InSituVisualization.Converters;
 using InSituVisualization.Model;
 
 namespace InSituVisualization.ViewModels
@@ -18,45 +20,10 @@ namespace InSituVisualization.ViewModels
 
         public MethodPerformanceInfo MethodPerformanceInfo { get; }
 
-        /// <summary>
-        /// Using HSV Values to get a nice transition:
-        /// Hue: 0 ° = Red
-        /// Hue: 120 ° = Green
-        /// </summary>
-        public Color BackgroundColor
-        {
-            get
-            {
-                // TODO RR:
-                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(20))
-                {
-                    return Colors.GreenYellow;
-                }
-                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(30))
-                {
-                    return Colors.ForestGreen;
-                }
-                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(60))
-                {
-                    return Colors.DarkGreen;
-                }
-                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(70))
-                {
-                    return Colors.Orange;
-                }
-                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(80))
-                {
-                    return Colors.DarkOrange;
-                }
-                if (MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime < TimeSpan.FromMilliseconds(80))
-                {
-                    return Colors.OrangeRed;
-                }
-                return Colors.Red;
-                //const double hueColorGreen = 120;
-                //return new HsvColor((1 - MethodPerformanceInfo.MemberTime) * hueColorGreen, 1, 1);
-            }
-        }
+        private IValueConverter TimeSpanToColoConverter { get; } = new TimeSpanToColorConverter();
+
+        // ReSharper disable once PossibleNullReferenceException
+        public Color BackgroundColor => (Color)TimeSpanToColoConverter.Convert(MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime, typeof(DateTime), null, null);
 
         public void OnOpenDetailViewCommand()
         {
