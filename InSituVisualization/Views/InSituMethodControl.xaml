@@ -35,7 +35,7 @@
                 </Style>
             </Button.Style>
         </Button>
-        <TextBlock Foreground="Red" Visibility="{Binding Path=MethodPerformanceInfo.HasChanged, Converter={StaticResource BoolToVis}}">?</TextBlock>
+        <TextBlock Foreground="Red" Visibility="{Binding Path=MethodPerformanceInfo.HasChanged, Converter={StaticResource BoolToVis}}" ToolTip="Predicted Time">?</TextBlock>
     </StackPanel>
 
 
