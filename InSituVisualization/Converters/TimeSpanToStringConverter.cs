@@ -20,7 +20,7 @@ namespace InSituVisualization.Converters
             // < 1 Sec
             if (timeSpan.TotalMilliseconds < 1000)
             {
-                return $"{timeSpan.TotalMilliseconds} ms";
+                return $"{timeSpan.TotalMilliseconds:F0} ms";
             }
 
             // < 2 min
