@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using InSituVisualization.Model;
 using Microsoft.CodeAnalysis;
 using DryIoc;
@@ -101,27 +100,25 @@ namespace InSituVisualization.TelemetryMapper
             var newPerformanceInfo = new MockMethodPerformanceInfo(methodSymbol, documentationCommentId);
             _telemetryDatas.Add(documentationCommentId, newPerformanceInfo);
 
-            await UpdateCallers(methodSymbol, newPerformanceInfo);
-
+            await UpdateCallers(methodSymbol, newPerformanceInfo.MethodPerformanceData.MeanExecutionTime);
 
             return newPerformanceInfo;
         }
 
         /// <summary>
-        /// Adding the meanExecutionTime to all executionTimes of the caller.
+        /// Adding the meanExecutionTime to all executionTimes of the symbol (caller).
         /// </summary>
-        private async Task UpdateCallers(ISymbol methodSymbol, MockMethodPerformanceInfo newPerformanceInfo)
+        private async Task UpdateCallers(ISymbol methodSymbol, TimeSpan meanExecutionTime)
         {
-            // reverse ... getting back the syntax...
             var callers = await SymbolFinder.FindCallersAsync(methodSymbol, Document.Project.Solution);
-            var meanExecutionTime = newPerformanceInfo.MethodPerformanceData.MeanExecutionTime;
             foreach (var symbolCallerInfo in callers)
             {
-                if (symbolCallerInfo.CallingSymbol == null)
+                var callingSymbol = symbolCallerInfo.CallingSymbol;
+                if (callingSymbol == null)
                 {
                     continue;
                 }
-                var callingMehtodSymbolCommentId = symbolCallerInfo.CallingSymbol.GetDocumentationCommentId();
+                var callingMehtodSymbolCommentId = callingSymbol.GetDocumentationCommentId();
                 if (!_telemetryDatas.TryGetValue(callingMehtodSymbolCommentId, out var callingPerfInfo))
                 {
                     continue;
@@ -133,6 +130,9 @@ namespace InSituVisualization.TelemetryMapper
                     var mockRecordedTime = (MockRecordedExecutionTimeMethodTelemetry)recordedTelemetry;
                     mockRecordedTime.UpdateDuration(mockRecordedTime.Duration + meanExecutionTime);
                 }
+
+                // recursively update all symbols up in the tree
+                await UpdateCallers(callingSymbol, callingPerfInfo.MethodPerformanceData.MeanExecutionTime);
             }
         }
     }
