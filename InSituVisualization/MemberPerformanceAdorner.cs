@@ -23,7 +23,7 @@ namespace InSituVisualization
         private readonly MethodAdornmentLayer _methodAdornerLayer;
         private SyntaxTree _originalTree;
 
-        private Document Document => _textView.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
+        public Document Document => _textView.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MemberPerformanceAdorner"/> class.

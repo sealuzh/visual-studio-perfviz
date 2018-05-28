@@ -8,7 +8,7 @@ namespace InSituVisualization.Model
     /// </summary>
     public class RecordedExecutionTimeMethodTelemetry : RecordedMethodTelemetry
     {
-        public TimeSpan Duration { get; }
+        public TimeSpan Duration { get; protected set; }
 
         public RecordedExecutionTimeMethodTelemetry(string documentationCommentId, string id, DateTime timestamp, TimeSpan duration, IClientData clientData) : base(documentationCommentId, id, timestamp, clientData)
         {

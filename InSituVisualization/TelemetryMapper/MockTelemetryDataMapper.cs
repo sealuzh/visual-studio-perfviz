@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using InSituVisualization.Model;
 using Microsoft.CodeAnalysis;
 using DryIoc;
+using Microsoft.CodeAnalysis.FindSymbols;
 
 namespace InSituVisualization.TelemetryMapper
 {
@@ -43,9 +45,21 @@ namespace InSituVisualization.TelemetryMapper
             public string Type { get; }
         }
 
+        private class MockRecordedExecutionTimeMethodTelemetry : RecordedExecutionTimeMethodTelemetry
+        {
+            public MockRecordedExecutionTimeMethodTelemetry(string documentationCommentId, string id, DateTime timestamp, TimeSpan duration, IClientData clientData) : base(documentationCommentId, id, timestamp, duration, clientData)
+            {
+            }
+
+            public void UpdateDuration(TimeSpan newDuration)
+            {
+                Duration = newDuration;
+            }
+        }
+
         private class MockMethodPerformanceInfo : MethodPerformanceInfo
         {
-            public MockMethodPerformanceInfo(IMethodSymbol methodSymbol, string documentationCommentId) : base( methodSymbol, GetMockData(documentationCommentId))
+            public MockMethodPerformanceInfo(IMethodSymbol methodSymbol, string documentationCommentId) : base(methodSymbol, GetMockData(documentationCommentId))
             {
             }
 
@@ -54,16 +68,16 @@ namespace InSituVisualization.TelemetryMapper
             private static IMethodPerformanceData GetMockData(string documentationCommentId)
             {
                 var performanceData = IocHelper.Container.Resolve<IMethodPerformanceData>();
-                var numberOfRecords = Random.Next(30);
-                var baseLineMilliSeconds = Random.Next(1000);
+                var numberOfRecords = Random.Next(2, 30);
+                var baseLineMilliSeconds = Random.Next(2, 100);
 
                 for (var i = 0; i < numberOfRecords; i++)
                 {
-                    performanceData.ExecutionTimes.Add(new RecordedExecutionTimeMethodTelemetry(
+                    performanceData.ExecutionTimes.Add(new MockRecordedExecutionTimeMethodTelemetry(
                         documentationCommentId,
                         Guid.NewGuid().ToString(),
                         DateTime.Now - TimeSpan.FromSeconds(Random.Next(1000)),
-                        TimeSpan.FromMilliseconds(baseLineMilliSeconds + Random.Next(-100, 100)),
+                        TimeSpan.FromMilliseconds(baseLineMilliSeconds + Random.Next(20)),
                         new MockClientData()));
                 }
 
@@ -72,19 +86,54 @@ namespace InSituVisualization.TelemetryMapper
         }
 
         private readonly Dictionary<string, MethodPerformanceInfo> _telemetryDatas = new Dictionary<string, MethodPerformanceInfo>();
+        private static Document Document => IocHelper.Container.Resolve<MemberPerformanceAdorner>().Document;
 
-        public Task<MethodPerformanceInfo> GetMethodPerformanceInfoAsync(IMethodSymbol methodSymbol)
+        public async Task<MethodPerformanceInfo> GetMethodPerformanceInfoAsync(IMethodSymbol methodSymbol)
         {
             // DocumentationCommentId is used in Symbol Editor, since methodSymbols aren't equal accross compilations
             // see https://github.com/dotnet/roslyn/issues/3058
             var documentationCommentId = methodSymbol.GetDocumentationCommentId();
             if (_telemetryDatas.TryGetValue(documentationCommentId, out var performanceInfo))
             {
-                return Task.FromResult(performanceInfo);
+                return performanceInfo;
             }
+
             var newPerformanceInfo = new MockMethodPerformanceInfo(methodSymbol, documentationCommentId);
             _telemetryDatas.Add(documentationCommentId, newPerformanceInfo);
-            return Task.FromResult((MethodPerformanceInfo) newPerformanceInfo);
+
+            await UpdateCallers(methodSymbol, newPerformanceInfo);
+
+
+            return newPerformanceInfo;
+        }
+
+        /// <summary>
+        /// Adding the meanExecutionTime to all executionTimes of the caller.
+        /// </summary>
+        private async Task UpdateCallers(ISymbol methodSymbol, MockMethodPerformanceInfo newPerformanceInfo)
+        {
+            // reverse ... getting back the syntax...
+            var callers = await SymbolFinder.FindCallersAsync(methodSymbol, Document.Project.Solution);
+            var meanExecutionTime = newPerformanceInfo.MethodPerformanceData.MeanExecutionTime;
+            foreach (var symbolCallerInfo in callers)
+            {
+                if (symbolCallerInfo.CallingSymbol == null)
+                {
+                    continue;
+                }
+                var callingMehtodSymbolCommentId = symbolCallerInfo.CallingSymbol.GetDocumentationCommentId();
+                if (!_telemetryDatas.TryGetValue(callingMehtodSymbolCommentId, out var callingPerfInfo))
+                {
+                    continue;
+                }
+
+                // Need to add the time of the current symbol to all callers
+                foreach (var recordedTelemetry in callingPerfInfo.MethodPerformanceData.ExecutionTimes)
+                {
+                    var mockRecordedTime = (MockRecordedExecutionTimeMethodTelemetry)recordedTelemetry;
+                    mockRecordedTime.UpdateDuration(mockRecordedTime.Duration + meanExecutionTime);
+                }
+            }
         }
     }
 }
