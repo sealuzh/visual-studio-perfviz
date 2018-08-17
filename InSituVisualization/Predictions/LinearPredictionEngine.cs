@@ -16,8 +16,8 @@ namespace InSituVisualization.Predictions
         public TimeSpan PredictMethodTime(MethodPerformanceInfo methodPerformanceInfo, object[] parameters)
         {
             // TODO RR: multiply by 1 + workolad
-            return methodPerformanceInfo.CalleePerformanceInfo.Sum(p => p.ExecutionTime) + 
-                methodPerformanceInfo.LoopPerformanceInfo.Sum(p => p.ExecutionTime);
+            return methodPerformanceInfo.CalleePerformanceInfos.Sum(p => p.ExecutionTime) + 
+                methodPerformanceInfo.LoopPerformanceInfos.Sum(p => p.ExecutionTime);
         }
 
         public TimeSpan PredictLoopTime(LoopPerformanceInfo loopPerformanceInfo)

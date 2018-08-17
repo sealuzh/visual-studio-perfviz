@@ -114,7 +114,7 @@ namespace InSituVisualization
                 var loopPerformanceInfo = await VisitLoopAsync(loopSyntax, methodPerformanceInfo);
                 if (loopPerformanceInfo != null)
                 {
-                    methodPerformanceInfo.LoopPerformanceInfo.Add(loopPerformanceInfo);
+                    methodPerformanceInfo.LoopPerformanceInfos.Add(loopPerformanceInfo);
                 }
             }
 

@@ -116,7 +116,7 @@
 
         <StackPanel Grid.Column="0" Grid.Row="1">
             <Label>Callers</Label>
-            <ListView ItemsSource="{Binding PerformanceInfo.CallerPerformanceInfo}" >
+            <ListView ItemsSource="{Binding PerformanceInfo.CallerPerformanceInfos}" >
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <WrapPanel>
@@ -130,7 +130,7 @@
 
         <StackPanel Grid.Column="1" Grid.Row="1">
             <Label>Callees</Label>
-            <ListView ItemsSource="{Binding PerformanceInfo.CalleePerformanceInfo}" >
+            <ListView ItemsSource="{Binding PerformanceInfo.CalleePerformanceInfos}" >
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <WrapPanel>

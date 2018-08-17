@@ -9,8 +9,8 @@ namespace InSituVisualization.Model
     //ReSharper disable UnusedMember.Global
     public class MethodPerformanceInfo : PerformanceInfo
     {
-        private readonly ObservableCollection<MethodPerformanceInfo> _callerPerformanceInfo = new SetCollection<MethodPerformanceInfo>();
-        private readonly ObservableCollection<MethodPerformanceInfo> _calleePerformanceInfo = new SetCollection<MethodPerformanceInfo>();
+        private readonly ObservableCollection<MethodPerformanceInfo> _callerPerformanceInfos = new SetCollection<MethodPerformanceInfo>();
+        private readonly ObservableCollection<MethodPerformanceInfo> _calleePerformanceInfos = new SetCollection<MethodPerformanceInfo>();
 
         public MethodPerformanceInfo(IPredictionEngine predictionEngine, IMethodSymbol methodSymbol, IMethodPerformanceData methodPerformanceData)
         {
@@ -18,7 +18,8 @@ namespace InSituVisualization.Model
             MethodSymbol = methodSymbol ?? throw new ArgumentNullException(nameof(methodSymbol));
             MethodPerformanceData = methodPerformanceData ?? throw new ArgumentNullException(nameof(methodPerformanceData));
             methodPerformanceData.PropertyChanged += (s, e) => OnPropertyChanged(nameof(ExecutionTime));
-            _calleePerformanceInfo.CollectionChanged += (s, e) => PredictExecutionTime();
+            _calleePerformanceInfos.CollectionChanged += (s, e) => PredictExecutionTime();
+            LoopPerformanceInfos.CollectionChanged += (s, e) => PredictExecutionTime();
         }
 
         public IPredictionEngine PredictionEngine { get; }
@@ -28,13 +29,15 @@ namespace InSituVisualization.Model
         /// <summary>
         /// Caller and Callee building the Tree
         /// </summary>
-        public ReadOnlyObservableCollection<MethodPerformanceInfo> CallerPerformanceInfo => new ReadOnlyObservableCollection<MethodPerformanceInfo>(_callerPerformanceInfo);
+        public ReadOnlyObservableCollection<MethodPerformanceInfo> CallerPerformanceInfos => new ReadOnlyObservableCollection<MethodPerformanceInfo>(_callerPerformanceInfos);
         /// <summary>
         /// Caller and Callee building the Tree
         /// </summary>
-        public ReadOnlyObservableCollection<MethodPerformanceInfo> CalleePerformanceInfo => new ReadOnlyObservableCollection<MethodPerformanceInfo>(_calleePerformanceInfo);
-
-        public ObservableCollection<LoopPerformanceInfo> LoopPerformanceInfo { get; } = new SetCollection<LoopPerformanceInfo>();
+        public ReadOnlyObservableCollection<MethodPerformanceInfo> CalleePerformanceInfos => new ReadOnlyObservableCollection<MethodPerformanceInfo>(_calleePerformanceInfos);
+        /// <summary>
+        /// Loops are inside the Method
+        /// </summary>
+        public ObservableCollection<LoopPerformanceInfo> LoopPerformanceInfos { get; } = new SetCollection<LoopPerformanceInfo>();
 
         protected override TimeSpan AverageExecutionTime => MethodPerformanceData.MeanExecutionTime;
 
@@ -51,8 +54,8 @@ namespace InSituVisualization.Model
 
         public void AddCalleePerformanceInfo(MethodPerformanceInfo calleePerformanceInfo)
         {
-            _calleePerformanceInfo.Add(calleePerformanceInfo);
-            calleePerformanceInfo._callerPerformanceInfo.Add(this);
+            _calleePerformanceInfos.Add(calleePerformanceInfo);
+            calleePerformanceInfo._callerPerformanceInfos.Add(this);
         }
 
         #region Helper Methods
@@ -63,7 +66,7 @@ namespace InSituVisualization.Model
         /// </summary>
         private void DoForCallers(Action<MethodPerformanceInfo> action)
         {
-            foreach (var caller in _callerPerformanceInfo)
+            foreach (var caller in _callerPerformanceInfos)
             {
                 if (caller == this)
                 {
