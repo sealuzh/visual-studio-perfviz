@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using InSituVisualization.Model;
 using Microsoft.CodeAnalysis;
 using DryIoc;
+using InSituVisualization.Predictions;
 using Microsoft.CodeAnalysis.FindSymbols;
 
 namespace InSituVisualization.TelemetryMapper
@@ -14,6 +15,8 @@ namespace InSituVisualization.TelemetryMapper
     /// </summary>
     internal class MockTelemetryDataMapper : ITelemetryDataMapper
     {
+        private readonly IPredictionEngine _predictionEngine;
+
         private class MockClientData : IClientData
         {
             private static readonly Random Random = new Random();
@@ -58,7 +61,7 @@ namespace InSituVisualization.TelemetryMapper
 
         private class MockMethodPerformanceInfo : MethodPerformanceInfo
         {
-            public MockMethodPerformanceInfo(IMethodSymbol methodSymbol, string documentationCommentId) : base(methodSymbol, GetMockData(documentationCommentId))
+            public MockMethodPerformanceInfo(IPredictionEngine predictionEngine, IMethodSymbol methodSymbol, string documentationCommentId) : base(predictionEngine, methodSymbol, GetMockData(documentationCommentId))
             {
             }
 
@@ -87,6 +90,11 @@ namespace InSituVisualization.TelemetryMapper
         private readonly Dictionary<string, MethodPerformanceInfo> _telemetryDatas = new Dictionary<string, MethodPerformanceInfo>();
         private static Document Document => IocHelper.Container.Resolve<MemberPerformanceAdorner>().Document;
 
+        public MockTelemetryDataMapper(IPredictionEngine predictionEngine)
+        {
+            _predictionEngine = predictionEngine;
+        }
+
         public async Task<MethodPerformanceInfo> GetMethodPerformanceInfoAsync(IMethodSymbol methodSymbol)
         {
             // DocumentationCommentId is used in Symbol Editor, since methodSymbols aren't equal accross compilations
@@ -97,7 +105,7 @@ namespace InSituVisualization.TelemetryMapper
                 return performanceInfo;
             }
 
-            var newPerformanceInfo = new MockMethodPerformanceInfo(methodSymbol, documentationCommentId);
+            var newPerformanceInfo = new MockMethodPerformanceInfo(_predictionEngine, methodSymbol, documentationCommentId);
             _telemetryDatas.Add(documentationCommentId, newPerformanceInfo);
 
             await UpdateCallers(methodSymbol, newPerformanceInfo.MethodPerformanceData.MeanExecutionTime);

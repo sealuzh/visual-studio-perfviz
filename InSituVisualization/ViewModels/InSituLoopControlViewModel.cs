@@ -25,14 +25,13 @@ namespace InSituVisualization.ViewModels
             get => _loopIterations;
             set
             {
-                var oldExecutionTime = ExecutionTime;
                 if (!SetProperty(ref _loopIterations, value))
                 {
                     return;
                 }
                 // Updating Predicted Method Time
-                LoopPerformanceInfo.MethodPerformanceInfo.PredictedExecutionTime += ExecutionTime - oldExecutionTime;
-                LoopPerformanceInfo.MethodPerformanceInfo.HasChanged = true;
+                LoopPerformanceInfo.PredictedLoopIterations = value;
+                LoopPerformanceInfo.PredictExecutionTime();
             }
         }
 
@@ -43,7 +42,7 @@ namespace InSituVisualization.ViewModels
         {
             get
             {
-                if (LoopPerformanceInfo.AverageLoopIterations == 0)
+                if (LoopPerformanceInfo.AverageLoopIterations <= 0)
                 {
                     return DefaultMaxLoopIterations;
                 }
@@ -51,6 +50,6 @@ namespace InSituVisualization.ViewModels
             }
         }
 
-        public TimeSpan ExecutionTime => LoopPerformanceInfo.GetExecutionTime(LoopIterations);
+        public TimeSpan ExecutionTime => LoopPerformanceInfo.ExecutionTime;
     }
 }

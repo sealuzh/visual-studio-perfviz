@@ -1,9 +1,10 @@
-﻿//#define TestMapping
+﻿#define TestMapping
 //#define TestFilter
 
 using DryIoc;
 using InSituVisualization.Filter;
 using InSituVisualization.Model;
+using InSituVisualization.Predictions;
 using InSituVisualization.TelemetryCollector;
 using InSituVisualization.TelemetryCollector.Insights;
 using InSituVisualization.TelemetryMapper;
@@ -26,6 +27,9 @@ namespace InSituVisualization
         {
             Container.Register<Settings>(Reuse.Singleton);
             Container.Register<IFilterController, FilterController>(Reuse.Singleton);
+            Container.Register<ISystemWorkload, SystemWorkload>(Reuse.Singleton);
+            // Register more complex predictions here
+            Container.Register<IPredictionEngine, LinearPredictionEngine>(Reuse.Singleton);
 #if TestFilter
             Container.Register<IFilterController, MockFilterController>(Reuse.Singleton, setup: Setup.Decorator);
 #endif

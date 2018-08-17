@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using InSituVisualization.Model;
+using InSituVisualization.Predictions;
 using InSituVisualization.TelemetryCollector;
 using Microsoft.CodeAnalysis;
 
@@ -11,12 +12,14 @@ namespace InSituVisualization.TelemetryMapper
     // ReSharper disable once ClassNeverInstantiated.Global Justification: IoC
     internal class TelemetryDataMapper : ITelemetryDataMapper
     {
+        private readonly IPredictionEngine _predictionEngine;
         private readonly ITelemetryProvider _telemetryProvider;
 
         private readonly Dictionary<string, MethodPerformanceInfo> _methodPerformancInfoCache = new Dictionary<string, MethodPerformanceInfo>();
 
-        public TelemetryDataMapper(ITelemetryProvider telemetryProvider)
+        public TelemetryDataMapper(ITelemetryProvider telemetryProvider, IPredictionEngine predictionEngine)
         {
+            _predictionEngine = predictionEngine ?? throw new ArgumentNullException(nameof(predictionEngine));
             _telemetryProvider = telemetryProvider ?? throw new ArgumentNullException(nameof(telemetryProvider));
         }
 
@@ -37,7 +40,7 @@ namespace InSituVisualization.TelemetryMapper
                 return null;
             }
 
-            var performanceInfo = new MethodPerformanceInfo(methodSymbol, methodTelemetry);
+            var performanceInfo = new MethodPerformanceInfo(_predictionEngine, methodSymbol, methodTelemetry);
             _methodPerformancInfoCache.Add(documentationCommentId, performanceInfo);
             return performanceInfo;
         }

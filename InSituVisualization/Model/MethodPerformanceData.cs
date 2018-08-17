@@ -8,9 +8,7 @@ using InSituVisualization.Utils;
 namespace InSituVisualization.Model
 {
     /// <summary>
-    /// All Available Data of a Method
-    /// This includes Telemetry
-    /// This includes Predictions
+    /// Available Data of a Method
     /// </summary>
     // ReSharper disable once ClassNeverInstantiated.Global, Justification: IoC
     public class MethodPerformanceData : ModelBase, IMethodPerformanceData

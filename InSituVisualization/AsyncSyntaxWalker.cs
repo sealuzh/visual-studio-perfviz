@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using InSituVisualization.Model;
+using InSituVisualization.Predictions;
 using InSituVisualization.TelemetryMapper;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -16,13 +17,21 @@ namespace InSituVisualization
     /// </summary>
     internal class AsyncSyntaxWalker
     {
+        private readonly IPredictionEngine _predictionEngine;
         private readonly Document _document;
         private readonly SemanticModel _semanticModel;
         private readonly ITelemetryDataMapper _telemetryDataMapper;
         private readonly MethodAdornmentLayer _methodAdornmentLayer;
 
-        public AsyncSyntaxWalker(Document document, SemanticModel semanticModel, ITelemetryDataMapper telemetryDataMapper, MethodAdornmentLayer methodAdornmentLayer)
+
+        public AsyncSyntaxWalker(
+            IPredictionEngine predictionEngine,
+            Document document, 
+            SemanticModel semanticModel,
+            ITelemetryDataMapper telemetryDataMapper, 
+            MethodAdornmentLayer methodAdornmentLayer)
         {
+            _predictionEngine = predictionEngine ?? throw new ArgumentNullException(nameof(predictionEngine));
             _document = document ?? throw new ArgumentNullException(nameof(document));
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
             _telemetryDataMapper = telemetryDataMapper ?? throw new ArgumentNullException(nameof(telemetryDataMapper));
@@ -55,6 +64,10 @@ namespace InSituVisualization
                     if (methodPerformanceInfo != null)
                     {
                         methodPerformanceInfo.HasChanged = HasTextChangesInNode(treeChanges, methodDeclarationSyntax);
+                        if (methodPerformanceInfo.HasChanged)
+                        {
+                            methodPerformanceInfo.PredictExecutionTime();
+                        }
                     }
                 }
                 catch (ArgumentException e)
@@ -145,7 +158,7 @@ namespace InSituVisualization
                 var invocationPerformanceInfo = await _telemetryDataMapper.GetMethodPerformanceInfoAsync(invokedMethodSymbol);
                 loopInvocationsList.Add(invocationPerformanceInfo);
             }
-            var loopPerformanceInfo = new LoopPerformanceInfo(methodPerformanceInfo, loopInvocationsList);
+            var loopPerformanceInfo = new LoopPerformanceInfo(_predictionEngine, methodPerformanceInfo, loopInvocationsList);
             _methodAdornmentLayer.DrawLoopPerformanceInfo(loopSyntax, loopPerformanceInfo);
             return loopPerformanceInfo;
         }

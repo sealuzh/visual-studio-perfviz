@@ -73,6 +73,10 @@
     <Compile Include="Filter\Filter.cs" />
     <Compile Include="Filter\FilterKind.cs" />
     <Compile Include="Filter\IFilter.cs" />
+    <Compile Include="Predictions\IPredictionEngine.cs" />
+    <Compile Include="Predictions\ISystemWorkload.cs" />
+    <Compile Include="Predictions\LinearPredictionEngine.cs" />
+    <Compile Include="Predictions\SystemWorkload.cs" />
     <Compile Include="Properties\Annotations1.cs" />
     <Compile Include="TelemetryCollector\Insights\InsightsRestApiCollector.cs" />
     <Compile Include="TelemetryCollector\Insights\InsightsRestApiDependencyData.cs" />

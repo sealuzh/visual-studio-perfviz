@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using DryIoc;
+using InSituVisualization.Predictions;
 using InSituVisualization.TelemetryMapper;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
@@ -59,8 +60,10 @@ namespace InSituVisualization
                 var semanticModel = await Document.GetSemanticModelAsync();
 
                 var telemetryDataMapper = IocHelper.Container.Resolve<ITelemetryDataMapper>();
-
-                var performanceSyntaxWalker = new AsyncSyntaxWalker(Document,
+                var predictionEngine = IocHelper.Container.Resolve<IPredictionEngine>();
+                var performanceSyntaxWalker = new AsyncSyntaxWalker(
+                    predictionEngine,
+                    Document,
                     semanticModel,
                     telemetryDataMapper, _methodAdornerLayer);
                 await performanceSyntaxWalker.VisitAsync(syntaxTree, _originalTree);
