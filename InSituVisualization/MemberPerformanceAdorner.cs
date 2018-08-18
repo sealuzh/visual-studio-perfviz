@@ -33,7 +33,7 @@ namespace InSituVisualization
         public MemberPerformanceAdorner(IWpfTextView textView)
         {
             _textView = textView ?? throw new ArgumentNullException(nameof(textView));
-            _textView.LayoutChanged += OnLayoutChanged;
+            //_textView.LayoutChanged += OnLayoutChanged;
             _methodAdornerLayer = new MethodAdornmentLayer(textView);
         }
 

@@ -73,11 +73,17 @@
     <Compile Include="Filter\Filter.cs" />
     <Compile Include="Filter\FilterKind.cs" />
     <Compile Include="Filter\IFilter.cs" />
+    <Compile Include="PerformanceAdornmentTaggerProvider.cs" />
+    <Compile Include="PerformanceTaggerProvider.cs" />
     <Compile Include="Predictions\IPredictionEngine.cs" />
     <Compile Include="Predictions\ISystemWorkload.cs" />
     <Compile Include="Predictions\LinearPredictionEngine.cs" />
     <Compile Include="Predictions\SystemWorkload.cs" />
     <Compile Include="Properties\Annotations1.cs" />
+    <Compile Include="Tagging\IntraTextAdornmentTagger.cs" />
+    <Compile Include="Tagging\PerformanceAdornmentTagger.cs" />
+    <Compile Include="Tagging\PerformanceTag.cs" />
+    <Compile Include="Tagging\PerformanceTagger.cs" />
     <Compile Include="TelemetryCollector\Insights\InsightsRestApiCollector.cs" />
     <Compile Include="TelemetryCollector\Insights\InsightsRestApiDependencyData.cs" />
     <Compile Include="TelemetryCollector\Insights\InsightsRestApiClientData.cs" />

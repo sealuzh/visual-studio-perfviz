@@ -108,7 +108,7 @@ namespace InSituVisualization.TelemetryMapper
             var newPerformanceInfo = new MockMethodPerformanceInfo(_predictionEngine, methodSymbol, documentationCommentId);
             _telemetryDatas.Add(documentationCommentId, newPerformanceInfo);
 
-            await UpdateCallers(methodSymbol, newPerformanceInfo.MethodPerformanceData.MeanExecutionTime);
+            await UpdateCallersAsync(methodSymbol, newPerformanceInfo.MethodPerformanceData.MeanExecutionTime).ConfigureAwait(false);
 
             return newPerformanceInfo;
         }
@@ -116,9 +116,9 @@ namespace InSituVisualization.TelemetryMapper
         /// <summary>
         /// Adding the meanExecutionTime to all executionTimes of the symbol (caller).
         /// </summary>
-        private async Task UpdateCallers(ISymbol methodSymbol, TimeSpan meanExecutionTime)
+        private async Task UpdateCallersAsync(ISymbol methodSymbol, TimeSpan meanExecutionTime)
         {
-            var callers = await SymbolFinder.FindCallersAsync(methodSymbol, Document.Project.Solution);
+            var callers = await SymbolFinder.FindCallersAsync(methodSymbol, Document.Project.Solution).ConfigureAwait(false);
             foreach (var symbolCallerInfo in callers)
             {
                 var callingSymbol = symbolCallerInfo.CallingSymbol;
@@ -140,7 +140,7 @@ namespace InSituVisualization.TelemetryMapper
                 }
 
                 // recursively update all symbols up in the tree
-                await UpdateCallers(callingSymbol, callingPerfInfo.MethodPerformanceData.MeanExecutionTime);
+                await UpdateCallersAsync(callingSymbol, callingPerfInfo.MethodPerformanceData.MeanExecutionTime).ConfigureAwait(false);
             }
         }
     }
