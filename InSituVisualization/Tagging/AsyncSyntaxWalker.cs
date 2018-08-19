@@ -32,9 +32,9 @@ namespace InSituVisualization.Tagging
             Document document, 
             SemanticModel semanticModel,
             ITelemetryDataMapper telemetryDataMapper,
-            ITextBuffer _buffer)
+            ITextBuffer buffer)
         {
-            this._buffer = _buffer;
+            _buffer = buffer;
             _predictionEngine = predictionEngine ?? throw new ArgumentNullException(nameof(predictionEngine));
             _document = document ?? throw new ArgumentNullException(nameof(document));
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
