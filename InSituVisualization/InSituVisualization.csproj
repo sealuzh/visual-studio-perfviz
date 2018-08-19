@@ -68,7 +68,7 @@
     <Compile Include="Model\IMethodPerformanceData.cs" />
     <Compile Include="Model\LoopPerformanceInfo.cs" />
     <Compile Include="Model\PerformanceInfo.cs" />
-    <Compile Include="AsyncSyntaxWalker.cs" />
+    <Compile Include="Tagging\AsyncSyntaxWalker.cs" />
     <Compile Include="Filter\StringFilter.cs" />
     <Compile Include="Filter\Filter.cs" />
     <Compile Include="Filter\FilterKind.cs" />
@@ -127,8 +127,6 @@
     <Compile Include="TelemetryMapper\ITelemetryDataMapper.cs" />
     <Compile Include="TelemetryCollector\ITelemetryProvider.cs" />
     <Compile Include="Converters\ColorToSolidColorBrushValueConverter.cs" />
-    <Compile Include="MemberPerformanceAdorner.cs" />
-    <Compile Include="MethodAdornerTextViewCreationListener.cs" />
     <Compile Include="Model\ModelBase.cs" />
     <Compile Include="Pack\OptionsPagePackage.cs" />
     <Compile Include="Views\OptionsPage.cs">
@@ -238,6 +236,7 @@
     <Reference Include="Microsoft.VisualStudio.CommandBars, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.VisualStudio.CoreUtility.15.4.27004\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
       <Private>True</Private>
@@ -245,6 +244,9 @@
     <Reference Include="Microsoft.VisualStudio.Imaging, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.VisualStudio.Imaging.15.4.27004\lib\net45\Microsoft.VisualStudio.Imaging.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.LanguageServices, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.VisualStudio.LanguageServices.2.4.0\lib\net46\Microsoft.VisualStudio.LanguageServices.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.OLE.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\packages\Microsoft.VisualStudio.OLE.Interop.7.10.6071\lib\Microsoft.VisualStudio.OLE.Interop.dll</HintPath>

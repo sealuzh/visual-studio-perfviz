@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace InSituVisualization
+namespace InSituVisualization.Tagging
 {
     /// <summary>
     /// Class does not inherit from CSharpSyntaxWalker since it wasn't possible to walk the tree in an async way...
@@ -70,7 +70,6 @@ namespace InSituVisualization
                 catch (ArgumentException e)
                 {
                     // syntaxNode is not within tree anymore ...
-                    continue;
                 }
             }
         }

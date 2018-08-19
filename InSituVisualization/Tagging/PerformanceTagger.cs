@@ -12,13 +12,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using DryIoc;
+using InSituVisualization.Predictions;
 using InSituVisualization.TelemetryMapper;
 using InSituVisualization.Utils;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 
@@ -35,6 +39,8 @@ namespace InSituVisualization.Tagging
     {
         private readonly ITextBuffer _buffer;
         private readonly ITelemetryDataMapper _telemetryDataMapper;
+        // TODO RR: Remove
+        private SyntaxTree _originalTree;
 
         public PerformanceTagger(ITextBuffer buffer)
         {
@@ -45,17 +51,37 @@ namespace InSituVisualization.Tagging
 
         #region ITagger implementation
 
-        public virtual IEnumerable<ITagSpan<PerformanceTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+        public IEnumerable<ITagSpan<PerformanceTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+        {
+            return GetTagsInternal().Result;
+        }
+
+        private async Task<IEnumerable<ITagSpan<PerformanceTag>>> GetTagsInternal()
         {
             var document = _buffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChanges();
             if (document == null)
             {
-                yield break;
+                return new List<ITagSpan<PerformanceTag>>();
             }
-            var syntaxTree = document.GetSyntaxTreeAsync().Result;
-            var semanticModel = document.GetSemanticModelAsync().Result;
+            var syntaxTree = await GetValidSyntaxTreeAsync(document).ConfigureAwait(false);
+            if (syntaxTree == null)
+            {
+                return new List<ITagSpan<PerformanceTag>>();
+            }
+
+            var semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
+            // TODO RR:
+            var telemetryDataMapper = IocHelper.Container.Resolve<ITelemetryDataMapper>();
+            var predictionEngine = IocHelper.Container.Resolve<IPredictionEngine>();
+            var performanceSyntaxWalker = new AsyncSyntaxWalker(
+                predictionEngine,
+                document,
+                semanticModel,
+                telemetryDataMapper);
+            //await performanceSyntaxWalker.VisitAsync(syntaxTree, _originalTree).ConfigureAwait(false);
 
             var methods = syntaxTree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>();
+            var list = new List<ITagSpan<PerformanceTag>>();
             foreach (var methodDeclarationSyntax in methods)
             {
                 var methodSymbol = semanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
@@ -66,8 +92,28 @@ namespace InSituVisualization.Tagging
 
                 var performanceInfo = _telemetryDataMapper.GetMethodPerformanceInfoAsync(methodSymbol).Result;
                 SnapshotSpan span = methodDeclarationSyntax.GetIdentifierSnapshotSpan(_buffer.CurrentSnapshot);
-                yield return new TagSpan<PerformanceTag>(span, new MethodPerformanceTag(performanceInfo));
+                list.Add(new TagSpan<PerformanceTag>(span, new MethodPerformanceTag(performanceInfo)));
             }
+            return list;
+        }
+
+        private async Task<SyntaxTree> GetValidSyntaxTreeAsync(Document document)
+        {
+            if (document == null)
+            {
+                return null;
+            }
+            var syntaxTree = await document.GetSyntaxTreeAsync().ConfigureAwait(false);
+            if (syntaxTree.GetDiagnostics().Any())
+            {
+                // there are errors in the code -> do not perform operations
+                return null;
+            }
+            if (_originalTree == null)
+            {
+                _originalTree = syntaxTree;
+            }
+            return syntaxTree;
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;

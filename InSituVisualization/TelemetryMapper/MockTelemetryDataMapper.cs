@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using DryIoc;
 using InSituVisualization.Predictions;
 using Microsoft.CodeAnalysis.FindSymbols;
+using Microsoft.VisualStudio.ComponentModelHost;
 
 namespace InSituVisualization.TelemetryMapper
 {
@@ -88,7 +89,6 @@ namespace InSituVisualization.TelemetryMapper
         }
 
         private readonly Dictionary<string, MethodPerformanceInfo> _telemetryDatas = new Dictionary<string, MethodPerformanceInfo>();
-        private static Document Document => IocHelper.Container.Resolve<MemberPerformanceAdorner>().Document;
 
         public MockTelemetryDataMapper(IPredictionEngine predictionEngine)
         {
@@ -118,7 +118,9 @@ namespace InSituVisualization.TelemetryMapper
         /// </summary>
         private async Task UpdateCallersAsync(ISymbol methodSymbol, TimeSpan meanExecutionTime)
         {
-            var callers = await SymbolFinder.FindCallersAsync(methodSymbol, Document.Project.Solution).ConfigureAwait(false);
+            var componentModel = (IComponentModel)Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(SComponentModel));
+            var workspace = componentModel.GetService<Microsoft.VisualStudio.LanguageServices.VisualStudioWorkspace>();
+            var callers = await SymbolFinder.FindCallersAsync(methodSymbol, workspace.CurrentSolution).ConfigureAwait(false);
             foreach (var symbolCallerInfo in callers)
             {
                 var callingSymbol = symbolCallerInfo.CallingSymbol;
