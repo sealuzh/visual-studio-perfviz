@@ -33,14 +33,14 @@ namespace InSituVisualization.Utils
                     return GetInvocationExpressionSpan(invocationExpressionSyntax);
                 default:
                     var lineSyntax = GetLineSyntaxNode(memberDeclarationSyntax);
-                    return Span.FromBounds(lineSyntax.SpanStart, lineSyntax.FullSpan.End);
+                    return lineSyntax.Span.ToSpan();
             }
         }
 
         private static Span GetInvocationExpressionSpan(InvocationExpressionSyntax invocationExpressionSyntax)
         {
             var spanStart = invocationExpressionSyntax.SpanStart;
-            var spanEnd = invocationExpressionSyntax.ArgumentList.FullSpan.End;
+            var spanEnd = invocationExpressionSyntax.ArgumentList.Span.End;
             return Span.FromBounds(spanStart, spanEnd);
         }
 
@@ -50,10 +50,10 @@ namespace InSituVisualization.Utils
             {
                 if (token.GetTrailingTrivia().Any(trivia => trivia.RawKind == (int)SyntaxKind.EndOfLineTrivia))
                 {
-                    return Span.FromBounds(syntaxNode.SpanStart, token.FullSpan.End);
+                    return Span.FromBounds(syntaxNode.SpanStart, token.Span.End);
                 }
             }
-            return Span.FromBounds(syntaxNode.SpanStart, syntaxNode.FullSpan.End);
+            return Span.FromBounds(syntaxNode.SpanStart, syntaxNode.Span.End);
         }
 
 
@@ -76,10 +76,10 @@ namespace InSituVisualization.Utils
         private static Span GetConstructorSpan(ConstructorDeclarationSyntax constructorDeclarationSyntax)
         {
             var spanStart = constructorDeclarationSyntax.Identifier.SpanStart;
-            var spanEnd = constructorDeclarationSyntax.ParameterList.FullSpan.End;
+            var spanEnd = constructorDeclarationSyntax.ParameterList.Span.End;
             if (constructorDeclarationSyntax.Initializer != null)
             {
-                spanEnd = constructorDeclarationSyntax.Initializer.FullSpan.End;
+                spanEnd = constructorDeclarationSyntax.Initializer.Span.End;
             }
             return Span.FromBounds(spanStart, spanEnd);
         }
@@ -91,11 +91,11 @@ namespace InSituVisualization.Utils
                 return default(Span);
             }
             var spanStart = methodDeclarationSyntax.Identifier.SpanStart;
-            var spanEnd = methodDeclarationSyntax.ParameterList.FullSpan.End;
+            var spanEnd = methodDeclarationSyntax.ParameterList.Span.End;
             if (methodDeclarationSyntax.ConstraintClauses.Any())
             {
                 // finding the end of where T : Clause (TypeParameterConstraintClause)
-                spanEnd = methodDeclarationSyntax.ConstraintClauses.FullSpan.End;
+                spanEnd = methodDeclarationSyntax.ConstraintClauses.Span.End;
             }
             return Span.FromBounds(spanStart, spanEnd);
         }
@@ -110,7 +110,7 @@ namespace InSituVisualization.Utils
             if (propertyDeclarationSyntax.ExpressionBody != null && propertyDeclarationSyntax.SemicolonToken != default(SyntaxToken))
             {
                 // inline getter
-                return Span.FromBounds(propertyDeclarationSyntax.Identifier.SpanStart, propertyDeclarationSyntax.SemicolonToken.FullSpan.End);
+                return Span.FromBounds(propertyDeclarationSyntax.Identifier.SpanStart, propertyDeclarationSyntax.SemicolonToken.Span.End);
             }
             var getAccessorDeclarationSyntax = propertyDeclarationSyntax.AccessorList.Accessors.FirstOrDefault(ac => ac.Kind() == SyntaxKind.GetAccessorDeclaration);
             if (getAccessorDeclarationSyntax == null)
@@ -119,7 +119,7 @@ namespace InSituVisualization.Utils
             }
             if (getAccessorDeclarationSyntax.SemicolonToken == default(SyntaxToken))
             {
-                return Span.FromBounds(getAccessorDeclarationSyntax.SpanStart, getAccessorDeclarationSyntax.FullSpan.End);
+                return Span.FromBounds(getAccessorDeclarationSyntax.SpanStart, getAccessorDeclarationSyntax.Span.End);
             }
             return default(Span);
         }

@@ -102,6 +102,7 @@
     <Compile Include="TelemetryCollector\TelemetryProvider.cs" />
     <Compile Include="Utils\StatisticExtensions.cs" />
     <Compile Include="Utils\SyntaxNodeExtensions.cs" />
+    <Compile Include="Utils\TextSpanExtensions.cs" />
     <Compile Include="Utils\TimeSpanExensions.cs" />
     <Compile Include="ViewModels\FilterControlViewModel.cs" />
     <Compile Include="ViewModels\InSituLoopControlViewModel.cs" />
