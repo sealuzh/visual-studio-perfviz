@@ -21,21 +21,18 @@ namespace InSituVisualization
         private readonly Document _document;
         private readonly SemanticModel _semanticModel;
         private readonly ITelemetryDataMapper _telemetryDataMapper;
-        private readonly MethodAdornmentLayer _methodAdornmentLayer;
 
 
         public AsyncSyntaxWalker(
             IPredictionEngine predictionEngine,
             Document document, 
             SemanticModel semanticModel,
-            ITelemetryDataMapper telemetryDataMapper, 
-            MethodAdornmentLayer methodAdornmentLayer)
+            ITelemetryDataMapper telemetryDataMapper)
         {
             _predictionEngine = predictionEngine ?? throw new ArgumentNullException(nameof(predictionEngine));
             _document = document ?? throw new ArgumentNullException(nameof(document));
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
             _telemetryDataMapper = telemetryDataMapper ?? throw new ArgumentNullException(nameof(telemetryDataMapper));
-            _methodAdornmentLayer = methodAdornmentLayer ?? throw new ArgumentNullException(nameof(methodAdornmentLayer)); ;
         }
 
         public async Task VisitAsync(SyntaxTree syntaxTree, SyntaxTree originalTree)
@@ -121,7 +118,7 @@ namespace InSituVisualization
             // TODO RR: all References:
             //var referencesToMethod = await SymbolFinder.FindReferencesAsync(methodSymbol, _document.Project.Solution);
 
-            _methodAdornmentLayer.DrawMethodPerformanceInfo(methodDeclarationSyntax, methodPerformanceInfo);
+            //_methodAdornmentLayer.DrawMethodPerformanceInfo(methodDeclarationSyntax, methodPerformanceInfo);
             return methodPerformanceInfo;
         }
 
@@ -138,7 +135,7 @@ namespace InSituVisualization
             {
                 return null;
             }
-            _methodAdornmentLayer.DrawMethodInvocationPerformanceInfo(invocationExpressionSyntax, invocationPerformanceInfo);
+            //_methodAdornmentLayer.DrawMethodInvocationPerformanceInfo(invocationExpressionSyntax, invocationPerformanceInfo);
             return invocationPerformanceInfo;
         }
 
@@ -159,7 +156,7 @@ namespace InSituVisualization
                 loopInvocationsList.Add(invocationPerformanceInfo);
             }
             var loopPerformanceInfo = new LoopPerformanceInfo(_predictionEngine, methodPerformanceInfo, loopInvocationsList);
-            _methodAdornmentLayer.DrawLoopPerformanceInfo(loopSyntax, loopPerformanceInfo);
+            //_methodAdornmentLayer.DrawLoopPerformanceInfo(loopSyntax, loopPerformanceInfo);
             return loopPerformanceInfo;
         }
 

@@ -21,7 +21,6 @@ namespace InSituVisualization
         /// Text textView where the adornment is created.
         /// </summary>
         private readonly IWpfTextView _textView;
-        private readonly MethodAdornmentLayer _methodAdornerLayer;
         private SyntaxTree _originalTree;
 
         public Document Document => _textView.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
@@ -34,7 +33,6 @@ namespace InSituVisualization
         {
             _textView = textView ?? throw new ArgumentNullException(nameof(textView));
             //_textView.LayoutChanged += OnLayoutChanged;
-            _methodAdornerLayer = new MethodAdornmentLayer(textView);
         }
 
 
@@ -65,7 +63,7 @@ namespace InSituVisualization
                     predictionEngine,
                     Document,
                     semanticModel,
-                    telemetryDataMapper, _methodAdornerLayer);
+                    telemetryDataMapper);
                 await performanceSyntaxWalker.VisitAsync(syntaxTree, _originalTree);
             }
             catch (Exception exception)

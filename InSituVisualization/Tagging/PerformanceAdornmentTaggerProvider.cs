@@ -40,8 +40,8 @@ namespace InSituVisualization.Tagging
                 return null;
             }
 
-            return PerformanceAdornmentTagger.GetTagger((IWpfTextView)textView, 
-                new Lazy<ITagAggregator<PerformanceTag>>(() => BufferTagAggregatorFactoryService.CreateTagAggregator<PerformanceTag>(textView.TextBuffer))) as ITagger<T>;
+            var tagAggregator = BufferTagAggregatorFactoryService.CreateTagAggregator<PerformanceTag>(textView.TextBuffer);
+            return textView.Properties.GetOrCreateSingletonProperty(() => new PerformanceAdornmentTagger((IWpfTextView)textView, tagAggregator)) as ITagger<T>;
         }
     }
 }

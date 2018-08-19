@@ -12,7 +12,7 @@ namespace InSituVisualization.Tagging
     /// This separation provides the potential for other extensions to consume color tags
     /// and provide alternative UI or other derived functionality over this data.
     /// </remarks>
-    public class PerformanceTag : ITag
+    public abstract class PerformanceTag : ITag
     {
         internal PerformanceTag(MethodPerformanceInfo performanceInfo)
         {

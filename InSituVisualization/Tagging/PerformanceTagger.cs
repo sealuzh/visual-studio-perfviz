@@ -66,7 +66,7 @@ namespace InSituVisualization.Tagging
 
                 var performanceInfo = _telemetryDataMapper.GetMethodPerformanceInfoAsync(methodSymbol).Result;
                 SnapshotSpan span = methodDeclarationSyntax.GetIdentifierSnapshotSpan(_buffer.CurrentSnapshot);
-                yield return new TagSpan<PerformanceTag>(span, new PerformanceTag(performanceInfo));
+                yield return new TagSpan<PerformanceTag>(span, new MethodPerformanceTag(performanceInfo));
             }
         }
 

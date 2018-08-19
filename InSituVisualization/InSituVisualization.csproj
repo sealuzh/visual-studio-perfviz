@@ -73,6 +73,9 @@
     <Compile Include="Filter\Filter.cs" />
     <Compile Include="Filter\FilterKind.cs" />
     <Compile Include="Filter\IFilter.cs" />
+    <Compile Include="Tagging\LoopPerformanceTag.cs" />
+    <Compile Include="Tagging\MethodInvocationPerformanceTag.cs" />
+    <Compile Include="Tagging\MethodPerformanceTag.cs" />
     <Compile Include="Tagging\PerformanceAdornmentTaggerProvider.cs" />
     <Compile Include="Tagging\PerformanceTaggerProvider.cs" />
     <Compile Include="Predictions\IPredictionEngine.cs" />
@@ -123,7 +126,6 @@
     <Compile Include="IocHelper.cs" />
     <Compile Include="TelemetryMapper\ITelemetryDataMapper.cs" />
     <Compile Include="TelemetryCollector\ITelemetryProvider.cs" />
-    <Compile Include="MethodAdornmentLayer.cs" />
     <Compile Include="Converters\ColorToSolidColorBrushValueConverter.cs" />
     <Compile Include="MemberPerformanceAdorner.cs" />
     <Compile Include="MethodAdornerTextViewCreationListener.cs" />

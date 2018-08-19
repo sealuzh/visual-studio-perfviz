@@ -24,7 +24,10 @@ namespace InSituVisualization.Tagging
     {
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
             return buffer.Properties.GetOrCreateSingletonProperty(() => new PerformanceTagger(buffer)) as ITagger<T>;
         }
     }
