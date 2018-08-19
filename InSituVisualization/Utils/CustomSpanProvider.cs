@@ -30,13 +30,21 @@ namespace InSituVisualization.Utils
                     return GetLoopIdentifierSpan(whileStatementSyntax);
                 // ReSharper disable once RedundantCaseLabel
                 case InvocationExpressionSyntax invocationExpressionSyntax:
+                    return GetInvocationExpressionSpan(invocationExpressionSyntax);
                 default:
                     var lineSyntax = GetLineSyntaxNode(memberDeclarationSyntax);
                     return Span.FromBounds(lineSyntax.SpanStart, lineSyntax.FullSpan.End);
             }
         }
 
-        private Span GetLoopIdentifierSpan(SyntaxNode syntaxNode)
+        private static Span GetInvocationExpressionSpan(InvocationExpressionSyntax invocationExpressionSyntax)
+        {
+            var spanStart = invocationExpressionSyntax.SpanStart;
+            var spanEnd = invocationExpressionSyntax.ArgumentList.FullSpan.End;
+            return Span.FromBounds(spanStart, spanEnd);
+        }
+
+        private static Span GetLoopIdentifierSpan(SyntaxNode syntaxNode)
         {
             foreach (var token in syntaxNode.DescendantNodesAndTokens(descend => true))
             {
