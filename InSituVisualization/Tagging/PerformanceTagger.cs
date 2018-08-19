@@ -63,6 +63,7 @@ namespace InSituVisualization.Tagging
             {
                 return new List<ITagSpan<PerformanceTag>>();
             }
+            // TODO RR: Only use this in changes....
             var syntaxTree = await GetValidSyntaxTreeAsync(document).ConfigureAwait(false);
             if (syntaxTree == null)
             {
@@ -71,30 +72,14 @@ namespace InSituVisualization.Tagging
 
             var semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
             // TODO RR:
-            var telemetryDataMapper = IocHelper.Container.Resolve<ITelemetryDataMapper>();
             var predictionEngine = IocHelper.Container.Resolve<IPredictionEngine>();
             var performanceSyntaxWalker = new AsyncSyntaxWalker(
                 predictionEngine,
                 document,
                 semanticModel,
-                telemetryDataMapper);
-            //await performanceSyntaxWalker.VisitAsync(syntaxTree, _originalTree).ConfigureAwait(false);
-
-            var methods = syntaxTree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>();
-            var list = new List<ITagSpan<PerformanceTag>>();
-            foreach (var methodDeclarationSyntax in methods)
-            {
-                var methodSymbol = semanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
-                if (methodSymbol == null)
-                {
-                    continue;
-                }
-
-                var performanceInfo = _telemetryDataMapper.GetMethodPerformanceInfoAsync(methodSymbol).Result;
-                SnapshotSpan span = methodDeclarationSyntax.GetIdentifierSnapshotSpan(_buffer.CurrentSnapshot);
-                list.Add(new TagSpan<PerformanceTag>(span, new MethodPerformanceTag(performanceInfo)));
-            }
-            return list;
+                _telemetryDataMapper, 
+                _buffer);
+            return await performanceSyntaxWalker.VisitAsync(syntaxTree, _originalTree).ConfigureAwait(false);
         }
 
         private async Task<SyntaxTree> GetValidSyntaxTreeAsync(Document document)

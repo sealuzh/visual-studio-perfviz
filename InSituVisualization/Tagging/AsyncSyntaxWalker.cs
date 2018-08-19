@@ -5,10 +5,13 @@ using System.Threading.Tasks;
 using InSituVisualization.Model;
 using InSituVisualization.Predictions;
 using InSituVisualization.TelemetryMapper;
+using InSituVisualization.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
 
 namespace InSituVisualization.Tagging
 {
@@ -17,6 +20,7 @@ namespace InSituVisualization.Tagging
     /// </summary>
     internal class AsyncSyntaxWalker
     {
+        private readonly ITextBuffer _buffer;
         private readonly IPredictionEngine _predictionEngine;
         private readonly Document _document;
         private readonly SemanticModel _semanticModel;
@@ -27,15 +31,17 @@ namespace InSituVisualization.Tagging
             IPredictionEngine predictionEngine,
             Document document, 
             SemanticModel semanticModel,
-            ITelemetryDataMapper telemetryDataMapper)
+            ITelemetryDataMapper telemetryDataMapper,
+            ITextBuffer _buffer)
         {
+            this._buffer = _buffer;
             _predictionEngine = predictionEngine ?? throw new ArgumentNullException(nameof(predictionEngine));
             _document = document ?? throw new ArgumentNullException(nameof(document));
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
             _telemetryDataMapper = telemetryDataMapper ?? throw new ArgumentNullException(nameof(telemetryDataMapper));
         }
 
-        public async Task VisitAsync(SyntaxTree syntaxTree, SyntaxTree originalTree)
+        public async Task<IEnumerable<ITagSpan<PerformanceTag>>> VisitAsync(SyntaxTree syntaxTree, SyntaxTree originalTree)
         {
             if (syntaxTree == null)
             {
@@ -46,18 +52,20 @@ namespace InSituVisualization.Tagging
                 throw new ArgumentNullException(nameof(originalTree));
             }
 
+            var list = new List<ITagSpan<PerformanceTag>>();
+
             // getting Changes
             // https://github.com/dotnet/roslyn/issues/17498
             // https://stackoverflow.com/questions/34243031/reliably-compare-type-symbols-itypesymbol-with-roslyn
             var treeChanges = syntaxTree.GetChanges(originalTree).Where(treeChange => !string.IsNullOrWhiteSpace(treeChange.NewText)).ToList();
 
-            var root = await syntaxTree.GetRootAsync();
+            var root = await syntaxTree.GetRootAsync().ConfigureAwait(false);
             var methods = root.DescendantNodes().OfType<MethodDeclarationSyntax>();
             foreach (var methodDeclarationSyntax in methods)
             {
                 try
                 {
-                    var methodPerformanceInfo = await VisitMethodDeclarationAsync(methodDeclarationSyntax);
+                    var methodPerformanceInfo = await VisitMethodDeclarationAsync(methodDeclarationSyntax, list).ConfigureAwait(false); 
                     if (methodPerformanceInfo != null)
                     {
                         methodPerformanceInfo.HasChanged = HasTextChangesInNode(treeChanges, methodDeclarationSyntax);
@@ -66,15 +74,19 @@ namespace InSituVisualization.Tagging
                             methodPerformanceInfo.PredictExecutionTime();
                         }
                     }
+                    list.Add(new TagSpan<PerformanceTag>(methodDeclarationSyntax.GetIdentifierSnapshotSpan(_buffer.CurrentSnapshot), 
+                        new MethodPerformanceTag(methodPerformanceInfo)));
                 }
                 catch (ArgumentException e)
                 {
                     // syntaxNode is not within tree anymore ...
                 }
             }
+
+            return list;
         }
 
-        public async Task<MethodPerformanceInfo> VisitMethodDeclarationAsync(MethodDeclarationSyntax methodDeclarationSyntax)
+        public async Task<MethodPerformanceInfo> VisitMethodDeclarationAsync(MethodDeclarationSyntax methodDeclarationSyntax, List<ITagSpan<PerformanceTag>> list)
         {
             var methodSymbol = _semanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
             if (methodSymbol == null)
@@ -82,7 +94,7 @@ namespace InSituVisualization.Tagging
                 return null;
             }
 
-            var methodPerformanceInfo = await _telemetryDataMapper.GetMethodPerformanceInfoAsync(methodSymbol);
+            var methodPerformanceInfo = await _telemetryDataMapper.GetMethodPerformanceInfoAsync(methodSymbol).ConfigureAwait(false);
             if (methodPerformanceInfo == null)
             {
                 return null;
@@ -95,11 +107,13 @@ namespace InSituVisualization.Tagging
             var invocationExpressionSyntaxs = methodDeclarationSyntax.DescendantNodes(node => true).OfType<InvocationExpressionSyntax>();
             foreach (var invocationExpressionSyntax in invocationExpressionSyntaxs)
             {
-                var invocationPerformanceInfo = await VisitInvocationAsync(invocationExpressionSyntax);
+                var invocationPerformanceInfo = await VisitInvocation(invocationExpressionSyntax).ConfigureAwait(false);
                 if (invocationPerformanceInfo != null)
                 {
                     methodPerformanceInfo.AddCalleePerformanceInfo(invocationPerformanceInfo);
                 }
+                list.Add(new TagSpan<PerformanceTag>(invocationExpressionSyntax.GetIdentifierSnapshotSpan(_buffer.CurrentSnapshot), 
+                    new MethodInvocationPerformanceTag(invocationPerformanceInfo)));
             }
 
             // Loops
@@ -107,21 +121,21 @@ namespace InSituVisualization.Tagging
             var loopSyntaxs = methodDeclarationSyntax.DescendantNodes(node => true).Where(IsLoopSyntax);
             foreach (var loopSyntax in loopSyntaxs)
             {
-                var loopPerformanceInfo = await VisitLoopAsync(loopSyntax, methodPerformanceInfo);
+                var loopPerformanceInfo = await VisitLoopAsync(loopSyntax, methodPerformanceInfo).ConfigureAwait(false);
                 if (loopPerformanceInfo != null)
                 {
                     methodPerformanceInfo.LoopPerformanceInfos.Add(loopPerformanceInfo);
                 }
+                list.Add(new TagSpan<PerformanceTag>(loopSyntax.GetIdentifierSnapshotSpan(_buffer.CurrentSnapshot),
+                    new LoopPerformanceTag(loopPerformanceInfo)));
             }
 
             // TODO RR: all References:
-            //var referencesToMethod = await SymbolFinder.FindReferencesAsync(methodSymbol, _document.Project.Solution);
-
-            //_methodAdornmentLayer.DrawMethodPerformanceInfo(methodDeclarationSyntax, methodPerformanceInfo);
+            //var referencesToMethod = await SymbolFinder.FindReferencesAsync(methodSymbol, _document.Project.Solution).ConfigureAwait(false);
             return methodPerformanceInfo;
         }
 
-        private async Task<MethodPerformanceInfo> VisitInvocationAsync(InvocationExpressionSyntax invocationExpressionSyntax)
+        private Task<MethodPerformanceInfo> VisitInvocation(InvocationExpressionSyntax invocationExpressionSyntax)
         {
             var invokedMethodSymbol = _semanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol as IMethodSymbol;
             // Only Drawing invocationSymbols that refer to the current assembly. Not drawing Information about other assemblies...
@@ -129,13 +143,7 @@ namespace InSituVisualization.Tagging
             {
                 return null;
             }
-            var invocationPerformanceInfo = await _telemetryDataMapper.GetMethodPerformanceInfoAsync(invokedMethodSymbol);
-            if (invocationPerformanceInfo == null)
-            {
-                return null;
-            }
-            //_methodAdornmentLayer.DrawMethodInvocationPerformanceInfo(invocationExpressionSyntax, invocationPerformanceInfo);
-            return invocationPerformanceInfo;
+            return _telemetryDataMapper.GetMethodPerformanceInfoAsync(invokedMethodSymbol);
         }
 
         private async Task<LoopPerformanceInfo> VisitLoopAsync(SyntaxNode loopSyntax, MethodPerformanceInfo methodPerformanceInfo)
@@ -151,11 +159,10 @@ namespace InSituVisualization.Tagging
                 {
                     continue;
                 }
-                var invocationPerformanceInfo = await _telemetryDataMapper.GetMethodPerformanceInfoAsync(invokedMethodSymbol);
+                var invocationPerformanceInfo = await _telemetryDataMapper.GetMethodPerformanceInfoAsync(invokedMethodSymbol).ConfigureAwait(false);
                 loopInvocationsList.Add(invocationPerformanceInfo);
             }
             var loopPerformanceInfo = new LoopPerformanceInfo(_predictionEngine, methodPerformanceInfo, loopInvocationsList);
-            //_methodAdornmentLayer.DrawLoopPerformanceInfo(loopSyntax, loopPerformanceInfo);
             return loopPerformanceInfo;
         }
 
