@@ -11,13 +11,12 @@
 
 using System;
 using System.ComponentModel.Composition;
-using InSituVisualization.Tagging;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 
-namespace InSituVisualization
+namespace InSituVisualization.Tagging
 {
     [Export(typeof(IViewTaggerProvider))]
     [ContentType("text")]

@@ -73,8 +73,8 @@
     <Compile Include="Filter\Filter.cs" />
     <Compile Include="Filter\FilterKind.cs" />
     <Compile Include="Filter\IFilter.cs" />
-    <Compile Include="PerformanceAdornmentTaggerProvider.cs" />
-    <Compile Include="PerformanceTaggerProvider.cs" />
+    <Compile Include="Tagging\PerformanceAdornmentTaggerProvider.cs" />
+    <Compile Include="Tagging\PerformanceTaggerProvider.cs" />
     <Compile Include="Predictions\IPredictionEngine.cs" />
     <Compile Include="Predictions\ISystemWorkload.cs" />
     <Compile Include="Predictions\LinearPredictionEngine.cs" />
