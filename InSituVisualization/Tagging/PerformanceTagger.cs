@@ -36,7 +36,7 @@ namespace InSituVisualization.Tagging
                 var document = snapshot.GetOpenDocumentInCurrentContextWithChanges();
                 if (document == null)
                 {
-                    throw new InvalidOperationException("Unable to get document");
+                    return null;
                 }
                 return new RoslynCache
                 {
@@ -102,6 +102,10 @@ namespace InSituVisualization.Tagging
             }
 
             _roslynCache = RoslynCache.Resolve(currentSnapshot).Result;
+            if (_roslynCache == null)
+            {
+                throw new InvalidOperationException("unable to get cache");
+            }
             if (_roslynCache.SyntaxTree.GetDiagnostics().Any())
             {
                 // there are errors in the code -> do not perform operations
