@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DryIoc;
 using InSituVisualization.Model;
 using InSituVisualization.Predictions;
 using InSituVisualization.TelemetryMapper;
@@ -18,21 +19,15 @@ namespace InSituVisualization.Tagging
     internal class AsyncSyntaxWalker
     {
         private readonly IPredictionEngine _predictionEngine;
-        private readonly Document _document;
         private readonly SemanticModel _semanticModel;
         private readonly ITelemetryDataMapper _telemetryDataMapper;
 
 
-        public AsyncSyntaxWalker(
-            IPredictionEngine predictionEngine,
-            Document document,
-            SemanticModel semanticModel,
-            ITelemetryDataMapper telemetryDataMapper)
+        public AsyncSyntaxWalker(SemanticModel semanticModel)
         {
-            _predictionEngine = predictionEngine ?? throw new ArgumentNullException(nameof(predictionEngine));
-            _document = document ?? throw new ArgumentNullException(nameof(document));
+            _predictionEngine = IocHelper.Container.Resolve<IPredictionEngine>() ?? throw new ArgumentNullException(nameof(_predictionEngine));
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
-            _telemetryDataMapper = telemetryDataMapper ?? throw new ArgumentNullException(nameof(telemetryDataMapper));
+            _telemetryDataMapper = IocHelper.Container.Resolve<ITelemetryDataMapper>() ?? throw new ArgumentNullException(nameof(_telemetryDataMapper));
         }
 
         public async Task<IDictionary<SyntaxNode, PerformanceTag>> VisitAsync(SyntaxTree syntaxTree, SyntaxTree originalTree)

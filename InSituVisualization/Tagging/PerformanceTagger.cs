@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DryIoc;
-using InSituVisualization.Predictions;
-using InSituVisualization.TelemetryMapper;
 using InSituVisualization.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
@@ -13,12 +10,13 @@ using Microsoft.VisualStudio.Text.Tagging;
 
 namespace InSituVisualization.Tagging
 {
+    /// <inheritdoc />
     /// <summary>
     /// Determines which spans of text get a PerformanceTag
     /// </summary>
     /// <remarks>
     /// This is a data-only component. The tagging system is a good fit for presenting data-about-text.
-    /// The <see cref="PerformanceAdornmentTagger"/> takes color tags produced by this tagger and creates corresponding UI for this data.
+    /// The <see cref="T:InSituVisualization.Tagging.PerformanceAdornmentTagger" /> takes performance tags produced by this tagger and creates corresponding UI for this data.
     /// </remarks>
     internal class PerformanceTagger : ITagger<PerformanceTag>
     {
@@ -28,24 +26,20 @@ namespace InSituVisualization.Tagging
         private class RoslynCache
         {
             private RoslynCache() { }
-            public Workspace Workspace { get; private set; }
-            public Document Document { get; private set; }
+
             public SemanticModel SemanticModel { get; private set; }
             public SyntaxTree SyntaxTree { get; private set; }
             public ITextSnapshot Snapshot { get; private set; }
 
-            public static async Task<RoslynCache> Resolve(ITextBuffer buffer, ITextSnapshot snapshot)
+            public static async Task<RoslynCache> Resolve(ITextSnapshot snapshot)
             {
-                var workspace = buffer.GetWorkspace();
                 var document = snapshot.GetOpenDocumentInCurrentContextWithChanges();
                 if (document == null)
                 {
-                    return null;
+                    throw new InvalidOperationException("Unable to get document");
                 }
                 return new RoslynCache
                 {
-                    Workspace = workspace,
-                    Document = document,
                     SemanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false),
                     SyntaxTree = await document.GetSyntaxTreeAsync().ConfigureAwait(false),
                     Snapshot = snapshot
@@ -55,7 +49,6 @@ namespace InSituVisualization.Tagging
 
         #endregion
 
-        private readonly ITextBuffer _buffer;
         // TODO RR: Remove
         private SyntaxTree _originalTree;
         private RoslynCache _roslynCache;
@@ -63,7 +56,6 @@ namespace InSituVisualization.Tagging
 
         public PerformanceTagger(ITextBuffer buffer)
         {
-            _buffer = buffer;
             buffer.Changed += (sender, args) => HandleBufferChanged(args);
         }
 
@@ -75,11 +67,17 @@ namespace InSituVisualization.Tagging
             {
                 yield break;
             }
-            UpdateCache(spans);
-            if (_roslynCache == null)
+
+            try
+            {
+                UpdateCache(spans);
+            }
+            catch (InvalidOperationException)
             {
                 yield break;
             }
+
+
             // Only returning requested spans
             foreach (var span in spans)
             {
@@ -96,13 +94,15 @@ namespace InSituVisualization.Tagging
 
         private void UpdateCache(NormalizedSnapshotSpanCollection spans)
         {
-            if (_roslynCache != null && _roslynCache.Snapshot == spans[0].Snapshot)
+            var currentSnapshot = spans[0].Snapshot;
+            if (_roslynCache != null && _roslynCache.Snapshot == currentSnapshot)
             {
+                // no changes
                 return;
             }
 
-            _roslynCache = RoslynCache.Resolve(_buffer, spans[0].Snapshot).Result;
-            if (_roslynCache == null || _roslynCache.SyntaxTree.GetDiagnostics().Any())
+            _roslynCache = RoslynCache.Resolve(currentSnapshot).Result;
+            if (_roslynCache.SyntaxTree.GetDiagnostics().Any())
             {
                 // there are errors in the code -> do not perform operations
                 return;
@@ -113,15 +113,11 @@ namespace InSituVisualization.Tagging
                 _originalTree = _roslynCache.SyntaxTree;
             }
 
-            var performanceSyntaxWalker = new AsyncSyntaxWalker(
-                IocHelper.Container.Resolve<IPredictionEngine>(),
-                _roslynCache.Document,
-                _roslynCache.SemanticModel,
-                IocHelper.Container.Resolve<ITelemetryDataMapper>());
-
-            var performanceTags = performanceSyntaxWalker.VisitAsync(_roslynCache.SyntaxTree, _originalTree).Result;
-            _performanceTagSpansCache = performanceTags.Select(perfTagKvp => new TagSpan<PerformanceTag>(perfTagKvp.Key.GetIdentifierSnapshotSpan(spans[0].Snapshot), perfTagKvp.Value)).ToList();
+            var performanceSyntaxWalker = new AsyncSyntaxWalker(_roslynCache.SemanticModel);
+            var nodeTags = performanceSyntaxWalker.VisitAsync(_roslynCache.SyntaxTree, _originalTree).Result;
+            _performanceTagSpansCache = nodeTags.Select(perfTagKvp => perfTagKvp.Key.GetTagSpan(currentSnapshot, perfTagKvp.Value)).ToList();
         }
+
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
@@ -132,7 +128,7 @@ namespace InSituVisualization.Tagging
         /// a <see cref="TagsChanged"/> event for these lines.
         /// </summary>
         /// <param name="args">The buffer change arguments.</param>
-        protected virtual void HandleBufferChanged(TextContentChangedEventArgs args)
+        private void HandleBufferChanged(TextContentChangedEventArgs args)
         {
             if (args.Changes.Count == 0)
                 return;

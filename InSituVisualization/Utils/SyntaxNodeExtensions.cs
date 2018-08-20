@@ -1,6 +1,7 @@
 ﻿using DryIoc;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
 
 namespace InSituVisualization.Utils
 {
@@ -12,5 +13,12 @@ namespace InSituVisualization.Utils
         {
             return new SnapshotSpan(textSnapshot, SpanProvider.GetSpan(syntax));
         }
+
+        public static TagSpan<T> GetTagSpan<T>(this SyntaxNode syntax, ITextSnapshot textSnapshot, T tag)
+            where T : ITag
+        {
+            return new TagSpan<T>(syntax.GetIdentifierSnapshotSpan(textSnapshot), tag);
+        }
+
     }
 }
