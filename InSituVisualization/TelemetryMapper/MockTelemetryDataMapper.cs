@@ -72,15 +72,13 @@ namespace InSituVisualization.TelemetryMapper
             {
                 var performanceData = IocHelper.Container.Resolve<IMethodPerformanceData>();
                 var numberOfRecords = Random.Next(2, 30);
-                var baseLineMilliSeconds = Random.Next(2, 100);
-
                 for (var i = 0; i < numberOfRecords; i++)
                 {
                     performanceData.ExecutionTimes.Add(new MockRecordedExecutionTimeMethodTelemetry(
                         documentationCommentId,
                         Guid.NewGuid().ToString(),
-                        DateTime.Now - TimeSpan.FromSeconds(Random.Next(1000)),
-                        TimeSpan.FromMilliseconds(baseLineMilliSeconds + Random.Next(20)),
+                        DateTime.Now - TimeSpan.FromMinutes(Random.Next(1000)),
+                        TimeSpan.FromMilliseconds(Random.NextDouble() * 20 + Random.Next(20)),
                         new MockClientData()));
                 }
 
