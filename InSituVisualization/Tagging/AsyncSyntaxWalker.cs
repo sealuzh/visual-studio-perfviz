@@ -5,13 +5,10 @@ using System.Threading.Tasks;
 using InSituVisualization.Model;
 using InSituVisualization.Predictions;
 using InSituVisualization.TelemetryMapper;
-using InSituVisualization.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
 
 namespace InSituVisualization.Tagging
 {
@@ -20,7 +17,6 @@ namespace InSituVisualization.Tagging
     /// </summary>
     internal class AsyncSyntaxWalker
     {
-        private readonly ITextBuffer _buffer;
         private readonly IPredictionEngine _predictionEngine;
         private readonly Document _document;
         private readonly SemanticModel _semanticModel;
@@ -29,19 +25,17 @@ namespace InSituVisualization.Tagging
 
         public AsyncSyntaxWalker(
             IPredictionEngine predictionEngine,
-            Document document, 
+            Document document,
             SemanticModel semanticModel,
-            ITelemetryDataMapper telemetryDataMapper,
-            ITextBuffer buffer)
+            ITelemetryDataMapper telemetryDataMapper)
         {
-            _buffer = buffer;
             _predictionEngine = predictionEngine ?? throw new ArgumentNullException(nameof(predictionEngine));
             _document = document ?? throw new ArgumentNullException(nameof(document));
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
             _telemetryDataMapper = telemetryDataMapper ?? throw new ArgumentNullException(nameof(telemetryDataMapper));
         }
 
-        public async Task<IEnumerable<ITagSpan<PerformanceTag>>> VisitAsync(SyntaxTree syntaxTree, SyntaxTree originalTree)
+        public async Task<IDictionary<SyntaxNode, PerformanceTag>> VisitAsync(SyntaxTree syntaxTree, SyntaxTree originalTree)
         {
             if (syntaxTree == null)
             {
@@ -52,7 +46,7 @@ namespace InSituVisualization.Tagging
                 throw new ArgumentNullException(nameof(originalTree));
             }
 
-            var list = new List<ITagSpan<PerformanceTag>>();
+            var dict = new Dictionary<SyntaxNode, PerformanceTag>();
 
             // getting Changes
             // https://github.com/dotnet/roslyn/issues/17498
@@ -65,7 +59,7 @@ namespace InSituVisualization.Tagging
             {
                 try
                 {
-                    var methodPerformanceInfo = await VisitMethodDeclarationAsync(methodDeclarationSyntax, list).ConfigureAwait(false); 
+                    var methodPerformanceInfo = await VisitMethodDeclarationAsync(methodDeclarationSyntax, dict).ConfigureAwait(false);
                     if (methodPerformanceInfo != null)
                     {
                         methodPerformanceInfo.HasChanged = HasTextChangesInNode(treeChanges, methodDeclarationSyntax);
@@ -74,8 +68,7 @@ namespace InSituVisualization.Tagging
                             methodPerformanceInfo.PredictExecutionTime();
                         }
                     }
-                    list.Add(new TagSpan<PerformanceTag>(methodDeclarationSyntax.GetIdentifierSnapshotSpan(_buffer.CurrentSnapshot), 
-                        new MethodPerformanceTag(methodPerformanceInfo)));
+                    dict.Add(methodDeclarationSyntax, new MethodPerformanceTag(methodPerformanceInfo));
                 }
                 catch (ArgumentException e)
                 {
@@ -83,10 +76,10 @@ namespace InSituVisualization.Tagging
                 }
             }
 
-            return list;
+            return dict;
         }
 
-        public async Task<MethodPerformanceInfo> VisitMethodDeclarationAsync(MethodDeclarationSyntax methodDeclarationSyntax, List<ITagSpan<PerformanceTag>> list)
+        public async Task<MethodPerformanceInfo> VisitMethodDeclarationAsync(MethodDeclarationSyntax methodDeclarationSyntax, IDictionary<SyntaxNode, PerformanceTag> list)
         {
             var methodSymbol = _semanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
             if (methodSymbol == null)
@@ -112,9 +105,9 @@ namespace InSituVisualization.Tagging
                 {
                     methodPerformanceInfo.AddCalleePerformanceInfo(invocationPerformanceInfo);
                 }
-                list.Add(new TagSpan<PerformanceTag>(invocationExpressionSyntax.GetIdentifierSnapshotSpan(_buffer.CurrentSnapshot), 
-                    new MethodInvocationPerformanceTag(invocationPerformanceInfo)));
+                list.Add(invocationExpressionSyntax, new MethodInvocationPerformanceTag(invocationPerformanceInfo));
             }
+            // TODO RR: Remove calees when deleting in code...
 
             // Loops
             // TODO RR: Clean and only Iterate once...
@@ -126,8 +119,7 @@ namespace InSituVisualization.Tagging
                 {
                     methodPerformanceInfo.LoopPerformanceInfos.Add(loopPerformanceInfo);
                 }
-                list.Add(new TagSpan<PerformanceTag>(loopSyntax.GetIdentifierSnapshotSpan(_buffer.CurrentSnapshot),
-                    new LoopPerformanceTag(loopPerformanceInfo)));
+                list.Add(loopSyntax, new LoopPerformanceTag(loopPerformanceInfo));
             }
 
             // TODO RR: all References:

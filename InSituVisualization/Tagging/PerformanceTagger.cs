@@ -1,28 +1,13 @@
-﻿//***************************************************************************
-//
-//    Copyright (c) Microsoft Corporation. All rights reserved.
-//    This code is licensed under the Visual Studio SDK license terms.
-//    THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
-//    ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
-//    IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
-//    PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
-//
-//***************************************************************************
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Media;
 using DryIoc;
 using InSituVisualization.Predictions;
 using InSituVisualization.TelemetryMapper;
 using InSituVisualization.Utils;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 
@@ -37,68 +22,105 @@ namespace InSituVisualization.Tagging
     /// </remarks>
     internal class PerformanceTagger : ITagger<PerformanceTag>
     {
+
+        #region Cache
+
+        private class RoslynCache
+        {
+            private RoslynCache() { }
+            public Workspace Workspace { get; private set; }
+            public Document Document { get; private set; }
+            public SemanticModel SemanticModel { get; private set; }
+            public SyntaxTree SyntaxTree { get; private set; }
+            public ITextSnapshot Snapshot { get; private set; }
+
+            public static async Task<RoslynCache> Resolve(ITextBuffer buffer, ITextSnapshot snapshot)
+            {
+                var workspace = buffer.GetWorkspace();
+                var document = snapshot.GetOpenDocumentInCurrentContextWithChanges();
+                if (document == null)
+                {
+                    return null;
+                }
+                return new RoslynCache
+                {
+                    Workspace = workspace,
+                    Document = document,
+                    SemanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false),
+                    SyntaxTree = await document.GetSyntaxTreeAsync().ConfigureAwait(false),
+                    Snapshot = snapshot
+                };
+            }
+        }
+
+        #endregion
+
         private readonly ITextBuffer _buffer;
-        private readonly ITelemetryDataMapper _telemetryDataMapper;
         // TODO RR: Remove
         private SyntaxTree _originalTree;
+        private RoslynCache _roslynCache;
+        private IList<TagSpan<PerformanceTag>> _performanceTagSpansCache;
 
         public PerformanceTagger(ITextBuffer buffer)
         {
             _buffer = buffer;
             buffer.Changed += (sender, args) => HandleBufferChanged(args);
-            _telemetryDataMapper = IocHelper.Container.Resolve<ITelemetryDataMapper>();
         }
 
         #region ITagger implementation
 
         public IEnumerable<ITagSpan<PerformanceTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
-            return GetTagsInternal().Result;
+            if (spans.Count == 0)
+            {
+                yield break;
+            }
+            UpdateCache(spans);
+            if (_roslynCache == null)
+            {
+                yield break;
+            }
+            // Only returning requested spans
+            foreach (var span in spans)
+            {
+                foreach (var performanceTag in _performanceTagSpansCache)
+                {
+                    var newSnapshotSpan = performanceTag.Span.TranslateTo(spans[0].Snapshot, SpanTrackingMode.EdgeExclusive);
+                    if (span.IntersectsWith(newSnapshotSpan))
+                    {
+                        yield return performanceTag;
+                    }
+                }
+            }
         }
 
-        private async Task<IEnumerable<ITagSpan<PerformanceTag>>> GetTagsInternal()
+        private void UpdateCache(NormalizedSnapshotSpanCollection spans)
         {
-            var document = _buffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChanges();
-            if (document == null)
+            if (_roslynCache != null && _roslynCache.Snapshot == spans[0].Snapshot)
             {
-                return new List<ITagSpan<PerformanceTag>>();
-            }
-            // TODO RR: Only use this in changes....
-            var syntaxTree = await GetValidSyntaxTreeAsync(document).ConfigureAwait(false);
-            if (syntaxTree == null)
-            {
-                return new List<ITagSpan<PerformanceTag>>();
+                return;
             }
 
-            var semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
-            // TODO RR:
-            var predictionEngine = IocHelper.Container.Resolve<IPredictionEngine>();
-            var performanceSyntaxWalker = new AsyncSyntaxWalker(
-                predictionEngine,
-                document,
-                semanticModel,
-                _telemetryDataMapper, 
-                _buffer);
-            return await performanceSyntaxWalker.VisitAsync(syntaxTree, _originalTree).ConfigureAwait(false);
-        }
-
-        private async Task<SyntaxTree> GetValidSyntaxTreeAsync(Document document)
-        {
-            if (document == null)
-            {
-                return null;
-            }
-            var syntaxTree = await document.GetSyntaxTreeAsync().ConfigureAwait(false);
-            if (syntaxTree.GetDiagnostics().Any())
+            _roslynCache = RoslynCache.Resolve(_buffer, spans[0].Snapshot).Result;
+            if (_roslynCache == null || _roslynCache.SyntaxTree.GetDiagnostics().Any())
             {
                 // there are errors in the code -> do not perform operations
-                return null;
+                return;
             }
+
             if (_originalTree == null)
             {
-                _originalTree = syntaxTree;
+                _originalTree = _roslynCache.SyntaxTree;
             }
-            return syntaxTree;
+
+            var performanceSyntaxWalker = new AsyncSyntaxWalker(
+                IocHelper.Container.Resolve<IPredictionEngine>(),
+                _roslynCache.Document,
+                _roslynCache.SemanticModel,
+                IocHelper.Container.Resolve<ITelemetryDataMapper>());
+
+            var performanceTags = performanceSyntaxWalker.VisitAsync(_roslynCache.SyntaxTree, _originalTree).Result;
+            _performanceTagSpansCache = performanceTags.Select(perfTagKvp => new TagSpan<PerformanceTag>(perfTagKvp.Key.GetIdentifierSnapshotSpan(spans[0].Snapshot), perfTagKvp.Value)).ToList();
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
