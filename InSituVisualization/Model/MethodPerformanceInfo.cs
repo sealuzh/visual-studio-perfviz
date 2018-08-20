@@ -49,7 +49,7 @@ namespace InSituVisualization.Model
             // TODO RR: Do not use Set, Use Loop Infos as well
             PredictedExecutionTime = PredictionEngine.PredictMethodTime(this, new object[0]);
             // Propagating Changes up the Tree
-            DoForCallers(mpi => mpi.PredictExecutionTime());
+            PropagateToCallers(mpi => mpi.PredictExecutionTime());
         }
 
         public void AddCalleePerformanceInfo(MethodPerformanceInfo calleePerformanceInfo)
@@ -60,21 +60,25 @@ namespace InSituVisualization.Model
 
         #region Helper Methods
 
+        protected bool IsPropagating { get; set; }
+
         /// <summary>
         /// Helper Method for updating callers
         /// Propagating Changes up the Tree
         /// </summary>
-        private void DoForCallers(Action<MethodPerformanceInfo> action)
+        private void PropagateToCallers(Action<MethodPerformanceInfo> action)
         {
+            IsPropagating = true;
             foreach (var caller in _callerPerformanceInfos)
             {
-                if (caller == this)
+                if (caller.IsPropagating)
                 {
-                    // do not update self... (otherwise it may result in a stackoverflow)
+                    // do not update if already updating ... (otherwise infinite loop...)
                     continue;
                 }
                 action(caller);
             }
+            IsPropagating = false;
         }
 
         #endregion
