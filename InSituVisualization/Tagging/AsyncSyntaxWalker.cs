@@ -6,6 +6,7 @@ using DryIoc;
 using InSituVisualization.Model;
 using InSituVisualization.Predictions;
 using InSituVisualization.TelemetryMapper;
+using InSituVisualization.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -30,6 +31,11 @@ namespace InSituVisualization.Tagging
             _telemetryDataMapper = IocHelper.Container.Resolve<ITelemetryDataMapper>() ?? throw new ArgumentNullException(nameof(_telemetryDataMapper));
         }
 
+
+        private Dictionary<SyntaxNode, PerformanceTag> PerformanceTags { get; set; }
+
+        private List<TextChange> TreeChanges { get; set; }
+
         public async Task<IDictionary<SyntaxNode, PerformanceTag>> VisitAsync(SyntaxTree syntaxTree, SyntaxTree originalTree)
         {
             if (syntaxTree == null)
@@ -41,12 +47,12 @@ namespace InSituVisualization.Tagging
                 throw new ArgumentNullException(nameof(originalTree));
             }
 
-            var dict = new Dictionary<SyntaxNode, PerformanceTag>();
+            PerformanceTags = new Dictionary<SyntaxNode, PerformanceTag>();
 
             // getting Changes
             // https://github.com/dotnet/roslyn/issues/17498
             // https://stackoverflow.com/questions/34243031/reliably-compare-type-symbols-itypesymbol-with-roslyn
-            var treeChanges = syntaxTree.GetChanges(originalTree).Where(treeChange => !string.IsNullOrWhiteSpace(treeChange.NewText)).ToList();
+            TreeChanges = syntaxTree.GetChanges(originalTree).Where(treeChange => !string.IsNullOrWhiteSpace(treeChange.NewText)).ToList();
 
             var root = await syntaxTree.GetRootAsync().ConfigureAwait(false);
             var methods = root.DescendantNodes().OfType<MethodDeclarationSyntax>();
@@ -54,16 +60,7 @@ namespace InSituVisualization.Tagging
             {
                 try
                 {
-                    var methodPerformanceInfo = await VisitMethodDeclarationAsync(methodDeclarationSyntax, dict).ConfigureAwait(false);
-                    if (methodPerformanceInfo != null)
-                    {
-                        methodPerformanceInfo.HasChanged = HasTextChangesInNode(treeChanges, methodDeclarationSyntax);
-                        if (methodPerformanceInfo.HasChanged)
-                        {
-                            methodPerformanceInfo.PredictExecutionTime();
-                        }
-                    }
-                    dict.Add(methodDeclarationSyntax, new MethodPerformanceTag(methodPerformanceInfo));
+                    await VisitMethodDeclarationAsync(methodDeclarationSyntax).ConfigureAwait(false);
                 }
                 catch (ArgumentException e)
                 {
@@ -71,58 +68,64 @@ namespace InSituVisualization.Tagging
                 }
             }
 
-            return dict;
+            return PerformanceTags;
         }
 
-        public async Task<MethodPerformanceInfo> VisitMethodDeclarationAsync(MethodDeclarationSyntax methodDeclarationSyntax, IDictionary<SyntaxNode, PerformanceTag> list)
+        public async Task VisitMethodDeclarationAsync(MethodDeclarationSyntax methodDeclarationSyntax)
         {
             var methodSymbol = _semanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
             if (methodSymbol == null)
             {
-                return null;
+                return;
             }
 
             var methodPerformanceInfo = await _telemetryDataMapper.GetMethodPerformanceInfoAsync(methodSymbol).ConfigureAwait(false);
             if (methodPerformanceInfo == null)
             {
-                return null;
+                return;
             }
 
             // TODO RR: var syntaxReference = methodSymbol.DeclaringSyntaxReferences
             // syntaxReference.GetSyntax(context.CancellationToken);
 
             // Invocations in Method
+            IList<MethodPerformanceInfo> invocationsList = new List<MethodPerformanceInfo>();
             var invocationExpressionSyntaxs = methodDeclarationSyntax.DescendantNodes(node => true).OfType<InvocationExpressionSyntax>();
             foreach (var invocationExpressionSyntax in invocationExpressionSyntaxs)
             {
-                var invocationPerformanceInfo = await VisitInvocation(invocationExpressionSyntax).ConfigureAwait(false);
-                if (invocationPerformanceInfo != null)
+                var invocationsTuple = await VisitInvocationAsync(invocationExpressionSyntax).ConfigureAwait(false);
+                if (invocationsTuple != null)
                 {
-                    methodPerformanceInfo.AddCalleePerformanceInfo(invocationPerformanceInfo);
+                    invocationsList.Add(invocationsTuple);
                 }
-                list.Add(invocationExpressionSyntax, new MethodInvocationPerformanceTag(invocationPerformanceInfo));
             }
-            // TODO RR: Remove calees when deleting in code...
+            methodPerformanceInfo.UpdateCallees(invocationsList);
 
             // Loops
             // TODO RR: Clean and only Iterate once...
-            var loopSyntaxs = methodDeclarationSyntax.DescendantNodes(node => true).Where(IsLoopSyntax);
+            var loopSyntaxs = methodDeclarationSyntax.DescendantNodes(node => true).Where(n => n.IsLoopSyntax());
+            var loopPerformanceInfos = new List<LoopPerformanceInfo>();
             foreach (var loopSyntax in loopSyntaxs)
             {
-                var loopPerformanceInfo = await VisitLoopAsync(loopSyntax, methodPerformanceInfo).ConfigureAwait(false);
-                if (loopPerformanceInfo != null)
-                {
-                    methodPerformanceInfo.LoopPerformanceInfos.Add(loopPerformanceInfo);
-                }
-                list.Add(loopSyntax, new LoopPerformanceTag(loopPerformanceInfo));
+                loopPerformanceInfos.Add(await VisitLoopAsync(loopSyntax, methodPerformanceInfo).ConfigureAwait(false));
             }
+            methodPerformanceInfo.UpdateLoops(loopPerformanceInfos);
+
+            // TODO RR: Problem with textchanges: Insertions aren't recognized as change, since the space did not exist before...
+            methodPerformanceInfo.HasChanged = methodDeclarationSyntax.HasTextChanges(TreeChanges);
+            if (methodPerformanceInfo.HasChanged)
+            {
+                methodPerformanceInfo.PredictExecutionTime();
+            }
+            PerformanceTags.Add(methodDeclarationSyntax, new MethodPerformanceTag(methodPerformanceInfo));
+
 
             // TODO RR: all References:
-            //var referencesToMethod = await SymbolFinder.FindReferencesAsync(methodSymbol, _document.Project.Solution).ConfigureAwait(false);
-            return methodPerformanceInfo;
+            //var referencesToMethod = await SymbolFinder.FindCallersAsync(methodSymbol, _document.Project.Solution).ConfigureAwait(false);
         }
 
-        private Task<MethodPerformanceInfo> VisitInvocation(InvocationExpressionSyntax invocationExpressionSyntax)
+        // ReSharper disable once SuggestBaseTypeForParameter
+        private async Task<MethodPerformanceInfo> VisitInvocationAsync(InvocationExpressionSyntax invocationExpressionSyntax)
         {
             var invokedMethodSymbol = _semanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol as IMethodSymbol;
             // Only Drawing invocationSymbols that refer to the current assembly. Not drawing Information about other assemblies...
@@ -130,7 +133,14 @@ namespace InSituVisualization.Tagging
             {
                 return null;
             }
-            return _telemetryDataMapper.GetMethodPerformanceInfoAsync(invokedMethodSymbol);
+
+            var invocationPerformanceInfo = await _telemetryDataMapper.GetMethodPerformanceInfoAsync(invokedMethodSymbol);
+
+            if (invocationPerformanceInfo != null)
+            {
+                PerformanceTags.Add(invocationExpressionSyntax, new MethodInvocationPerformanceTag(invocationPerformanceInfo));
+            }
+            return invocationPerformanceInfo;
         }
 
         private async Task<LoopPerformanceInfo> VisitLoopAsync(SyntaxNode loopSyntax, MethodPerformanceInfo methodPerformanceInfo)
@@ -150,21 +160,8 @@ namespace InSituVisualization.Tagging
                 loopInvocationsList.Add(invocationPerformanceInfo);
             }
             var loopPerformanceInfo = new LoopPerformanceInfo(_predictionEngine, methodPerformanceInfo, loopInvocationsList);
+            PerformanceTags.Add(loopSyntax, new LoopPerformanceTag(loopPerformanceInfo));
             return loopPerformanceInfo;
-        }
-
-
-        private static bool IsLoopSyntax(SyntaxNode node)
-        {
-            return node is ForStatementSyntax ||
-                   node is WhileStatementSyntax ||
-                   node is DoStatementSyntax ||
-                   node is ForEachStatementSyntax;
-        }
-
-        private static bool HasTextChangesInNode(IEnumerable<TextChange> textChanges, SyntaxNode syntaxNode)
-        {
-            return textChanges.Any(textChange => syntaxNode.Span.IntersectsWith(textChange.Span));
         }
     }
 }

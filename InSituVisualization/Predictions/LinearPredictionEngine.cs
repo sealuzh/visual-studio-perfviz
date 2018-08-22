@@ -24,7 +24,7 @@ namespace InSituVisualization.Predictions
         public TimeSpan PredictMethodTime(MethodPerformanceInfo methodPerformanceInfo, object[] parameters)
         {
             // TODO RR: multiply by 1 + workolad
-            var executionTimeWithoutLoops = methodPerformanceInfo.CalleePerformanceInfos.Sum(p => p.ExecutionTime);
+            var executionTimeWithoutLoops = methodPerformanceInfo.AllCalleePerformanceInfo.Sum(p => p.ExecutionTime);
             if (!methodPerformanceInfo.LoopPerformanceInfos.Any())
             {
                 return executionTimeWithoutLoops;
