@@ -78,7 +78,7 @@ namespace InSituVisualization.TelemetryMapper
                         documentationCommentId,
                         Guid.NewGuid().ToString(),
                         DateTime.Now - TimeSpan.FromMinutes(Random.Next(1000)),
-                        TimeSpan.FromMilliseconds(Random.NextDouble() * 20 + Random.Next(20)),
+                        TimeSpan.FromMilliseconds(Random.NextDouble() * 10),
                         new MockClientData()));
                 }
 
