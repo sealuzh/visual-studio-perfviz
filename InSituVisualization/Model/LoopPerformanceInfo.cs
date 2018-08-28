@@ -26,7 +26,7 @@ namespace InSituVisualization.Model
         /// </summary>
         public TimeSpan SingleIterationTime
         {
-            get { return InvocationPerformanceInfos.Sum(p => p.MethodPerformanceData.MeanExecutionTime); }
+            get { return InvocationPerformanceInfos.Sum(p => p.ExecutionTime); }
         }
 
         /// <summary>

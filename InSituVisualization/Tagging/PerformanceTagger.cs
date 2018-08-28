@@ -68,15 +68,10 @@ namespace InSituVisualization.Tagging
                 yield break;
             }
 
-            try
-            {
-                UpdateCache(spans);
-            }
-            catch (InvalidOperationException)
+            if (!UpdateCache(spans))
             {
                 yield break;
             }
-
 
             // Only returning requested spans
             foreach (var span in spans)
@@ -92,24 +87,24 @@ namespace InSituVisualization.Tagging
             }
         }
 
-        private void UpdateCache(NormalizedSnapshotSpanCollection spans)
+        private bool UpdateCache(NormalizedSnapshotSpanCollection spans)
         {
             var currentSnapshot = spans[0].Snapshot;
-            if (_roslynCache != null && _roslynCache.Snapshot == currentSnapshot)
+            if (_roslynCache != null && _roslynCache.Snapshot == currentSnapshot && _performanceTagSpansCache != null)
             {
                 // no changes
-                return;
+                return true;
             }
 
             _roslynCache = RoslynCache.Resolve(currentSnapshot).Result;
             if (_roslynCache == null)
             {
-                throw new InvalidOperationException("unable to get cache");
+                return false;
             }
             if (_roslynCache.SyntaxTree.GetDiagnostics().Any())
             {
                 // there are errors in the code -> do not perform operations
-                return;
+                return false;
             }
 
             if (_originalTree == null)
@@ -120,6 +115,7 @@ namespace InSituVisualization.Tagging
             var performanceSyntaxWalker = new AsyncSyntaxWalker(_roslynCache.SemanticModel);
             var nodeTags = performanceSyntaxWalker.VisitAsync(_roslynCache.SyntaxTree, _originalTree).Result;
             _performanceTagSpansCache = nodeTags.Select(perfTagKvp => perfTagKvp.Key.GetTagSpan(currentSnapshot, perfTagKvp.Value)).ToList();
+            return true;
         }
 
 

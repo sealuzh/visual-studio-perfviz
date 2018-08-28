@@ -39,7 +39,7 @@ namespace InSituVisualization.Model
             MethodPerformanceData = methodPerformanceData ?? throw new ArgumentNullException(nameof(methodPerformanceData));
             methodPerformanceData.PropertyChanged += (s, e) => OnPropertyChanged(nameof(ExecutionTime));
             //_calleePerformanceInfos.CollectionChanged += (s, e) => PredictExecutionTime();
-            //LoopPerformanceInfos.CollectionChanged += (s, e) => PredictExecutionTime();
+            _loopPerformanceInfos.CollectionChanged += (s, e) => PredictExecutionTime();
         }
 
         public IPredictionEngine PredictionEngine { get; }
@@ -104,6 +104,7 @@ namespace InSituVisualization.Model
         public void UpdateLoops(IList<LoopPerformanceInfo> loopsList)
         {
             _loopPerformanceInfos = new ObservableCollection<LoopPerformanceInfo>(loopsList);
+            PredictExecutionTime();
         }
 
         #region Propagation

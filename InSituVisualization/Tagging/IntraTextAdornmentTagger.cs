@@ -98,8 +98,17 @@ namespace InSituVisualization.Tagging
 
                 Dictionary<SnapshotSpan, TAdornment> translatedAdornmentCache = new Dictionary<SnapshotSpan, TAdornment>();
 
-                foreach (var keyValuePair in _adornmentCache)
-                    translatedAdornmentCache.Add(keyValuePair.Key.TranslateTo(Snapshot, SpanTrackingMode.EdgeExclusive), keyValuePair.Value);
+                try
+                {
+                    foreach (var keyValuePair in _adornmentCache)
+                        translatedAdornmentCache.Add(keyValuePair.Key.TranslateTo(Snapshot, SpanTrackingMode.EdgeExclusive), keyValuePair.Value);
+
+                }
+                catch (Exception e)
+                {
+                    return;
+                }
+
 
                 _adornmentCache = translatedAdornmentCache;
             }
