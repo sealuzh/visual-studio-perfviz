@@ -18,7 +18,6 @@ namespace InSituVisualization.Model
         public MethodPerformanceInfo MethodPerformanceInfo { get; }
         public IList<MethodPerformanceInfo> InvocationPerformanceInfos { get; }
 
-
         public int PredictedLoopIterations { get; set; }
 
         /// <summary>

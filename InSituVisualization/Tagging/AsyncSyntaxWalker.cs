@@ -151,8 +151,7 @@ namespace InSituVisualization.Tagging
             {
                 var invokedMethodSymbol = _semanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol as IMethodSymbol;
                 // Only Drawing invocationSymbols that refer to the current assembly. Not drawing Information about other assemblies...
-                if (invokedMethodSymbol == null ||
-                    !Equals(_semanticModel.Compilation.Assembly, invokedMethodSymbol.ContainingAssembly))
+                if (invokedMethodSymbol == null || !Equals(_semanticModel.Compilation.Assembly, invokedMethodSymbol.ContainingAssembly))
                 {
                     continue;
                 }

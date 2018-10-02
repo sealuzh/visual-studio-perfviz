@@ -131,6 +131,11 @@ namespace InSituVisualization.Model
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            return $"{GetType().Name} {MethodSymbol}";
+        }
     }
     //ReSharper restore UnusedMember.Global
 }
