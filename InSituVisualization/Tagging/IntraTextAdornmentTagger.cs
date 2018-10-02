@@ -195,8 +195,19 @@ namespace InSituVisualization.Tagging
             // so that they can be removed from the cache if they no longer correspond to data tags.
             HashSet<SnapshotSpan> toRemove = new HashSet<SnapshotSpan>();
             foreach (var ar in _adornmentCache)
-                if (spans.IntersectsWith(new NormalizedSnapshotSpanCollection(ar.Key)))
+            {
+                try
+                {
+                    if (spans.IntersectsWith(new NormalizedSnapshotSpanCollection(ar.Key)))
+                        toRemove.Add(ar.Key);
+                }
+                catch (ArgumentException ex)
+                {
+                    // TODO RR: Find better fix
                     toRemove.Add(ar.Key);
+                }
+            }
+
 
             foreach (var spanDataPair in GetAdornmentData(spans).Distinct(new Comparer()))
             {
@@ -234,7 +245,9 @@ namespace InSituVisualization.Tagging
             }
 
             foreach (var snapshotSpan in toRemove)
+            {
                 _adornmentCache.Remove(snapshotSpan);
+            }
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
