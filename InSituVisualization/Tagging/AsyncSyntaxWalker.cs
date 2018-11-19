@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using DryIoc;
@@ -158,9 +159,118 @@ namespace InSituVisualization.Tagging
                 var invocationPerformanceInfo = await _telemetryDataMapper.GetMethodPerformanceInfoAsync(invokedMethodSymbol).ConfigureAwait(false);
                 loopInvocationsList.Add(invocationPerformanceInfo);
             }
+
+
             var loopPerformanceInfo = new LoopPerformanceInfo(_predictionEngine, methodPerformanceInfo, loopInvocationsList);
+
+            var derivedLoopIterations = TryGetLoopIterationsFromCodeFlow(loopSyntax);
+            if (derivedLoopIterations != 0)
+            {
+                loopPerformanceInfo.PredictedLoopIterations = derivedLoopIterations;
+            }
+
             PerformanceTags.Add(loopSyntax, new LoopPerformanceTag(loopPerformanceInfo));
             return loopPerformanceInfo;
+        }
+
+        /// <summary>
+        /// Performs Code Flow Analysis to determine the loop iterations
+        /// </summary>
+        /// <param name="loopSyntax">Loop to examine</param>
+        /// <returns>Non-zero if successful, zero otherwise</returns>
+        private int TryGetLoopIterationsFromCodeFlow(SyntaxNode loopSyntax)
+        {
+            try
+            {
+                switch (loopSyntax)
+                {
+                    case ForStatementSyntax forStatementSyntax:
+                        return GetForLoopIterationsFromCodeFlow(forStatementSyntax);
+                    case WhileStatementSyntax whileStatementSyntax:
+                        // TODO RR:
+                        return 0;
+                    case ForEachStatementSyntax forEachStatementSyntax:
+                        // TODO RR:
+                        return 0;
+                    case DoStatementSyntax doStatementSyntax:
+                        // TODO RR:
+                        return 0;
+                }
+            }
+            catch (Exception e)
+            {
+                // ignore
+            }
+            return 0;
+        }
+
+        private int GetForLoopIterationsFromCodeFlow(ForStatementSyntax forStatementSyntax)
+        {
+            if (!(forStatementSyntax.Condition is BinaryExpressionSyntax binaryCondition))
+            {
+                return 0;
+            }
+
+            if (binaryCondition.Kind() == SyntaxKind.LessThanExpression ||
+                binaryCondition.Kind() == SyntaxKind.LessThanOrEqualExpression)
+            {
+                // Left is variable
+                var left = GetNumericLiteralExpression(binaryCondition.Left);
+                if (left.Kind() == SyntaxKind.NumericLiteralExpression && int.TryParse(left.ToString(), out var leftValue))
+                {
+                    // Right is value
+                    var right = GetNumericLiteralExpression(binaryCondition.Right);
+                    if (right.Kind() == SyntaxKind.NumericLiteralExpression && int.TryParse(right.ToString(), out var rightValue))
+                    {
+                        return rightValue - leftValue;
+                    }
+                }
+
+                //var conditiondataFlowAnalysis = _semanticModel.AnalyzeDataFlow(binaryCondition);
+                //if (conditiondataFlowAnalysis.Succeeded)
+                //{
+                //    var symbol = conditiondataFlowAnalysis.ReadInside.FirstOrDefault();
+                //    var syntax = symbol?.OriginalDefinition.DeclaringSyntaxReferences.FirstOrDefault().GetSyntax();
+                //    if (!(syntax is VariableDeclaratorSyntax variableDeclaratorSyntax))
+                //    {
+                //        return 0;
+                //    }
+
+                //    var value = GetNumericLiteralExpression(variableDeclaratorSyntax.Initializer.Value);
+                //    if (value.Kind() == SyntaxKind.NumericLiteralExpression && int.TryParse(value.ToString(), out var intValue))
+                //    {
+                //        return intValue;
+                //    }
+                //}
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// following variables until we find a declaration with a value
+        /// </summary>
+        /// <param name="expressionSyntax">An Expression</param>
+        /// <returns>A SyntaxExpression of type SyntaxKind.NumericLiteralExpression or the topmost one found</returns>
+        private ExpressionSyntax GetNumericLiteralExpression(ExpressionSyntax expressionSyntax)
+        {
+            do
+            {
+                if (expressionSyntax.Kind() == SyntaxKind.NumericLiteralExpression)
+                {
+                    break;
+                }
+
+                var valueSymbolInfo = _semanticModel.GetSymbolInfo(expressionSyntax);
+                if (valueSymbolInfo.Symbol.OriginalDefinition.DeclaringSyntaxReferences.FirstOrDefault().GetSyntax() is VariableDeclaratorSyntax valueDeclaration)
+                {
+                    if (valueDeclaration.Initializer == null)
+                    {
+                        break;
+                    }
+                    expressionSyntax = valueDeclaration.Initializer.Value;
+                }
+            } while (expressionSyntax is IdentifierNameSyntax);
+            return expressionSyntax;
         }
     }
 }
