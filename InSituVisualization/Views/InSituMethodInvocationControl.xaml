@@ -16,10 +16,12 @@
     </UserControl.Resources>
 
     <StackPanel Orientation="Horizontal" Opacity="0.6">
-        <Button Background="{Binding Path=BackgroundColor, Converter={StaticResource ColorToSolidColorBrush}}"
+        <Button Background="Transparent"
                 Command="{Binding Path=OpenDetailViewCommand}"
                 VerticalContentAlignment="Top"
                 HorizontalContentAlignment="Right"
+                Width="60"
+                Height="17"
                 Padding="0"
                 BorderThickness="0">
             <Button.Style>
@@ -33,10 +35,10 @@
                 </Style>
             </Button.Style>
             <Button.Content>
-                <Canvas Width="60">
+                <Canvas Width="60" Background="Transparent">
                     <TextBlock Canvas.ZIndex="3" Text="{Binding Path=MethodPerformanceInfo.ExecutionTime, Converter={StaticResource TimeSpanToString}}" VerticalAlignment="Top"></TextBlock>
-                    <Rectangle Canvas.ZIndex="2" Fill="{Binding Path=BackgroundColor, Converter={StaticResource ColorToSolidColorBrush}}" Width="{Binding Path=MethodPerformanceInfo.ExecutionTime, Converter={StaticResource ExecutionTimeToWidth}}" IsHitTestVisible="False" Height="17" />
-                    <Rectangle Canvas.ZIndex="1" Fill="LightGray" IsHitTestVisible="False" Width="60" Height="17" />
+                    <Rectangle Canvas.ZIndex="2" Fill="{Binding Path=BackgroundColor, Converter={StaticResource ColorToSolidColorBrush}}" Width="{Binding Path=MethodPerformanceInfo.ExecutionTime, Converter={StaticResource ExecutionTimeToWidth}}" Height="17" />
+                    <Rectangle Canvas.ZIndex="1" Fill="Transparent" Height="17" />
                 </Canvas>
             </Button.Content>
         </Button>

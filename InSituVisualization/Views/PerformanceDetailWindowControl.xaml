@@ -56,10 +56,10 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                         <DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp}" />
-                        <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" />
                         <DataGridTextColumn Header="Client Region" Binding="{Binding ClientData.CountryOrRegion}" />
                         <DataGridTextColumn Header="Client City" Binding="{Binding ClientData.City}" />
                         <DataGridTextColumn Header="Client Ip" Binding="{Binding ClientData.Ip}" />
+                        <DataGridTextColumn Header="Duration" Binding="{Binding Duration, Converter={StaticResource TimeSpanToString}}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
@@ -78,10 +78,10 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                         <DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp}" />
-                        <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" />
                         <DataGridTextColumn Header="Client Region" Binding="{Binding ClientData.CountryOrRegion}" />
                         <DataGridTextColumn Header="Client City" Binding="{Binding ClientData.City}" />
                         <DataGridTextColumn Header="Client Ip" Binding="{Binding ClientData.Ip}" />
+                        <DataGridTextColumn Header="Duration" Binding="{Binding Duration, Converter={StaticResource TimeSpanToString}}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
