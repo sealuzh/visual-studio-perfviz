@@ -10,16 +10,13 @@
 
     <UserControl.Resources>
         <converters:ColorToSolidColorBrushValueConverter x:Key="ColorToSolidColorBrush" />
+        <converters:ExecutionTimeToWidthConverter x:Key="ExecutionTimeToWidth" />
         <converters:TimeSpanToStringConverter x:Key="TimeSpanToString" />
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </UserControl.Resources>
 
     <StackPanel Orientation="Horizontal" Opacity="0.6">
-        <Button Background="{Binding Path=BackgroundColor, Converter={StaticResource ColorToSolidColorBrush}}"
-                Width ="60" 
-                Height="17"
-                Command="{Binding Path=OpenDetailViewCommand}"
-                Content="{Binding Path=MethodPerformanceInfo.ExecutionTime, Converter={StaticResource TimeSpanToString}}"
+        <Button Command="{Binding Path=OpenDetailViewCommand}"
                 VerticalContentAlignment="Top"
                 HorizontalContentAlignment="Right"
                 Padding="0"
@@ -34,6 +31,13 @@
                     </Style.Triggers>
                 </Style>
             </Button.Style>
+            <Button.Content>
+                <Canvas Width="60">
+                    <TextBlock Canvas.ZIndex="3" Text="{Binding Path=MethodPerformanceInfo.ExecutionTime, Converter={StaticResource TimeSpanToString}}" VerticalAlignment="Top"></TextBlock>
+                    <Rectangle Canvas.ZIndex="2" Fill="{Binding Path=BackgroundColor, Converter={StaticResource ColorToSolidColorBrush}}" Width="{Binding Path=MethodPerformanceInfo.ExecutionTime, Converter={StaticResource ExecutionTimeToWidth}}" IsHitTestVisible="False" Height="17" />
+                    <Rectangle Canvas.ZIndex="1" Fill="LightGray" IsHitTestVisible="False" Width="60" Height="17" />
+                </Canvas>
+            </Button.Content>
         </Button>
         <TextBlock Foreground="Red" Visibility="{Binding Path=MethodPerformanceInfo.HasPrediction, Converter={StaticResource BoolToVis}}" ToolTip="Predicted Time">?</TextBlock>
     </StackPanel>
