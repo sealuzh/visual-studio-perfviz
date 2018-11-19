@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -22,6 +24,24 @@ namespace InSituVisualization.ViewModels
         public ICommand OpenDetailViewCommand { get; }
 
         public MethodPerformanceInfo MethodPerformanceInfo { get; }
+
+        /// <summary>
+        /// The last invocations in points
+        /// </summary>
+        public PointCollection Points
+        {
+            get
+            {
+                var points = new PointCollection();
+                var executionTimeMethodTelemetries = MethodPerformanceInfo.MethodPerformanceData.FilteredExecutionTimes.OrderByDescending(o => o.Timestamp).Take(30);
+                var i = 0;
+                foreach (var timeSpan in executionTimeMethodTelemetries)
+                {
+                    points.Add(new Point(i++ * 2, timeSpan.Duration.TotalMilliseconds));
+                }
+                return points;
+            }
+        }
 
         private IValueConverter TimeSpanToColoConverter { get; } = new TimeSpanToColorConverter();
 

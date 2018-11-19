@@ -71,7 +71,7 @@ namespace InSituVisualization.TelemetryMapper
             private static IMethodPerformanceData GetMockData(string documentationCommentId)
             {
                 var performanceData = IocHelper.Container.Resolve<IMethodPerformanceData>();
-                var numberOfRecords = Random.Next(2, 30);
+                var numberOfRecords = Random.Next(20, 60);
                 for (var i = 0; i < numberOfRecords; i++)
                 {
                     performanceData.ExecutionTimes.Add(new MockRecordedExecutionTimeMethodTelemetry(

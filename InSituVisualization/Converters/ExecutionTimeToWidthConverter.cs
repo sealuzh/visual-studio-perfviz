@@ -6,7 +6,7 @@ namespace InSituVisualization.Converters
     internal class ExecutionTimeToWidthConverter : IValueConverter
     {
         private const int MinWidth = 0;
-        private const int MaxWidth = 60;
+        private const int MaxWidth = 58;
 
         private static readonly TimeSpan MaxTimeSpan = TimeSpan.FromMilliseconds(1000);
 
