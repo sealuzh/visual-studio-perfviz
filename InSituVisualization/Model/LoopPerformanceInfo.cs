@@ -18,7 +18,6 @@ namespace InSituVisualization.Model
         public MethodPerformanceInfo MethodPerformanceInfo { get; }
         public IList<MethodPerformanceInfo> InvocationPerformanceInfos { get; }
 
-
         public int PredictedLoopIterations { get; set; }
 
         /// <summary>
@@ -26,7 +25,7 @@ namespace InSituVisualization.Model
         /// </summary>
         public TimeSpan SingleIterationTime
         {
-            get { return InvocationPerformanceInfos.Sum(p => p.MethodPerformanceData.MeanExecutionTime); }
+            get { return InvocationPerformanceInfos.Sum(p => p.ExecutionTime); }
         }
 
         /// <summary>

@@ -17,6 +17,12 @@ namespace InSituVisualization.Converters
                 return "0 ms";
             }
 
+            // < 1 ms
+            if (timeSpan.TotalMilliseconds < 1)
+            {
+                return $"{timeSpan.TotalMilliseconds:F2} ms";
+            }
+
             // < 1 Sec
             if (timeSpan.TotalMilliseconds < 1000)
             {

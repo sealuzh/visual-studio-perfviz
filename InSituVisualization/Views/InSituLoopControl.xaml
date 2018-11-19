@@ -16,12 +16,13 @@
 
     <StackPanel Orientation="Horizontal" Opacity="0.6">
         <Label Background="Transparent"
-                Foreground="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}"
-                Width ="30" 
-                Height="17"
-                Content="{Binding Path=LoopIterations}"
-                Padding="0"
-                BorderThickness="0">
+               Foreground="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}"
+               HorizontalContentAlignment="Right"
+               Width ="30" 
+               Height="17"
+               Content="{Binding Path=LoopIterations}"
+               Padding="0"
+               BorderThickness="0">
         </Label>
         <Slider Width ="100" Maximum="{Binding Path=MaxLoopIterations}" Value="{Binding Path=LoopIterations}" />
     </StackPanel>

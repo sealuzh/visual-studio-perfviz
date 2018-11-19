@@ -38,7 +38,6 @@ namespace InSituVisualization
             Container.Register<InsightsRestApiDataMapper>(Reuse.Singleton);
             Container.Register<ITelemetryCollector, InsightsRestApiCollector>();
             Container.Register<CustomSpanProvider>(Reuse.Singleton);
-            Container.Register<MemberPerformanceAdorner>(Reuse.Singleton);
 #if TestMapping
             Container.Register<ITelemetryDataMapper, MockTelemetryDataMapper>(Reuse.Singleton);
 #else

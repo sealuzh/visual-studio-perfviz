@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using DryIoc;
 using InSituVisualization.Predictions;
 using Microsoft.CodeAnalysis.FindSymbols;
+using Microsoft.VisualStudio.ComponentModelHost;
 
 namespace InSituVisualization.TelemetryMapper
 {
@@ -71,15 +72,13 @@ namespace InSituVisualization.TelemetryMapper
             {
                 var performanceData = IocHelper.Container.Resolve<IMethodPerformanceData>();
                 var numberOfRecords = Random.Next(2, 30);
-                var baseLineMilliSeconds = Random.Next(2, 100);
-
                 for (var i = 0; i < numberOfRecords; i++)
                 {
                     performanceData.ExecutionTimes.Add(new MockRecordedExecutionTimeMethodTelemetry(
                         documentationCommentId,
                         Guid.NewGuid().ToString(),
-                        DateTime.Now - TimeSpan.FromSeconds(Random.Next(1000)),
-                        TimeSpan.FromMilliseconds(baseLineMilliSeconds + Random.Next(20)),
+                        DateTime.Now - TimeSpan.FromMinutes(Random.Next(1000)),
+                        TimeSpan.FromMilliseconds(Random.NextDouble() * 10),
                         new MockClientData()));
                 }
 
@@ -88,7 +87,6 @@ namespace InSituVisualization.TelemetryMapper
         }
 
         private readonly Dictionary<string, MethodPerformanceInfo> _telemetryDatas = new Dictionary<string, MethodPerformanceInfo>();
-        private static Document Document => IocHelper.Container.Resolve<MemberPerformanceAdorner>().Document;
 
         public MockTelemetryDataMapper(IPredictionEngine predictionEngine)
         {
@@ -108,7 +106,7 @@ namespace InSituVisualization.TelemetryMapper
             var newPerformanceInfo = new MockMethodPerformanceInfo(_predictionEngine, methodSymbol, documentationCommentId);
             _telemetryDatas.Add(documentationCommentId, newPerformanceInfo);
 
-            await UpdateCallers(methodSymbol, newPerformanceInfo.MethodPerformanceData.MeanExecutionTime);
+            await UpdateCallersAsync(methodSymbol, newPerformanceInfo.MethodPerformanceData.MeanExecutionTime).ConfigureAwait(false);
 
             return newPerformanceInfo;
         }
@@ -116,9 +114,11 @@ namespace InSituVisualization.TelemetryMapper
         /// <summary>
         /// Adding the meanExecutionTime to all executionTimes of the symbol (caller).
         /// </summary>
-        private async Task UpdateCallers(ISymbol methodSymbol, TimeSpan meanExecutionTime)
+        private async Task UpdateCallersAsync(ISymbol methodSymbol, TimeSpan meanExecutionTime)
         {
-            var callers = await SymbolFinder.FindCallersAsync(methodSymbol, Document.Project.Solution);
+            var componentModel = (IComponentModel)Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(SComponentModel));
+            var workspace = componentModel.GetService<Microsoft.VisualStudio.LanguageServices.VisualStudioWorkspace>();
+            var callers = await SymbolFinder.FindCallersAsync(methodSymbol, workspace.CurrentSolution).ConfigureAwait(false);
             foreach (var symbolCallerInfo in callers)
             {
                 var callingSymbol = symbolCallerInfo.CallingSymbol;
@@ -140,7 +140,7 @@ namespace InSituVisualization.TelemetryMapper
                 }
 
                 // recursively update all symbols up in the tree
-                await UpdateCallers(callingSymbol, callingPerfInfo.MethodPerformanceData.MeanExecutionTime);
+                await UpdateCallersAsync(callingSymbol, callingPerfInfo.MethodPerformanceData.MeanExecutionTime).ConfigureAwait(false);
             }
         }
     }
