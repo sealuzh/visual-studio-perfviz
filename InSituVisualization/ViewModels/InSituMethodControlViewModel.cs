@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -14,6 +15,8 @@ namespace InSituVisualization.ViewModels
         {
             MethodPerformanceInfo = methodPerformanceInfo ?? throw new ArgumentNullException(nameof(methodPerformanceInfo));
             OpenDetailViewCommand = new RelayCommand<object>(obj => OnOpenDetailViewCommand());
+
+            MethodPerformanceInfo.PropertyChanged += MethodPerformanceInfoPropertyChanged;
         }
 
         public ICommand OpenDetailViewCommand { get; }
@@ -23,12 +26,22 @@ namespace InSituVisualization.ViewModels
         private IValueConverter TimeSpanToColoConverter { get; } = new TimeSpanToColorConverter();
 
         // ReSharper disable once PossibleNullReferenceException
-        public Color BackgroundColor => (Color)TimeSpanToColoConverter.Convert(MethodPerformanceInfo.MethodPerformanceData.MeanExecutionTime, typeof(DateTime), null, null);
+        public Color BackgroundColor => (Color)TimeSpanToColoConverter.Convert(MethodPerformanceInfo.ExecutionTime, typeof(DateTime), null, null);
 
         public void OnOpenDetailViewCommand()
         {
             var settings = IocHelper.Container.Resolve<Settings>();
             settings.SetDetailWindowContent(MethodPerformanceInfo);
+        }
+
+        private void MethodPerformanceInfoPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(MethodPerformanceInfo.ExecutionTime):
+                    OnPropertyChanged(nameof(BackgroundColor));
+                    break;
+            }
         }
 
     }

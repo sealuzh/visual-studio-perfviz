@@ -37,7 +37,7 @@
             </Button.Style>
             <Button.Content>
                 <Canvas Width="60" Background="Transparent">
-                    <TextBlock Canvas.ZIndex="3" Text="{Binding Path=MethodPerformanceInfo.ExecutionTime, Converter={StaticResource TimeSpanToString}}" VerticalAlignment="Top" TextAlignment="Right" FontSize="11" Foreground="Black" Width="58"></TextBlock>
+                    <TextBlock Canvas.ZIndex="3" Text="{Binding Path=MethodPerformanceInfo.ExecutionTime, Converter={StaticResource TimeSpanToString}}" VerticalAlignment="Top" TextAlignment="Right" FontSize="11" Foreground="White" Width="58"></TextBlock>
                     <Rectangle Canvas.ZIndex="2" Fill="{Binding Path=BackgroundColor, Converter={StaticResource ColorToSolidColorBrush}}" Width="{Binding Path=MethodPerformanceInfo.ExecutionTime, Converter={StaticResource ExecutionTimeToWidth}}" Height="15" />
                     <Rectangle Canvas.ZIndex="2" Fill="Transparent" Width="60" Height="15"/>
                 </Canvas>
