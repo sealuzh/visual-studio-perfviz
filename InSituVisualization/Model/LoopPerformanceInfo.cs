@@ -7,6 +7,8 @@ namespace InSituVisualization.Model
 {
     public class LoopPerformanceInfo : PerformanceInfo
     {
+        private int _predictedLoopIterations;
+
         public LoopPerformanceInfo(IPredictionEngine predictionEngine, MethodPerformanceInfo methodPerformanceInfo, IList<MethodPerformanceInfo> methodInvocationsPerformanceInfos)
         {
             PredictionEngine = predictionEngine ?? throw new ArgumentNullException(nameof(predictionEngine));
@@ -18,7 +20,15 @@ namespace InSituVisualization.Model
         public MethodPerformanceInfo MethodPerformanceInfo { get; }
         public IList<MethodPerformanceInfo> InvocationPerformanceInfos { get; }
 
-        public int PredictedLoopIterations { get; set; }
+        public int PredictedLoopIterations
+        {
+            get => _predictedLoopIterations;
+            set
+            {
+                SetProperty(ref _predictedLoopIterations, value);
+                PredictExecutionTime();
+            }
+        }
 
         /// <summary>
         /// The Time a single Loop takes

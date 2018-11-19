@@ -1,4 +1,5 @@
 ﻿using System;
+using InSituVisualization.Annotations;
 using InSituVisualization.Model;
 
 namespace InSituVisualization.ViewModels
@@ -12,7 +13,8 @@ namespace InSituVisualization.ViewModels
         {
             LoopPerformanceInfo = loopPerformanceInfo;
             // initializing LoopIterations to Average
-            _loopIterations = LoopPerformanceInfo.AverageLoopIterations;
+            _loopIterations = LoopPerformanceInfo.PredictedLoopIterations > 0 ? LoopPerformanceInfo.PredictedLoopIterations : LoopPerformanceInfo.AverageLoopIterations;
+
         }
 
         public LoopPerformanceInfo LoopPerformanceInfo { get; }
@@ -31,7 +33,6 @@ namespace InSituVisualization.ViewModels
                 }
                 // Updating Predicted Method Time
                 LoopPerformanceInfo.PredictedLoopIterations = value;
-                LoopPerformanceInfo.PredictExecutionTime();
             }
         }
 
@@ -42,11 +43,11 @@ namespace InSituVisualization.ViewModels
         {
             get
             {
-                if (LoopPerformanceInfo.AverageLoopIterations <= 0)
+                if (_loopIterations <= 0)
                 {
                     return DefaultMaxLoopIterations;
                 }
-                return LoopPerformanceInfo.AverageLoopIterations * 100;
+                return _loopIterations * 100;
             }
         }
 
