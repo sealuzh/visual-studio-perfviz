@@ -1,46 +1,27 @@
 ﻿using System;
 using System.Windows.Data;
+using System.Windows.Media.TextFormatting;
 
 namespace InSituVisualization.Converters
 {
     internal class ExecutionTimeToWidthConverter : IValueConverter
     {
+        private const int MinWidth = 0;
+        private const int MaxWidth = 60;
+
+        private static readonly TimeSpan MaxTimeSpan = TimeSpan.FromMilliseconds(1000);
+
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (value == null)
+            if (!(value is TimeSpan timeSpan) || timeSpan == TimeSpan.MinValue)
             {
-                return 0;
+                return MinWidth;
             }
-            var timeSpan = (TimeSpan)value;
-            if (timeSpan == TimeSpan.MinValue)
+            if (timeSpan > MaxTimeSpan)
             {
-                return 0;
+                return MaxWidth;
             }
-            if (timeSpan < TimeSpan.FromMilliseconds(20))
-            {
-                return 10;
-            }
-            if (timeSpan < TimeSpan.FromMilliseconds(50))
-            {
-                return 20;
-            }
-            if (timeSpan < TimeSpan.FromMilliseconds(100))
-            {
-                return 30;
-            }
-            if (timeSpan < TimeSpan.FromMilliseconds(300))
-            {
-                return 40;
-            }
-            if (timeSpan < TimeSpan.FromMilliseconds(600))
-            {
-                return 50;
-            }
-            if (timeSpan < TimeSpan.FromMilliseconds(1000))
-            {
-                return 58;
-            }
-            return 60;
+            return System.Convert.ToInt32(timeSpan.TotalMilliseconds / MaxTimeSpan.TotalMilliseconds * MaxWidth);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
