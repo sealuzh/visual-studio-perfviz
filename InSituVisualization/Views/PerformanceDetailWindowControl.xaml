@@ -44,15 +44,15 @@
         </Grid.RowDefinitions>
 
         <Popup IsOpen="{Binding ShowFilteredExecutionTimes}" AllowsTransparency="True">
-            <StackPanel>
-                <ToggleButton HorizontalAlignment="Stretch" IsChecked="{Binding ShowFilteredExecutionTimes, Mode=TwoWay}" Foreground="White" Background="Transparent">
+            <DockPanel Height="500">
+                <ToggleButton DockPanel.Dock="Top" HorizontalAlignment="Stretch" IsChecked="{Binding ShowFilteredExecutionTimes, Mode=TwoWay}" Foreground="White" Background="Black">
                     <ToggleButton.Template>
                         <ControlTemplate TargetType="{x:Type ToggleButton}">
-                            <ContentPresenter HorizontalAlignment="Right" Content="❌"/>
+                            <ContentPresenter HorizontalAlignment="Right" Content="❌" />
                         </ControlTemplate>
                     </ToggleButton.Template>
                 </ToggleButton>
-                <DataGrid ItemsSource="{Binding PerformanceInfo.MethodPerformanceData.FilteredExecutionTimes}" AutoGenerateColumns="False">
+                <DataGrid DockPanel.Dock="Bottom" ItemsSource="{Binding PerformanceInfo.MethodPerformanceData.FilteredExecutionTimes}" AutoGenerateColumns="False">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                         <DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp}" />
@@ -62,19 +62,19 @@
                         <DataGridTextColumn Header="Duration" Binding="{Binding Duration, Converter={StaticResource TimeSpanToString}}" />
                     </DataGrid.Columns>
                 </DataGrid>
-            </StackPanel>
+            </DockPanel>
         </Popup>
 
         <Popup IsOpen="{Binding ShowExecutionTimes}" AllowsTransparency="True">
-            <StackPanel>
-                <ToggleButton HorizontalAlignment="Stretch" IsChecked="{Binding ShowExecutionTimes, Mode=TwoWay}" Foreground="White" Background="Transparent">
+            <DockPanel Height="500">
+                <ToggleButton DockPanel.Dock="Top" HorizontalAlignment="Stretch" IsChecked="{Binding ShowExecutionTimes, Mode=TwoWay}" Foreground="White" Background="Transparent">
                     <ToggleButton.Template>
                         <ControlTemplate TargetType="{x:Type ToggleButton}">
                             <ContentPresenter HorizontalAlignment="Right" Content="❌"/>
                         </ControlTemplate>
                     </ToggleButton.Template>
                 </ToggleButton>
-                <DataGrid ItemsSource="{Binding PerformanceInfo.MethodPerformanceData.ExecutionTimes}" AutoGenerateColumns="False">
+                <DataGrid DockPanel.Dock="Bottom" ItemsSource="{Binding PerformanceInfo.MethodPerformanceData.ExecutionTimes}" AutoGenerateColumns="False">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                         <DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp}" />
@@ -84,7 +84,7 @@
                         <DataGridTextColumn Header="Duration" Binding="{Binding Duration, Converter={StaticResource TimeSpanToString}}" />
                     </DataGrid.Columns>
                 </DataGrid>
-            </StackPanel>
+            </DockPanel>
         </Popup>
 
         <StackPanel Grid.Column="0" Grid.Row="0" >
