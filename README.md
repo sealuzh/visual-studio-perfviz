@@ -36,13 +36,13 @@ This is achieved trough the use of the [The .NET Compiler Platform ("Roslyn")](h
 #### In Situ Visualization
 In situ visualizations are attached to methods, methodInvocations and loops. The displayed values are mean execution times. For faster recognition, there are color codes available which are displayed behind the actual mean execution time. The default setting is a Transition from Green (120° Hue) to Red (0° Hue) using the HSV Color Value. The user is able to define custom color codes individually for both, the method visualization as well as the visualization for the method invocation. A Conterter is available to set the color coding.
 
-![In Situ Visualization](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/InSituVisualization.PNG)
+![In Situ Visualization](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/SimpleMethod.PNG)
 
 #### Predictions
 Whenever changes are made to a method, a simple prediction of the new mean execution time is given. The prediction currently consists of a simple sum of the known execution times. 
 For loops there is a prediction of the average loop times displayed, which is calculated trough division of the method execution time by the sum of the known execution times inside the loop. An additional slider allows the adjustment of the estimated loop iterations. The newly predicted execution time of the method is propagated upwards in the abstract syntax tree, so that the predicted execution time of all callers is adjusted.
 
-![Loop Predictions](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/LoopPrediction.PNG)
+![Loop Predictions](https://github.com/sealuzh/visual-studio-perfviz/blob/master/Screenshots/Slider.gif)
 
 #### Detailed Breakdown
 A detail window is available to show further information about a certain telemetry. It is available by clicking an In Situ Visualization.
