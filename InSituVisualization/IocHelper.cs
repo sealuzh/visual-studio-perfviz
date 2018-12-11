@@ -1,4 +1,4 @@
-﻿#define TestMapping
+﻿//#define TestMapping
 //#define TestFilter
 
 using DryIoc;
