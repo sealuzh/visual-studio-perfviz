@@ -63,6 +63,7 @@
     <Compile Include="DryIoc\Container.cs" />
     <Compile Include="DryIoc\FastExpressionCompiler.cs" />
     <Compile Include="DryIoc\ImTools.cs" />
+    <Compile Include="ErrorHandler.cs" />
     <Compile Include="Filter\ComparableFilter.cs" />
     <Compile Include="Filter\IFilterController.cs" />
     <Compile Include="Filter\MockFilterController.cs" />

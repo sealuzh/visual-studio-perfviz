@@ -112,10 +112,18 @@ namespace InSituVisualization.Tagging
                 _originalTree = _roslynCache.SyntaxTree;
             }
 
-            var performanceSyntaxWalker = new AsyncSyntaxWalker(_roslynCache.SemanticModel);
-            var nodeTags = performanceSyntaxWalker.VisitAsync(_roslynCache.SyntaxTree, _originalTree).Result;
-            _performanceTagSpansCache = nodeTags.Select(perfTagKvp => perfTagKvp.Key.GetTagSpan(currentSnapshot, perfTagKvp.Value)).ToList();
-            return true;
+            try
+            {
+                var performanceSyntaxWalker = new AsyncSyntaxWalker(_roslynCache.SemanticModel);
+                var nodeTags = performanceSyntaxWalker.VisitAsync(_roslynCache.SyntaxTree, _originalTree).Result;
+                _performanceTagSpansCache = nodeTags.Select(perfTagKvp => perfTagKvp.Key.GetTagSpan(currentSnapshot, perfTagKvp.Value)).ToList();
+                return true;
+            }
+            catch (Exception e)
+            {
+                ErrorHandler.ReportError(e);
+                return false;
+            }
         }
 
 
