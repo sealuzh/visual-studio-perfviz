@@ -24,7 +24,7 @@ namespace InSituVisualization.TelemetryCollector
 
         public async Task<IMethodPerformanceData> GetTelemetryDataAsync(string documentationCommentId)
         {
-            await UpdateTelemetryDataAsync();
+            await UpdateTelemetryDataAsync().ConfigureAwait(false);
             return TelemetryByDocumentationCommentId.TryGetValue(documentationCommentId, out var methodTelemetry) ? methodTelemetry : null;
         }
 
@@ -38,7 +38,7 @@ namespace InSituVisualization.TelemetryCollector
 
             foreach (var telemetryCollector in _telemetryCollectorRegistry.TelemetryCollectors)
             {
-                var recordedMethodTelemetries = await telemetryCollector.GetTelemetryAsync();
+                var recordedMethodTelemetries = await telemetryCollector.GetTelemetryAsync().ConfigureAwait(false);
                 foreach (var methodTelemetry in recordedMethodTelemetries)
                 {
                     if (!AcknowledgedTelemetryIds.Add(methodTelemetry.Id) || string.IsNullOrWhiteSpace(methodTelemetry.DocumentationCommentId))

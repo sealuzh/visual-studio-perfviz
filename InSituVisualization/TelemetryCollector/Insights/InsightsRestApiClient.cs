@@ -34,19 +34,19 @@ namespace InSituVisualization.TelemetryCollector.Insights
         public async Task<InsightsRestApiResponse> GetTelemetryAsync()
         {
             var parameters = ParameterString + $"&$top={_top}";
-            return await GetTelemetryInternalAsync(parameters);
+            return await GetTelemetryInternalAsync(parameters).ConfigureAwait(false);
         }
 
         public async Task<InsightsRestApiResponse> GetTelemetryAsync(string documentationCommentId)
         {
             var filter = $"$filter=dependency/name eq '{WebUtility.HtmlEncode(documentationCommentId)}'";
             var parameters = ParameterString + $"&$top={_top}&{filter}";
-            return await GetTelemetryInternalAsync(parameters);
+            return await GetTelemetryInternalAsync(parameters).ConfigureAwait(false);
         }
 
         private async Task<InsightsRestApiResponse> GetTelemetryInternalAsync(string parameters)
         {
-            var telemetryJson = await GetStringAsync(parameters);
+            var telemetryJson = await GetStringAsync(parameters).ConfigureAwait(false);
             return JsonConvert.DeserializeObject<InsightsRestApiResponse>(telemetryJson);
         }
 
@@ -59,13 +59,14 @@ namespace InSituVisualization.TelemetryCollector.Insights
 
             var client = new HttpClient
             {
-                BaseAddress = _baseUri
+                BaseAddress = _baseUri,
+                Timeout = TimeSpan.FromMilliseconds(10000)
             };
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("x-api-key", _apiKey);
             var req = $"{_appId}/{QueryType}/{QueryPath}?{parameterString}";
-            var response = await client.GetAsync(req);
-            return response.IsSuccessStatusCode ? await response.Content.ReadAsStringAsync() : throw new InvalidOperationException(response.ReasonPhrase);
+            var response = await client.GetAsync(req).ConfigureAwait(false);
+            return response.IsSuccessStatusCode ? await response.Content.ReadAsStringAsync().ConfigureAwait(false) : throw new InvalidOperationException(response.ReasonPhrase);
         }
     }
 }

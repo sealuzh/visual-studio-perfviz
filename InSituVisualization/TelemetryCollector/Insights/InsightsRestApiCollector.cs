@@ -18,7 +18,7 @@ namespace InSituVisualization.TelemetryCollector.Insights
 
         public async Task<IList<RecordedMethodTelemetry>> GetTelemetryAsync()
         {
-            var response = await _client.GetTelemetryAsync();
+            var response = await _client.GetTelemetryAsync().ConfigureAwait(false);
             return _mapper.GetMethodTelemetry(response);
         }
     }

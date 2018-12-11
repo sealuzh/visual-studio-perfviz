@@ -135,7 +135,7 @@ namespace InSituVisualization.Tagging
                 return null;
             }
 
-            var invocationPerformanceInfo = await _telemetryDataMapper.GetMethodPerformanceInfoAsync(invokedMethodSymbol);
+            var invocationPerformanceInfo = await _telemetryDataMapper.GetMethodPerformanceInfoAsync(invokedMethodSymbol).ConfigureAwait(false);
 
             if (invocationPerformanceInfo != null)
             {
